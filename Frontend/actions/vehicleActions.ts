@@ -1,7 +1,8 @@
 "use server";
 
-import pool from '@/lib/db';
 import { revalidatePath } from 'next/cache';
+
+const BACKEND_URL = 'http://localhost:5000/api';
 
 export interface Vehicle {
     id: string;
@@ -12,39 +13,49 @@ export interface Vehicle {
     created_at?: Date;
 }
 
-// Fetch all vehicles
+// Fetch all vehicles via Backend API
 export async function getVehicles(): Promise<{ success: boolean; data?: any[]; error?: string }> {
     try {
-        const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
-        return { success: true, data: rows as any[] };
+        const res = await fetch(`${BACKEND_URL}/vehicles`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Failed to fetch from backend');
+        return await res.json();
     } catch (error) {
-        console.error("Database Error:", error);
-        return { success: false, error: "Failed to fetch vehicles" };
+        console.error("API Error:", error);
+        return { success: false, error: "Backend communication failed" };
     }
 }
 
-// Add a new vehicle
+// Add a new vehicle via Backend API
 export async function addVehicle(formData: FormData) {
     try {
-        const make = formData.get('make');
-        const model = formData.get('model');
-        const licensePlate = formData.get('licensePlate');
-        const year = formData.get('year');
-        const mileage = formData.get('mileage');
-        const fuelType = formData.get('fuelType');
-        const transmission = formData.get('transmission');
+        const data = {
+            make: formData.get('make'),
+            model: formData.get('model'),
+            licensePlate: formData.get('licensePlate'),
+            year: formData.get('year'),
+            mileage: formData.get('mileage'),
+            fuelType: formData.get('fuelType'),
+            transmission: formData.get('transmission'),
+        };
 
-        const [result] = await pool.execute(
-            'INSERT INTO vehicles (make, model, license_plate, year, mileage, fuel_type, transmission, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [make, model, licensePlate, year, mileage, fuelType, transmission, 'Active']
-        );
+        const res = await fetch(`${BACKEND_URL}/vehicles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
 
-        revalidatePath('/admin');
-        revalidatePath('/admin/add-vehicle');
+        if (!res.ok) throw new Error('Failed to add via backend');
+        
+        const result = await res.json();
+        
+        if (result.success) {
+            revalidatePath('/');
+            revalidatePath('/add-vehicle');
+        }
 
-        return { success: true };
+        return result;
     } catch (error) {
-        console.error("Database Error:", error);
-        return { success: false, error: "Failed to add vehicle" };
+        console.error("API Error:", error);
+        return { success: false, error: "Backend communication failed" };
     }
 }
