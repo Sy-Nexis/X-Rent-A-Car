@@ -1,129 +1,85 @@
 "use client";
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Info } from "lucide-react";
+import { useRef, useState } from 'react';
+import { addVehicle } from '@/backend/actions/vehicleActions';
 
-interface AddVehicleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export default function AddVehicleModal({ onClose }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [loading, setLoading] = useState(false);
 
-export default function AddVehicleModal({ isOpen, onClose }: AddVehicleModalProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  // Client-side submit handler
+  async function handleSubmit(formData: FormData) {
+    setLoading(true);
 
-  const onSubmit = (data: any) => {
-    console.log("Vehicle Data:", data);
-    onClose();
-  };
+    // Call the server action directly from the client
+    const response = await addVehicle(formData);
+
+    setLoading(false);
+
+    if (response.success) {
+      formRef.current?.reset();
+      onClose(); // Close the modal on success
+    } else {
+      alert(response.error); // Handle database errors gracefully
+    }
+  }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-          />
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="relative w-full max-w-2xl bg-bg-surface rounded-2xl shadow-2xl overflow-hidden border border-border-subtle"
-          >
-            <div className="flex items-center justify-between px-6 py-5 border-b border-border-subtle bg-bg-surface">
-              <div>
-                <h2 className="text-xl font-bold text-text-primary">Add New Vehicle</h2>
-                <p className="text-xs text-text-secondary mt-0.5">Enter fleet vehicle specifications</p>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full hover:bg-bg-base transition-colors text-text-secondary hover:text-text-primary"
-              >
-                <X size={20} />
-              </button>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
+      <div className="bg-white dark:bg-[#2c2c2e] p-6 rounded-2xl w-full max-w-md shadow-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">Register New Vehicle</h2>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">Make</label>
-                  <input
-                    {...register("make", { required: true })}
-                    placeholder="e.g. Toyota"
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">Model</label>
-                  <input
-                    {...register("model", { required: true })}
-                    placeholder="e.g. Prius"
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">Year</label>
-                  <input
-                    {...register("year", { required: true })}
-                    placeholder="2024"
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">License Plate</label>
-                  <input
-                    {...register("licensePlate", { required: true })}
-                    placeholder="WP AAA-1234"
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">Initial Mileage (km)</label>
-                  <input
-                    {...register("mileage", { required: true })}
-                    placeholder="0"
-                    type="number"
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider ml-1">Fuel Type</label>
-                  <select
-                    {...register("fuelType", { required: true })}
-                    className="w-full px-4 py-2.5 bg-bg-base rounded-lg border border-transparent focus:border-blue-apple focus:ring-4 focus:ring-blue-apple/10 transition-all outline-none text-sm appearance-none"
-                  >
-                    <option value="petrol">Petrol</option>
-                    <option value="diesel">Diesel</option>
-                    <option value="electric">Electric</option>
-                    <option value="hybrid">Hybrid</option>
-                  </select>
-                </div>
-              </div>
+        {/* The action attribute natively ties the form to our submit handler */}
+        <form ref={formRef} action={handleSubmit} className="space-y-4">
 
-              <div className="flex items-center gap-4 justify-end pt-6 border-t border-border-subtle">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-2.5 rounded-lg text-sm font-semibold text-text-secondary hover:bg-bg-base transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-8 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-apple hover:bg-blue-600 transition-all shadow-lg shadow-blue-apple/20 active:scale-[0.98]"
-                >
-                  Save Vehicle
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+          <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-bold">Make</label>
+            <input
+              name="make"
+              required
+              className="w-full mt-1 p-2 bg-gray-50 dark:bg-[#1c1c1e] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-lg border border-transparent focus:border-blue-500 outline-none"
+              placeholder="e.g. Toyota"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-bold">Model</label>
+            <input
+              name="model"
+              required
+              className="w-full mt-1 p-2 bg-gray-50 dark:bg-[#1c1c1e] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-lg border border-transparent focus:border-blue-500 outline-none"
+              placeholder="e.g. Prius"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs text-gray-500 uppercase tracking-wider font-bold">License Plate</label>
+            <input
+              name="licensePlate"
+              required
+              className="w-full mt-1 p-2 bg-gray-50 dark:bg-[#1c1c1e] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-lg border border-transparent focus:border-blue-500 outline-none"
+              placeholder="e.g. CBA-9921"
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-[#0071e3] text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Saving...' : 'Save Vehicle'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
