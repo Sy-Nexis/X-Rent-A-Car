@@ -2,8 +2,8 @@
 
 import React, { useState, useTransition } from "react";
 import { Plus, Search, Filter } from "lucide-react";
-import VehicleTable from "./VehicleTable";
-import AddVehicleModal from "./AddVehicleModal";
+import VehicleTable from "@/components/Vehicles/VehicleTable";
+import AddVehicleModal from "@/components/Vehicles/AddVehicleModal";
 
 interface VehicleManagerProps {
   initialData: any[];
