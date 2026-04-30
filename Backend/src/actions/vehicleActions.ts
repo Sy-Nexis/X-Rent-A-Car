@@ -1,9 +1,9 @@
 "use server";
 
 import pool from '../db';
-import { revalidatePath } from '../../../.next/dev/cache';
+import { revalidatePath } from 'next/cache';
 
-// Fetch all vehicles
+
 export async function getVehicles() {
     try {
         const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
