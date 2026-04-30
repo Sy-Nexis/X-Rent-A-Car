@@ -1,6 +1,6 @@
 import React from 'react';
 import { getVehicles } from '@/actions/vehicleActions';
-import VehicleManager from '@/components/Vehicles/VehicleManager';
+import VehicleManager from '../../../components/Vehicles/VehicleManager';
 
 export const metadata = {
   title: 'Vehicle Fleet Management | XNRENT CAR',
