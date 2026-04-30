@@ -1,8 +1,5 @@
-"use client";
-
 import React from "react";
-import { Car, Users, GaugeCircle, Clock, Star, Route, Navigation, Activity, Signal, MapPin } from "lucide-react";
-import { activityLog } from "./mockData";
+import { Car, Users, GaugeCircle, Clock, Star, Route } from "lucide-react";
 
 export function DriverDetailHero() {
   return (
@@ -72,54 +69,26 @@ export function GPSTracker() {
       </div>
 
       <div className="flex flex-col gap-3 mb-4 flex-1">
-        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50">
-          <span className="text-sm text-text-secondary flex items-center gap-2"><Navigation size={14}/> Heading</span>
-          <span className="text-sm font-medium text-text-primary">North-East · 048°</span>
+        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50 text-xs sm:text-sm">
+          <span className="text-text-secondary flex items-center gap-2">Heading</span>
+          <span className="font-medium text-text-primary">North-East · 048°</span>
         </div>
-        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50">
-          <span className="text-sm text-text-secondary flex items-center gap-2"><Activity size={14}/> Altitude</span>
-          <span className="text-sm font-medium text-text-primary">186 m</span>
+        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50 text-xs sm:text-sm">
+          <span className="text-text-secondary flex items-center gap-2">Altitude</span>
+          <span className="font-medium text-text-primary">186 m</span>
         </div>
-        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50">
-          <span className="text-sm text-text-secondary flex items-center gap-2"><Route size={14}/> Route</span>
-          <span className="text-sm font-medium text-text-primary">A2 Highway</span>
+        <div className="flex justify-between items-center py-2 border-b border-border-subtle/50 text-xs sm:text-sm">
+          <span className="text-text-secondary flex items-center gap-2">Route</span>
+          <span className="font-medium text-text-primary">A2 Highway</span>
         </div>
-        <div className="flex justify-between items-center py-2">
-          <span className="text-sm text-text-secondary flex items-center gap-2"><Signal size={14}/> Signal</span>
-          <span className="text-sm font-medium text-blue-apple">Strong 4G</span>
+        <div className="flex justify-between items-center py-2 text-xs sm:text-sm">
+          <span className="text-text-secondary flex items-center gap-2">Signal</span>
+          <span className="font-medium text-blue-apple">Strong 4G</span>
         </div>
       </div>
 
-      <div className="mt-auto bg-bg-base rounded-element p-3 font-mono text-xs text-text-secondary flex items-center justify-center gap-2 border border-border-subtle">
-        <MapPin size={12} />
+      <div className="mt-auto bg-bg-base rounded-element p-3 font-mono text-[10px] sm:text-xs text-text-secondary flex items-center justify-center gap-2 border border-border-subtle">
         <span>6.9271° N, 79.8612° E</span>
-      </div>
-    </div>
-  );
-}
-
-export function ActivityLog() {
-  const getColor = (type: string) => {
-    switch(type) {
-      case 'start': return 'bg-green-apple ring-green-apple/20';
-      case 'stop': return 'bg-blue-apple ring-blue-apple/20';
-      case 'alert': return 'bg-red-apple ring-red-apple/20';
-      case 'idle': return 'bg-orange-apple ring-orange-apple/20';
-      default: return 'bg-border-subtle ring-border-subtle/20';
-    }
-  };
-
-  return (
-    <div className="bg-bg-surface rounded-card border border-border-subtle p-5 shadow-sm">
-      <h3 className="text-base font-semibold text-text-primary mb-5">Activity Log</h3>
-      <div className="relative pl-3 border-l-2 border-border-subtle space-y-6">
-        {activityLog.map((log, i) => (
-          <div key={i} className="relative">
-            <div className={`absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full ring-4 ${getColor(log.type)}`}></div>
-            <div className="text-xs text-text-secondary mb-0.5 font-medium">{log.time}</div>
-            <div className="text-sm text-text-primary leading-snug">{log.text}</div>
-          </div>
-        ))}
       </div>
     </div>
   );

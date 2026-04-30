@@ -1,9 +1,4 @@
-import { 
-  Car, 
-  Users, 
-  Route, 
-  ShieldAlert 
-} from "lucide-react";
+import { Car, Users, Route, ShieldAlert } from "lucide-react";
 
 export const statsData = [
   {

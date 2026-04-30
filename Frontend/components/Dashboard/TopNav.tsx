@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Car } from "lucide-react";
-import Link from "next/link";
 
 export default function TopNav() {
   return (

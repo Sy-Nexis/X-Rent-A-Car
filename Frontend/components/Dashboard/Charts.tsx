@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  Cell, 
-  PieChart, 
-  Pie 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  PieChart,
+  Pie,
 } from "recharts";
 import { tripsData, pieData, alertsData } from "./mockData";
 
@@ -24,17 +24,17 @@ export function TripsBarChart() {
       <div className="h-[200px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={tripsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} dy={10} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} />
+            <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6e6e73' }} dy={10} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6e6e73' }} />
             <Tooltip 
-              cursor={{ fill: 'var(--color-border-subtle)', opacity: 0.5 }}
-              contentStyle={{ borderRadius: '10px', border: '1px solid var(--color-border-subtle)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
+              cursor={{ fill: 'rgba(0,0,0,0.05)', opacity: 0.5 }}
+              contentStyle={{ borderRadius: '10px', border: '1px solid #e5e7eb', backgroundColor: '#fff', color: '#1d1d1f' }}
             />
             <Bar dataKey="trips" radius={[4, 4, 0, 0]}>
               {tripsData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
-                  fill={entry.day === 'Wed' || entry.day === 'Sat' ? 'var(--color-purple-apple)' : entry.day === 'Sun' ? 'var(--color-blue-apple)' : 'var(--color-border-subtle)'} 
+                  fill={entry.day === 'Wed' || entry.day === 'Sat' ? '#bf5af2' : entry.day === 'Sun' ? '#0071e3' : '#e5e7eb'} 
                 />
               ))}
             </Bar>
@@ -69,8 +69,8 @@ export function FleetStatusDonut() {
                 ))}
               </Pie>
               <Tooltip 
-                contentStyle={{ borderRadius: '10px', border: '1px solid var(--color-border-subtle)', backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
-                itemStyle={{ color: 'var(--text-primary)' }}
+                contentStyle={{ borderRadius: '10px', border: '1px solid #e5e7eb', backgroundColor: '#fff', color: '#1d1d1f' }}
+                itemStyle={{ color: '#1d1d1f' }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -109,10 +109,10 @@ export function ActiveAlerts() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {alertsData.map((alert, i) => (
-          <div key={i} className="bg-bg-base p-4 rounded-element border border-border-subtle flex items-start gap-3 hover:border-red-apple/30 transition-colors group cursor-pointer">
+          <div key={i} className="bg-bg-base p-4 rounded-element border border-border-subtle flex items-start gap-3 hover:border-red-500/30 transition-colors group cursor-pointer">
             <div className="text-lg mt-0.5">{alert.severity}</div>
             <div>
-              <div className="text-sm font-semibold text-text-primary mb-1 group-hover:text-red-apple transition-colors">{alert.title}</div>
+              <div className="text-sm font-semibold text-text-primary mb-1 group-hover:text-red-500 transition-colors">{alert.title}</div>
               <div className="text-xs text-text-secondary">{alert.detail}</div>
             </div>
           </div>
