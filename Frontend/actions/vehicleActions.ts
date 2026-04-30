@@ -1,6 +1,6 @@
 "use server";
 
-import pool from '@backend/db';
+import pool from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 
 export interface Vehicle {
