@@ -31,8 +31,8 @@ export async function addVehicle(formData: FormData) {
         const licensePlate = formData.get('licensePlate');
 
         const [result] = await pool.execute(
-            'INSERT INTO vehicles (make, model, license_plate, status) VALUES (?, ?, ?, ?)',
-            [make, model, licensePlate, status]
+            'INSERT INTO vehicles (make, model, license_plate, status) VALUES (?, ?, ?)',
+            [make, model, licensePlate]
         );
 
         // Next.js --> Clear Cache & Update
