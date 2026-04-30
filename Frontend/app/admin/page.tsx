@@ -1,29 +1,18 @@
-import React from "react";
-import AdminNav from "@/components/AdminNav";
-import TabSwitcher from "@/components/TabSwitcher";
+import { getVehicles } from '@backend/actions/vehicleActions';
+import VehicleTable from '@/components/VehicleTable';
 
-export const metadata = {
-  title: "XNRENT CAR | Admin Management Portal",
-  description: "Manage your fleet and driver personnel",
-};
+export default async function AdminPage() {
+  const response = await getVehicles();
+  const vehicles = response.success ? response.data : [];
 
-export default function AdminPage() {
   return (
-    <div className="min-h-screen bg-bg-base flex flex-col">
-      {/* Server Component Nav */}
-      <AdminNav />
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e]">
+      {/* Navigation and Header components go here */}
 
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-6 py-10">
-        {/* Client Component for Interactive Sections */}
-        <TabSwitcher />
+      <main className="p-6 max-w-7xl mx-auto">
+        {/* Pass the server-fetched data down to the client component */}
+        <VehicleTable initialData={vehicles} />
       </main>
-
-      {/* Simple Footer */}
-      <footer className="py-8 px-6 text-center border-t border-border-subtle bg-bg-surface/30">
-        <p className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em]">
-          XNRENT CAR Fleet Operations · Internal Admin System
-        </p>
-      </footer>
     </div>
   );
 }

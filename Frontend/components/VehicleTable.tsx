@@ -11,8 +11,13 @@ const vehicles = [
   { id: "XNR-1120", make: "BMW", model: "520d", plate: "WP XY-8831", status: "Active" },
 ];
 
-export default function VehicleTable() {
+interface VehicleTableProps {
+  initialData?: any[];
+}
+
+export default function VehicleTable({ initialData = vehicles }: VehicleTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const displayVehicles = initialData;
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -59,7 +64,7 @@ export default function VehicleTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle/50">
-            {vehicles.map((vehicle, i) => (
+            {displayVehicles.map((vehicle, i) => (
               <tr key={i} className="group hover:bg-bg-base/50 transition-colors">
                 <td className="px-6 py-4 font-bold text-text-primary">{vehicle.id}</td>
                 <td className="px-6 py-4">
