@@ -3,7 +3,7 @@ import pool from '../db';
 
 const router = Router();
 
-// Endpoint will be: POST http://localhost:5000/api/vehicles/add
+// /api/vehicles/add
 router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const { make, model, year, vin, licensePlate, transmission, fuelType, engineCapacity, color, mileage, dailyRate, branch, status } = req.body;
