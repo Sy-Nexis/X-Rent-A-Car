@@ -4,10 +4,19 @@ import pool from '../db';
 import { revalidatePath } from 'next/cache';
 
 
-export async function getVehicles() {
+export interface Vehicle {
+    id: string;
+    make: string;
+    model: string;
+    license_plate: string;
+    status: string;
+    created_at?: Date;
+}
+
+export async function getVehicles(): Promise<{ success: boolean; data?: Vehicle[]; error?: string }> {
     try {
         const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
-        return { success: true, data: rows };
+        return { success: true, data: rows as Vehicle[] };
     } catch (error) {
         console.error("Database Error:", error);
         return { success: false, error: "Failed to fetch vehicles" };
