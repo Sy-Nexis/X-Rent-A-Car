@@ -1,58 +1,44 @@
 // src/index.ts
-import express from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import pool from './db'; // Imports your database connection
+// import vehicleInputRouter from './Admin/VehicleInput';
+import pool from './db';
 
 // Load environment variables
-dotenv.config({ path: '.env.local' });
+dotenv.config();
 
-const app = express();
+const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Frontend - Backend Communication
-app.use(express.json()); // Allows the backend to understand JSON data
+app.use(cors()); // Allow cross-origin requests from your frontend
+app.use(express.json()); // Parse incoming JSON payloads
 
-// TESTING
-// app.get('/api/health', (req, res) => {
-//     res.json({ status: 'OK', message: 'XNRENT Backend is running smoothly!' });
-// });
 
-// DB Check
-app.get('/api/db-check', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT 1 + 1 AS result');
-        res.json({ status: 'Connected', data: rows });
-    } catch (error) {
-        res.status(500).json({ status: 'Database Error', error });
-    }
-});
-// Get all vehicles
-app.get('/api/vehicles', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
-        res.json({ success: true, data: rows });
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Failed to fetch vehicles' });
-    }
+
+
+
+
+// app.use('/api/vehicles/add', vehicleInputRouter);
+
+// Health Check Route
+app.get('/api/health', (req: Request, res: Response) => {
+    res.status(200).json({
+        status: 'Active',
+        message: 'XNRENT Fleet API is running.'
+    });
 });
 
-// Add new vehicle
-app.post('/api/vehicles', async (req, res) => {
-    try {
-        const { make, model, licensePlate, year, mileage, fuelType, transmission } = req.body;
-        await pool.execute(
-            'INSERT INTO vehicles (make, model, license_plate, year, mileage, fuel_type, transmission, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [make, model, licensePlate, year, mileage, fuelType, transmission, 'Active']
-        );
-        res.json({ success: true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, error: 'Failed to add vehicle' });
-    }
-});
+// Start the Server
+app.listen(PORT, async () => {
+    console.log(`API Server running on http://localhost:${PORT}`);
 
-app.listen(PORT, () => {
-    console.log(`Server -> http://localhost:${PORT}`);
+    try {
+        const connection = await pool.getConnection();
+        console.log('DB successfully');
+        connection.release();
+    } catch (error) {
+        console.error('DB failed:', error);
+    }
 });
