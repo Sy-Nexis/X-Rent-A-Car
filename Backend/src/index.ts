@@ -11,15 +11,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors()); // Allows your Next.js frontend to communicate with this backend
+app.use(cors()); // Frontend - Backend Communication
 app.use(express.json()); // Allows the backend to understand JSON data
 
-// A simple test route to make sure it's working
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'XNRENT Backend is running smoothly!' });
-});
+// TESTING
+// app.get('/api/health', (req, res) => {
+//     res.json({ status: 'OK', message: 'XNRENT Backend is running smoothly!' });
+// });
 
-// A test route to check database connection
+// DB Check
 app.get('/api/db-check', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT 1 + 1 AS result');
@@ -29,7 +29,7 @@ app.get('/api/db-check', async (req, res) => {
     }
 });
 
-// Start the server
+
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    console.log(`Server -> http://localhost:${PORT}`);
 });
