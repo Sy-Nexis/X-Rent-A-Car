@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from 'react';
-import { addVehicle } from '@backend/actions/vehicleActions';
+import { addVehicle } from '@/actions/vehicleActions';
 
 interface AddVehicleModalProps {
   onClose: () => void;

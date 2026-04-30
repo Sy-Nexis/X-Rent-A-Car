@@ -1,4 +1,4 @@
-import { getVehicles } from '@backend/actions/vehicleActions';
+import { getVehicles } from '@/actions/vehicleActions';
 import VehicleTable from '@/components/VehicleTable';
 
 export default async function AdminPage() {
