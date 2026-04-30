@@ -85,10 +85,11 @@ export default function TabSwitcher() {
       </AnimatePresence>
 
       {/* Modals */}
-      <AddVehicleModal 
-        isOpen={isVehicleModalOpen} 
-        onClose={() => setIsVehicleModalOpen(false)} 
-      />
+      {isVehicleModalOpen && (
+        <AddVehicleModal 
+          onClose={() => setIsVehicleModalOpen(false)} 
+        />
+      )}
       <AddDriverModal 
         isOpen={isDriverModalOpen} 
         onClose={() => setIsDriverModalOpen(false)} 

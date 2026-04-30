@@ -1,26 +1,28 @@
 "use client";
 
 import { useRef, useState } from 'react';
-import { addVehicle } from '@/backend/actions/vehicleActions';
+import { addVehicle } from '@backend/actions/vehicleActions';
 
-export default function AddVehicleModal({ onClose }) {
+interface AddVehicleModalProps {
+  onClose: () => void;
+}
+
+export default function AddVehicleModal({ onClose }: AddVehicleModalProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
 
-  // Client-side submit handler
   async function handleSubmit(formData: FormData) {
     setLoading(true);
 
-    // Call the server action directly from the client
     const response = await addVehicle(formData);
 
     setLoading(false);
 
     if (response.success) {
       formRef.current?.reset();
-      onClose(); // Close the modal on success
+      onClose();
     } else {
-      alert(response.error); // Handle database errors gracefully
+      alert(response.error);
     }
   }
 
