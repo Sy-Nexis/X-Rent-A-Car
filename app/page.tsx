@@ -496,7 +496,7 @@ function FleetStatusDonut() {
                 stroke="none"
               >
                 {pieData.map((entry, index) => (
-                  <PieCell key={`cell-${index}`} fill={entry.color} />
+                  <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip 
