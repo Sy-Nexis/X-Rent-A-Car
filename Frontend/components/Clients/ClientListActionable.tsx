@@ -1,23 +1,19 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MoreHorizontal, 
   Search, 
   Mail, 
   Phone, 
-  ShieldAlert, 
   User, 
-  ChevronRight, 
   Trash2, 
   Eye, 
   Edit3,
-  UserCheck,
   UserX,
   Plus
 } from "lucide-react";
 import Link from "next/link";
+import UpdateClientModal from "./UpdateClientModal";
 
 // --- TYPES ---
 interface Client {
@@ -26,7 +22,11 @@ interface Client {
   last_name: string;
   email: string;
   phone: string;
-  government_id: string; // NIC
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  government_id: string; 
   license_number: string;
   status: string;
   total_rentals?: number;
@@ -41,6 +41,10 @@ export default function ClientListActionable({ initialClients }: ClientListActio
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  
+  // Modal States
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   
   // Filtering Logic (Instant Search)
   const filteredClients = clients.filter((client) => {
@@ -75,7 +79,7 @@ export default function ClientListActionable({ initialClients }: ClientListActio
         </div>
 
         <Link 
-          href="/Admin/Client/Register"
+          href="/Admin/Client/Data"
           className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95"
         >
           <Plus size={18} />
@@ -85,7 +89,7 @@ export default function ClientListActionable({ initialClients }: ClientListActio
 
       {/* 2. CLIENT TABLE CONTAINER */}
       <div className="relative bg-white/[0.02] border border-white/5 rounded-[40px] shadow-2xl shadow-black/40 overflow-hidden">
-        <div className="overflow-x-auto custom-scrollbar">
+        <div className="overflow-x-auto custom-scrollbar text-white">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.01]">
@@ -178,7 +182,15 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                           >
                             <div className="p-2 space-y-1">
                               <MenuButton icon={<Eye size={16} />} label="View Profile" />
-                              <MenuButton icon={<Edit3 size={16} />} label="Edit Details" />
+                              <MenuButton 
+                                icon={<Edit3 size={16} />} 
+                                label="Edit Details" 
+                                onClick={() => {
+                                  setSelectedClient(client);
+                                  setIsUpdateModalOpen(true);
+                                  setActiveMenu(null);
+                                }}
+                              />
                               <div className="h-px bg-white/5 my-2" />
                               <MenuButton icon={<UserX size={16} />} label="Ban Client" variant="danger" />
                               <MenuButton icon={<Trash2 size={16} />} label="Remove Record" variant="danger" />
@@ -207,6 +219,16 @@ export default function ClientListActionable({ initialClients }: ClientListActio
         </div>
       </div>
 
+      {/* UPDATE MODAL INTEGRATION */}
+      <UpdateClientModal 
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        client={selectedClient}
+        onActionComplete={() => {
+           // Optionally refetch or let router.refresh handle it
+        }}
+      />
+
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -233,13 +255,16 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
-function MenuButton({ icon, label, variant = "default" }: { icon: any; label: string; variant?: "default" | "danger" }) {
+function MenuButton({ icon, label, variant = "default", onClick }: { icon: any; label: string; variant?: "default" | "danger"; onClick?: () => void }) {
   return (
-    <button className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
-      variant === "danger" 
-        ? "text-red-500 hover:bg-red-500/10" 
-        : "text-[#86868b] hover:bg-white/5 hover:text-white"
-    }`}>
+    <button 
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
+        variant === "danger" 
+          ? "text-red-500 hover:bg-red-500/10" 
+          : "text-[#86868b] hover:bg-white/5 hover:text-white"
+      }`}
+    >
       {icon}
       {label}
     </button>
