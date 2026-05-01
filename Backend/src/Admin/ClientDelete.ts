@@ -18,7 +18,7 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const deleteQuery = `DELETE FROM client WHERE (government_id = ? )`;
+        const deleteQuery = `DELETE FROM clients WHERE (government_id = ? )`;
 
         const [result]: any = await pool.execute(deleteQuery, [String(nic)]);
 
@@ -36,11 +36,11 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
         });
 
     } catch (error: any) {
-        console.error('Error inserting client:', error);
+        console.error('Error deleting client:', error);
 
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while saving client data.'
+            message: 'Internal Server Error while terminating client record.'
         });
     }
 });
