@@ -4,7 +4,7 @@ import pool from '../db';
 const router = Router();
 
 // /api/vehicles/add
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
         const { make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status } = req.body;
         // Secure SQL --> ? -- SQL INJECTION Can't

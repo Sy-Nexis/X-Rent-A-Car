@@ -4,7 +4,7 @@ import pool from '../db';
 const router = Router();
 
 // /api/vehicles/del
-router.delete('/', async (req: Request, res: Response): Promise<void> => {
+router.delete('/del', async (req: Request, res: Response): Promise<void> => {
     try {
         const { vin, plate } = req.query;
         console.log(`DELETE request received for VIN: ${vin}, Plate: ${plate}`);
