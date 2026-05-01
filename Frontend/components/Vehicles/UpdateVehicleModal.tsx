@@ -156,17 +156,17 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-4xl bg-white/90 dark:bg-[#2c2c2e]/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/20 dark:border-white/5 overflow-hidden flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-6xl bg-white/90 dark:bg-[#2c2c2e]/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/20 dark:border-white/5 overflow-hidden flex flex-col max-h-[90vh]"
             >
               {/* STICKY HEADER */}
-              <div className="px-10 py-8 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-transparent backdrop-blur-md z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                    <Zap size={24} />
+              <div className="px-12 py-10 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-transparent backdrop-blur-md z-10">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
+                    <Zap size={32} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-black text-[#1d1d1f] dark:text-white">Edit Vehicle Specifications</h2>
-                    <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mt-0.5">Fleet Asset Management</p>
+                    <h2 className="text-2xl font-black text-[#1d1d1f] dark:text-white">Edit Vehicle Specifications</h2>
+                    <p className="text-xs font-bold text-[#6e6e73] uppercase tracking-widest mt-1">Enterprise Fleet Asset Management</p>
                   </div>
                 </div>
                 <button
@@ -178,13 +178,13 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
               </div>
 
               {/* SCROLLABLE FORM CONTENT */}
-              <div className="flex-1 overflow-y-auto px-10 py-10 custom-scrollbar">
-                <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+              <div className="flex-1 overflow-y-auto px-16 py-12 custom-scrollbar">
+                <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="space-y-16">
                   
                   {/* SECTION 01: IDENTIFICATION */}
                   <section>
                     <SectionHeader number="01" title="IDENTIFICATION" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-8">
                       <div className="relative group">
                         <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 mb-2 block">VIN Number</label>
                         <div className="relative">
@@ -294,40 +294,40 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
 function SectionHeader({ number, title }: { number: string; title: string }) {
   return (
-    <div className="flex items-center gap-3 border-b border-gray-200/50 dark:border-white/5 pb-2">
-      <span className="text-[10px] font-black text-blue-500 tracking-tighter">{number}</span>
-      <h3 className="text-[10px] font-black text-[#1d1d1f] dark:text-white uppercase tracking-[0.2em]">{title}</h3>
+    <div className="flex items-center gap-4 border-b border-gray-200/50 dark:border-white/5 pb-3">
+      <span className="text-xs font-black text-blue-500 tracking-tighter">{number}</span>
+      <h3 className="text-xs font-black text-[#1d1d1f] dark:text-white uppercase tracking-[0.25em]">{title}</h3>
     </div>
   );
 }
 
 const FormInput = React.forwardRef(({ label, icon, error, ...props }: any, ref: any) => (
-  <div className="space-y-2">
-    <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
+  <div className="space-y-3">
+    <label className="text-[11px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
     <div className="relative">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
-        {icon}
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
+        {React.cloneElement(icon as React.ReactElement, { size: 20 })}
       </div>
       <input
         ref={ref}
         {...props}
-        className={`w-full pl-12 pr-4 py-4 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-bold transition-all outline-none ${error ? 'border-red-500/50 ring-4 ring-red-500/10' : ''}`}
+        className={`w-full pl-14 pr-6 py-5 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 text-base font-bold transition-all outline-none ${error ? 'border-red-500/50 ring-4 ring-red-500/10' : ''}`}
       />
     </div>
   </div>
 ));
 
 const FormSelect = React.forwardRef(({ label, icon, children, ...props }: any, ref: any) => (
-  <div className="space-y-2">
-    <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
+  <div className="space-y-3">
+    <label className="text-[11px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
     <div className="relative">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73]">
-        {icon}
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6e6e73]">
+        {React.cloneElement(icon as React.ReactElement, { size: 20 })}
       </div>
       <select
         ref={ref}
         {...props}
-        className="w-full pl-12 pr-10 py-4 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-bold transition-all outline-none appearance-none"
+        className="w-full pl-14 pr-10 py-5 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 text-base font-bold transition-all outline-none appearance-none"
       >
         {children}
       </select>
