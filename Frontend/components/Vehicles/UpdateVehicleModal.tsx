@@ -17,7 +17,9 @@ import {
   Palette,
   MapPin,
   Calendar,
-  DollarSign
+  DollarSign,
+  Activity,
+  Box
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -71,22 +73,23 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
     },
   });
 
-  // Sync form if vehicle changes
   useEffect(() => {
-    reset({
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      status: vehicle.status,
-      dailyRate: vehicle.dailyRate,
-      fuelType: vehicle.fuelType,
-      transmission: vehicle.transmission,
-      engineCapacity: vehicle.engineCapacity || "",
-      color: vehicle.color || "",
-      mileage: vehicle.mileage || 0,
-      branch: vehicle.branch || "Main",
-    });
-  }, [vehicle, reset]);
+    if (isOpen) {
+      reset({
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        status: vehicle.status,
+        dailyRate: vehicle.dailyRate,
+        fuelType: vehicle.fuelType,
+        transmission: vehicle.transmission,
+        engineCapacity: vehicle.engineCapacity || "",
+        color: vehicle.color || "",
+        mileage: vehicle.mileage || 0,
+        branch: vehicle.branch || "Main",
+      });
+    }
+  }, [isOpen, vehicle, reset]);
 
   const onSubmit = async (data: any) => {
     setIsUpdating(true);
@@ -98,7 +101,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         year: parseInt(data.year),
         dailyRate: parseFloat(data.dailyRate),
         mileage: parseInt(data.mileage),
-        licensePlate: vehicle.licensePlate // Maintain identification
+        licensePlate: vehicle.licensePlate 
       };
 
       const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
@@ -112,7 +115,6 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         throw new Error(result.message || "Update failed");
       }
 
-      // Success Sequence
       setShowSuccess(true);
       router.refresh();
       
@@ -140,131 +142,128 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
             {/* BACKDROP */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isUpdating && setIsOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-md"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md"
             />
 
-            {/* MODAL CARD */}
+            {/* SPLIT PANEL MODAL CARD */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 30 }}
-              transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              className="relative w-[95vw] h-[95vh] bg-white dark:bg-[#1c1c1e] rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/5 overflow-hidden flex flex-col"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-5xl bg-[#1c1c1e] rounded-[32px] shadow-2xl overflow-hidden border border-white/10 flex flex-col md:flex-row min-h-[650px] max-h-[90vh]"
             >
-              {/* STICKY HEADER - MUCH LARGER */}
-              <div className="px-24 py-12 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white dark:bg-[#1c1c1e] z-10">
-                <div className="flex items-center gap-10">
-                  <div className="w-24 h-24 rounded-[32px] bg-blue-600 flex items-center justify-center text-white shadow-2xl shadow-blue-500/40">
-                    <Zap size={48} />
+              {/* LEFT SIDEBAR: IDENTITY PANEL (35%) */}
+              <div className="md:w-[35%] bg-gradient-to-b from-[#1c1c1e] to-[#121214] p-10 flex flex-col justify-between border-r border-white/5">
+                <div>
+                  <div className="w-20 h-20 rounded-3xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-8 border border-blue-500/20">
+                    <Car size={40} />
                   </div>
-                  <div>
-                    <h2 className="text-4xl font-black text-[#1d1d1f] dark:text-white tracking-tight">Edit Vehicle Specifications</h2>
-                    <p className="text-sm font-bold text-[#6e6e73] uppercase tracking-[0.4em] mt-2">Enterprise Fleet Console v2.0</p>
+                  
+                  <div className="space-y-1">
+                    <h2 className="text-3xl font-black text-white tracking-tight">{vehicle.make}</h2>
+                    <h3 className="text-xl font-bold text-[#86868b]">{vehicle.model}</h3>
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-500/10 w-fit px-3 py-1.5 rounded-full border border-blue-500/20">
+                       <ShieldCheck size={12} />
+                       <span>Verified Asset</span>
+                    </div>
+                    <div className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest ml-1">
+                      Registry ID: {vehicle.id}
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-5 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all text-[#6e6e73] scale-125"
-                >
-                  <X size={28} />
-                </button>
+
+                <div className="space-y-6">
+                   <div className="p-5 bg-white/5 rounded-2xl border border-white/5">
+                      <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mb-2">Fleet Status</p>
+                      <div className="flex items-center gap-2">
+                         <div className={`w-2 h-2 rounded-full ${vehicle.status.toLowerCase() === 'active' ? 'bg-green-500' : 'bg-orange-500'} animate-pulse`} />
+                         <span className="text-sm font-black text-white uppercase tracking-widest">{vehicle.status}</span>
+                      </div>
+                   </div>
+                   
+                   <div className="flex items-center gap-4 text-[#424245] text-[9px] font-bold uppercase tracking-widest">
+                      <div className="flex items-center gap-1">
+                         <Zap size={12} />
+                         <span>XNRENT CORE V2</span>
+                      </div>
+                      <div className="w-1 h-1 bg-[#424245] rounded-full" />
+                      <span>{new Date().getFullYear()}</span>
+                   </div>
+                </div>
               </div>
 
-              {/* SCROLLABLE FORM CONTENT */}
-              <div className="flex-1 overflow-y-auto px-16 py-12 custom-scrollbar">
-                <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="space-y-16">
-                  
-                  {/* SECTION 01: IDENTIFICATION */}
-                  <section>
-                    <SectionHeader number="01" title="IDENTIFICATION" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-12">
-                      <div className="relative group">
-                        <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 mb-4 block">VIN Number</label>
-                        <div className="relative">
-                          <input disabled value={vehicle.vin} className="w-full pl-24 pr-8 py-8 bg-gray-100 dark:bg-white/5 rounded-[32px] border-4 border-transparent text-2xl font-mono font-black text-[#8e8e93] cursor-not-allowed" />
-                          <Lock className="absolute left-8 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={32} />
-                        </div>
+              {/* RIGHT PANEL: INPUT GRID (65%) */}
+              <div className="flex-1 bg-[#2c2c2e] flex flex-col">
+                {/* HEADER */}
+                <div className="px-10 py-8 flex items-center justify-between">
+                  <h4 className="text-xs font-black text-[#86868b] uppercase tracking-[0.3em]">Vehicle Specifications</h4>
+                  <button 
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-all text-[#86868b] hover:text-white"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* FORM CONTENT */}
+                <div className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar">
+                  <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                    {error && (
+                      <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
+                        <Box size={16} />
+                        {error}
                       </div>
-                      <div className="relative group">
-                        <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 mb-4 block">License Plate</label>
-                        <div className="relative">
-                          <input disabled value={vehicle.licensePlate} className="w-full pl-24 pr-8 py-8 bg-gray-100 dark:bg-white/5 rounded-[32px] border-4 border-transparent text-2xl font-mono font-black text-[#8e8e93] cursor-not-allowed" />
-                          <Lock className="absolute left-8 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={32} />
-                        </div>
-                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <InputCard label="Year" icon={<Calendar size={14}/>} {...register("year")} />
+                      <InputCard label="Fuel Type" icon={<Fuel size={14}/>} {...register("fuelType")} />
+                      <InputCard label="Transmission" icon={<Gauge size={14}/>} {...register("transmission")} />
+                      <InputCard label="Engine" icon={<Zap size={14}/>} {...register("engineCapacity")} />
+                      <InputCard label="Color" icon={<Palette size={14}/>} {...register("color")} />
+                      <InputCard label="Mileage (km)" icon={<Activity size={14}/>} {...register("mileage")} />
+                      <InputCard label="Branch" icon={<MapPin size={14}/>} {...register("branch")} />
+                      <InputCard label="Daily Rate" icon={<DollarSign size={14}/>} {...register("dailyRate")} />
                     </div>
-                  </section>
 
-                  {/* SECTION 02: FLEET SPECS */}
-                  <section>
-                    <SectionHeader number="02" title="FLEET SPECIFICATIONS" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mt-6">
-                      {/* LEFT COLUMN */}
-                      <div className="space-y-6">
-                        <FormInput label="Make" icon={<Car size={16}/>} {...register("make", { required: true })} error={errors.make} />
-                        <FormInput label="Model" icon={<Zap size={16}/>} {...register("model", { required: true })} error={errors.model} />
-                        <FormInput label="Year" type="number" icon={<Calendar size={16}/>} {...register("year", { required: true })} error={errors.year} />
-                        <FormSelect label="Branch" icon={<MapPin size={16}/>} {...register("branch")}>
-                          <option value="Main">Main Branch</option>
-                          <option value="Colombo">Colombo Central</option>
-                          <option value="Kandy">Kandy Station</option>
-                        </FormSelect>
-                        <FormSelect label="Status" icon={<ShieldCheck size={16}/>} {...register("status")}>
-                          <option value="Active">Active</option>
-                          <option value="Maintenance">Maintenance</option>
-                          <option value="In Prep">In Prep</option>
-                        </FormSelect>
-                      </div>
-
-                      {/* RIGHT COLUMN */}
-                      <div className="space-y-6">
-                        <FormInput label="Mileage (KM)" type="number" icon={<Gauge size={16}/>} {...register("mileage")} />
-                        <FormSelect label="Fuel Type" icon={<Fuel size={16}/>} {...register("fuelType")}>
-                          <option value="Petrol">Petrol</option>
-                          <option value="Diesel">Diesel</option>
-                          <option value="Hybrid">Hybrid</option>
-                        </FormSelect>
-                        <FormInput label="Color" icon={<Palette size={16}/>} {...register("color")} />
-                        <FormSelect label="Transmission" icon={<Zap size={16}/>} {...register("transmission")}>
-                          <option value="Automatic">Automatic</option>
-                          <option value="Manual">Manual</option>
-                        </FormSelect>
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">Daily Rental Rate (Rs.)</label>
-                           <div className="relative">
-                              <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500" size={18} />
-                              <input 
-                                type="number" 
-                                step="0.01" 
-                                {...register("dailyRate", { required: true, min: 0 })}
-                                className="w-full pl-12 pr-4 py-4 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-sm font-black text-blue-500 transition-all outline-none"
-                              />
-                           </div>
-                        </div>
-                      </div>
+                    <div className="pt-8 border-t border-white/5 space-y-4">
+                       <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-1">Secure Identifiers (Read Only)</p>
+                       <div className="grid grid-cols-2 gap-4 opacity-60">
+                          <div className="p-5 bg-[#1c1c1e] rounded-2xl border border-white/5 flex items-center justify-between">
+                             <div className="space-y-1">
+                                <p className="text-[9px] font-bold text-blue-500 uppercase tracking-widest">VIN Number</p>
+                                <p className="text-xs font-mono font-bold text-white tracking-tighter">{vehicle.vin}</p>
+                             </div>
+                             <Lock size={14} className="text-[#424245]" />
+                          </div>
+                          <div className="p-5 bg-[#1c1c1e] rounded-2xl border border-white/5 flex items-center justify-between">
+                             <div className="space-y-1">
+                                <p className="text-[9px] font-bold text-blue-500 uppercase tracking-widest">License Plate</p>
+                                <p className="text-xs font-mono font-bold text-white tracking-widest">{vehicle.licensePlate}</p>
+                             </div>
+                             <Lock size={14} className="text-[#424245]" />
+                          </div>
+                       </div>
                     </div>
-                  </section>
-                </form>
-              </div>
+                  </form>
+                </div>
 
-              {/* STICKY FOOTER - MUCH LARGER */}
-              <div className="px-24 py-12 border-t-2 border-gray-200/50 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#1c1c1e]">
-                <p className="text-xl font-black text-[#6e6e73] uppercase tracking-[0.3em]">
-                  {error ? <span className="text-red-500">{error}</span> : "Enterprise Registry Sync"}
-                </p>
-                <div className="flex items-center gap-10">
-                  <button
+                {/* FOOTER */}
+                <div className="px-10 py-8 bg-[#2c2c2e] border-t border-white/5 flex items-center justify-end gap-4">
+                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    disabled={isUpdating}
-                    className="px-10 py-6 text-sm font-black uppercase tracking-[0.4em] text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white transition-colors"
+                    className="px-6 py-3 text-[10px] font-black text-[#86868b] uppercase tracking-widest hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -273,14 +272,14 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                     type="submit"
                     disabled={!isDirty || isUpdating || showSuccess}
                     className={`
-                      flex items-center gap-6 px-16 py-8 rounded-[32px] text-sm font-black uppercase tracking-[0.4em] transition-all
+                      flex items-center gap-3 px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
                       ${!isDirty || isUpdating || showSuccess
-                        ? 'bg-gray-200 dark:bg-white/5 text-[#6e6e73] cursor-not-allowed'
-                        : 'bg-blue-600 text-white shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:shadow-[0_20px_50px_rgba(37,99,235,0.5)] hover:-translate-y-2 active:scale-95'}
+                        ? 'bg-white/5 text-[#424245] cursor-not-allowed'
+                        : 'bg-blue-600 text-white shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1 active:scale-95'}
                     `}
                   >
-                    {isUpdating ? <Loader2 size={24} className="animate-spin" /> : showSuccess ? <Check size={24} /> : null}
-                    <span>{showSuccess ? "Sync Successful" : isUpdating ? "Syncing..." : "Update Specifications"}</span>
+                    {isUpdating ? <Loader2 size={16} className="animate-spin" /> : showSuccess ? <Check size={16} /> : <SaveIcon size={16} />}
+                    <span>{showSuccess ? "Success" : isUpdating ? "Saving..." : "Save Changes"}</span>
                   </button>
                 </div>
               </div>
@@ -292,48 +291,28 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
   );
 }
 
-function SectionHeader({ number, title }: { number: string; title: string }) {
-  return (
-    <div className="flex items-center gap-6 border-b-2 border-gray-200/50 dark:border-white/10 pb-6">
-      <span className="text-2xl font-black text-blue-500 tracking-tighter">{number}</span>
-      <h3 className="text-2xl font-black text-[#1d1d1f] dark:text-white uppercase tracking-[0.4em]">{title}</h3>
+const InputCard = React.forwardRef(({ label, icon, ...props }: any, ref: any) => (
+  <div className="p-4 bg-[#1c1c1e] rounded-2xl border border-white/5 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all group">
+    <div className="flex items-center gap-2 mb-2">
+       <span className="text-blue-500 group-focus-within:scale-110 transition-transform">{icon}</span>
+       <label className="text-[9px] font-black text-[#6e6e73] uppercase tracking-widest">{label}</label>
     </div>
+    <input
+      ref={ref}
+      {...props}
+      className="w-full bg-transparent text-sm font-bold text-white outline-none placeholder:text-[#424245]"
+    />
+  </div>
+));
+
+function SaveIcon({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <polyline points="17 21 17 13 7 13 7 21" />
+      <polyline points="7 3 7 8 15 8" />
+    </svg>
   );
 }
 
-const FormInput = React.forwardRef(({ label, icon, error, ...props }: any, ref: any) => (
-  <div className="space-y-4">
-    <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 block">{label}</label>
-    <div className="relative group">
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
-        {React.cloneElement(icon as React.ReactElement, { size: 32 })}
-      </div>
-      <input
-        ref={ref}
-        {...props}
-        className={`w-full pl-20 pr-8 py-8 bg-white dark:bg-[#121214] rounded-[32px] border-4 border-transparent focus:border-blue-600 focus:ring-[20px] focus:ring-blue-600/5 text-2xl font-bold transition-all outline-none ${error ? 'border-red-500/50 ring-[20px] ring-red-500/5' : ''}`}
-      />
-    </div>
-  </div>
-));
-
-const FormSelect = React.forwardRef(({ label, icon, children, ...props }: any, ref: any) => (
-  <div className="space-y-4">
-    <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 block">{label}</label>
-    <div className="relative group">
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
-        {React.cloneElement(icon as React.ReactElement, { size: 32 })}
-      </div>
-      <select
-        ref={ref}
-        {...props}
-        className="w-full pl-20 pr-12 py-8 bg-white dark:bg-[#121214] rounded-[32px] border-4 border-transparent focus:border-blue-600 focus:ring-[20px] focus:ring-blue-600/5 text-2xl font-bold transition-all outline-none appearance-none"
-      >
-        {children}
-      </select>
-    </div>
-  </div>
-));
-
-FormInput.displayName = "FormInput";
-FormSelect.displayName = "FormSelect";
+InputCard.displayName = "InputCard";
