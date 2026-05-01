@@ -33,16 +33,6 @@ const navLinks = [
     path: "/Admin/Client", 
     icon: Users 
   },
-  { 
-    name: "Financial Reports", 
-    path: "/Admin/Reports", 
-    icon: PieChart 
-  },
-  { 
-    name: "System Settings", 
-    path: "/Admin/Settings", 
-    icon: Settings 
-  },
 ];
 
 // --- MAIN COMPONENT ---
