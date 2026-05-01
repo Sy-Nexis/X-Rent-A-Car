@@ -64,7 +64,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
       }).toString();
 
       // Ensure the endpoint matches your Backend exactly (e.g., /del vs /delete)
-      const API_BASE_URL = "http://127.0.0.1:5000";
+      const API_BASE_URL = "http://localhost:5000";
       const url = `${API_BASE_URL}/api/vehicles/del?${queryParams}`;
 
       const response = await fetch(url, {

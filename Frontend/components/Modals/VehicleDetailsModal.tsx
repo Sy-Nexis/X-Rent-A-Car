@@ -2,16 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  X, 
-  Car, 
-  Fuel, 
-  Gauge, 
-  Calendar, 
-  Hash, 
-  MapPin, 
-  DollarSign, 
-  Palette, 
+import {
+  X,
+  Car,
+  Fuel,
+  Gauge,
+  Calendar,
+  Hash,
+  MapPin,
+  DollarSign,
+  Palette,
   Activity,
   ShieldCheck,
   Zap,
@@ -60,9 +60,9 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
     setLoading(true);
     setError(null);
     try {
-      const url = `http://127.0.0.1:5000/api/vehicles/view/${vehicleId}`;
+      const url = `http://localhost:5000/api/vehicles/view/${vehicleId}`;
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Server Error (${response.status}): ${response.statusText}`);
@@ -126,17 +126,17 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
               </div>
 
               <div className="mt-8 md:mt-0">
-                 <div className="flex items-center gap-2 text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mb-4">
-                    <ShieldCheck size={14} className="text-green-500" />
-                    <span>Verified Asset</span>
-                 </div>
-                 <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200/50 dark:border-white/5">
-                    <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mb-1">Status</p>
-                    <div className="flex items-center gap-2">
-                       <div className={`w-2 h-2 rounded-full ${vehicle?.status.toLowerCase() === 'active' ? 'bg-green-500' : 'bg-orange-500'} animate-pulse`} />
-                       <span className="text-sm font-black uppercase">{vehicle?.status || '---'}</span>
-                    </div>
-                 </div>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mb-4">
+                  <ShieldCheck size={14} className="text-green-500" />
+                  <span>Verified Asset</span>
+                </div>
+                <div className="p-4 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200/50 dark:border-white/5">
+                  <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest mb-1">Status</p>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${vehicle?.status.toLowerCase() === 'active' ? 'bg-green-500' : 'bg-orange-500'} animate-pulse`} />
+                    <span className="text-sm font-black uppercase">{vehicle?.status || '---'}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -163,16 +163,16 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
               ) : vehicle ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* SPEC CARDS */}
-                  <DetailCard icon={<Calendar size={18}/>} label="Year" value={vehicle.year} />
-                  <DetailCard icon={<Hash size={18}/>} label="License Plate" value={vehicle.license_plate} isMono />
-                  <DetailCard icon={<Fuel size={18}/>} label="Fuel Type" value={vehicle.fuel_type} />
-                  <DetailCard icon={<Gauge size={18}/>} label="Transmission" value={vehicle.transmission} />
-                  <DetailCard icon={<Zap size={18}/>} label="Engine" value={vehicle.engine_capacity || 'N/A'} />
-                  <DetailCard icon={<Palette size={18}/>} label="Color" value={vehicle.color || 'N/A'} />
-                  <DetailCard icon={<Activity size={18}/>} label="Mileage" value={`${vehicle.mileage?.toLocaleString() || 0} km`} />
-                  <DetailCard icon={<MapPin size={18}/>} label="Branch" value={vehicle.branch || 'Main'} />
-                  <DetailCard icon={<DollarSign size={18}/>} label="Daily Rate" value={`Rs. ${Number(vehicle.daily_rate).toLocaleString()}`} highlight />
-                  
+                  <DetailCard icon={<Calendar size={18} />} label="Year" value={vehicle.year} />
+                  <DetailCard icon={<Hash size={18} />} label="License Plate" value={vehicle.license_plate} isMono />
+                  <DetailCard icon={<Fuel size={18} />} label="Fuel Type" value={vehicle.fuel_type} />
+                  <DetailCard icon={<Gauge size={18} />} label="Transmission" value={vehicle.transmission} />
+                  <DetailCard icon={<Zap size={18} />} label="Engine" value={vehicle.engine_capacity || 'N/A'} />
+                  <DetailCard icon={<Palette size={18} />} label="Color" value={vehicle.color || 'N/A'} />
+                  <DetailCard icon={<Activity size={18} />} label="Mileage" value={`${vehicle.mileage?.toLocaleString() || 0} km`} />
+                  <DetailCard icon={<MapPin size={18} />} label="Branch" value={vehicle.branch || 'Main'} />
+                  <DetailCard icon={<DollarSign size={18} />} label="Daily Rate" value={`Rs. ${Number(vehicle.daily_rate).toLocaleString()}`} highlight />
+
                   <div className="col-span-full mt-4 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                     <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">VIN Number</p>
                     <p className="text-xs font-mono font-bold tracking-tighter break-all">{vehicle.vin}</p>
