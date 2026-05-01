@@ -4,18 +4,18 @@ import pool from '../db';
 const router = Router();
 
 // /api/client/add
-router.post('/add', async (req: Request, res: Response): Promise<void> => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id, first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status } = req.body;
+        const { first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status } = req.body;
         // Secure SQL --> ? -- SQL INJECTION Can't
-        const insertQuery = `INSERT INTO clients ( id , first_name , last_name , email , phone , address , city , state , zip_code , government_id , license_number , status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const [result] = await pool.execute(insertQuery, [id, first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status]);
+        const insertQuery = `INSERT INTO clients ( first_name, last_name, email,  phone, address, city, state, zip_code, government_id, license_number, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await pool.execute(insertQuery, [first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status]);
 
 
 
         res.status(201).json({
             success: true,
-            message: 'Client successfully registered to the fleet.',
+            message: 'Client successfully registered to the DB.',
             data: result
         });
 
@@ -29,41 +29,40 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-router.put('/', async (req: Request, res: Response): Promise<void> => {
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { vin } = req.query;
+        const { government } = req.query;
 
-        if (!vin) {
+        if (!government) {
             res.status(400).json({
                 success: false,
-                message: 'Please provide the client .......'
+                message: 'Please provide the client government id'
             });
             return;
         }
 
-        const { make, model, year, licensePlate, transmission, fuelType, engineCapacity, color, mileage, dailyRate, branch, status } = req.body;
+        const { first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status } = req.body;
 
 
         //COALESCE(?, nameee) --> if NULL NO UPDATE
         const updateQuery = `
             UPDATE clients 
-            SET  make = COALESCE(?, make), model = COALESCE(?, model), year = COALESCE(?, year), license_plate = COALESCE(?, license_plate), transmission = COALESCE(?, transmission), fuel_type = COALESCE(?, fuel_type), engine_capacity = COALESCE(?, engine_capacity), color = COALESCE(?, color), mileage = COALESCE(?, mileage), daily_rate = COALESCE(?, daily_rate), branch = COALESCE(?, branch), status = COALESCE(?, status)
-            WHERE vin = ? `;
+            SET  first_name = COALESCE(?, first_name), last_name = COALESCE(?, last_name), email = COALESCE(?, email), phone = COALESCE(?, phone), address = COALESCE(?, address), city = COALESCE(?, city), state = COALESCE(?, state), zip_code = COALESCE(?, zip_code), license_number = COALESCE(?, license_number), status = COALESCE(?, status)
+            WHERE government_id = ? `;
 
         const [result]: any = await pool.execute(updateQuery, [
-            make ?? null,
-            model ?? null,
-            year ?? null,
-            licensePlate ?? null,
-            transmission ?? null,
-            fuelType ?? null,
-            engineCapacity ?? null,
-            color ?? null,
-            mileage ?? null,
-            dailyRate ?? null,
-            branch ?? null,
+            first_name ?? null,
+            last_name ?? null,
+            email ?? null,
+            phone ?? null,
+            address ?? null,
+            city ?? null,
+            state ?? null,
+            zip_code ?? null,
+            government_id ?? null,
+            license_number ?? null,
             status ?? null,
-            String(vin)
+            String(government_id)
         ]);
 
         if (result.affectedRows === 0) {
@@ -76,7 +75,7 @@ router.put('/', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `CLient with ........ has been successfully updated.`
+            message: `CLient with Government ID: ${government} has been successfully updated.`
         });
 
     } catch (error: any) {
