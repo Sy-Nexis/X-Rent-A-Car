@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
 import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
+import UpdateVehicleAction from "./UpdateVehicleAction";
 
 interface Vehicle {
   id: number;
@@ -242,6 +243,10 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                                   <ChevronRight size={16} className="text-blue-500" />
                                   View Details
                                 </button>
+                                <UpdateVehicleAction 
+                                  vehicle={vehicle} 
+                                  onActionComplete={() => setActiveMenu(null)} 
+                                />
                                 <button
                                   onClick={() => {
                                     setDeletingVehicle(vehicle);
