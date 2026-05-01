@@ -95,20 +95,20 @@ export default function EditVehiclePage() {
           const data = result.data;
           setVehicle(data);
           
-          // CRITICAL: Ensure EVERY SINGLE FIELD is passed into reset()
+          // CRITICAL: Map snake_case from DB to camelCase for Form
           reset({
             make: data.make,
             model: data.model,
             year: data.year,
             transmission: data.transmission,
-            fuelType: data.fuelType,
-            engineCapacity: data.engineCapacity || "",
+            fuelType: data.fuel_type, // Mapped from fuel_type
+            engineCapacity: data.engine_capacity || "", // Mapped from engine_capacity
             color: data.color || "",
             mileage: data.mileage || 0,
-            dailyRate: data.dailyRate,
+            dailyRate: data.daily_rate, // Mapped from daily_rate
             branch: data.branch || "",
             status: data.status,
-            licensePlate: data.licensePlate,
+            licensePlate: data.license_plate, // Mapped from license_plate
             vin: data.vin
           });
         } else {
@@ -132,12 +132,19 @@ export default function EditVehiclePage() {
     setError(null);
     
     try {
-      // Format Payload: ensure year and mileage are integers, and dailyRate is a float.
+      // Format Payload: map back to snake_case for Backend API
       const payload = {
-        ...data,
+        make: data.make,
+        model: data.model,
         year: parseInt(data.year.toString()),
+        transmission: data.transmission,
+        fuel_type: data.fuelType,
+        engine_capacity: data.engineCapacity,
+        color: data.color,
         mileage: parseInt(data.mileage.toString()),
-        dailyRate: parseFloat(data.dailyRate.toString()),
+        daily_rate: parseFloat(data.dailyRate.toString()),
+        branch: data.branch,
+        status: data.status,
       };
 
       const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
@@ -274,12 +281,12 @@ export default function EditVehiclePage() {
                 </p>
                 <div className="space-y-4">
                   <div className="p-6 bg-gray-100 dark:bg-black/40 rounded-3xl border border-transparent dark:border-white/5 opacity-80">
-                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-2">VIN Number (Locked)</span>
-                    <span className="text-sm font-mono font-black tracking-tighter text-[#1d1d1f] dark:text-white">{vehicle?.vin}</span>
+                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-2">License Plate (Locked)</span>
+                    <span className="text-sm font-mono font-black tracking-widest text-[#1d1d1f] dark:text-white">{(vehicle as any)?.license_plate || vehicle?.licensePlate}</span>
                   </div>
                   <div className="p-6 bg-gray-100 dark:bg-black/40 rounded-3xl border border-transparent dark:border-white/5 opacity-80">
-                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-2">License Plate (Locked)</span>
-                    <span className="text-sm font-mono font-black tracking-widest text-[#1d1d1f] dark:text-white">{vehicle?.licensePlate}</span>
+                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-2">VIN Number (Locked)</span>
+                    <span className="text-sm font-mono font-black tracking-tighter text-[#1d1d1f] dark:text-white">{vehicle?.vin}</span>
                   </div>
                 </div>
              </div>
@@ -367,7 +374,7 @@ export default function EditVehiclePage() {
                         </select>
                       </FormGroup>
 
-                      <FormGroup label="Daily Rate (Rs.)" icon={<DollarSign size={16}/>} className="lg:col-span-2 bg-blue-600/[0.04] border-blue-500/10 shadow-inner">
+                      <FormGroup label="Daily Rate (Rs.)" icon={<div className="text-blue-500 font-black text-xs">Rs</div>} className="lg:col-span-2 bg-blue-600/[0.04] border-blue-500/10 shadow-inner">
                         <input type="number" step="0.01" {...register("dailyRate", { required: true })} className="input-field text-3xl font-black text-blue-600" />
                       </FormGroup>
                    </div>
