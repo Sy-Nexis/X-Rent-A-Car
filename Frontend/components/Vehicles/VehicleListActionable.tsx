@@ -14,7 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
 import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
-import UpdateVehicleAction from "./UpdateVehicleAction";
+import UpdateVehicleModal from "./UpdateVehicleModal";
 
 interface Vehicle {
   id: number;
@@ -243,7 +243,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                                   <ChevronRight size={16} className="text-blue-500" />
                                   View Details
                                 </button>
-                                <UpdateVehicleAction 
+                                <UpdateVehicleModal 
                                   vehicle={vehicle} 
                                   onActionComplete={() => setActiveMenu(null)} 
                                 />
