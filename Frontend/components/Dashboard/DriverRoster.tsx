@@ -81,7 +81,7 @@ export default function DriverRoster({ data, onSelect, selectedId }: DriverRoste
                 </td>
                 <td className="py-4 px-2">
                   <div className="text-text-primary font-black tabular-nums">
-                    {item.mileage || Math.floor(Math.random() * 100)} <span className="text-text-secondary text-[9px] font-bold uppercase tracking-tighter">Usage pts</span>
+                    {item.mileage || ((item.id || 0) % 100)} <span className="text-text-secondary text-[9px] font-bold uppercase tracking-tighter">Usage pts</span>
                   </div>
                 </td>
                 <td className="py-4 px-2 text-right">
