@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import vehicleInputRouter from './Admin/VehicleInput';
+import vehicleViwRouter from './Admin/VehicleView';
 import pool from './db';
 
 // Load environment variables
@@ -21,6 +22,7 @@ app.use(express.json()); // Parse incoming JSON payloads
 
 
 app.use('/api/vehicles/add', vehicleInputRouter);
+app.use('/api/vehicles/view', vehicleViwRouter);
 
 // Health Check Route
 app.get('/api/health', (req: Request, res: Response) => {
