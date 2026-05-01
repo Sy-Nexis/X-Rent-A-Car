@@ -15,6 +15,7 @@ import {
   Plus
 } from "lucide-react";
 import Link from "next/link";
+import DeleteClientConfirmModal from "../Modals/DeleteClientConfirmModal";
 
 // --- TYPES ---
 interface Client {
@@ -42,6 +43,10 @@ export default function ClientListActionable({ initialClients }: ClientListActio
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  
+  // Modal States
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
   
   // Filtering Logic (Instant Search)
   const filteredClients = clients.filter((client) => {
@@ -187,7 +192,16 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                               </Link>
                               <div className="h-px bg-white/5 my-2" />
                               <MenuButton icon={<UserX size={16} />} label="Ban Client" variant="danger" />
-                              <MenuButton icon={<Trash2 size={16} />} label="Remove Record" variant="danger" />
+                              <MenuButton 
+                                icon={<Trash2 size={16} />} 
+                                label="Remove Record" 
+                                variant="danger" 
+                                onClick={() => {
+                                  setClientToDelete(client);
+                                  setIsDeleteModalOpen(true);
+                                  setActiveMenu(null);
+                                }}
+                              />
                             </div>
                           </motion.div>
                         )}
@@ -212,6 +226,16 @@ export default function ClientListActionable({ initialClients }: ClientListActio
           )}
         </div>
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <DeleteClientConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        client={clientToDelete}
+        onConfirm={() => {
+           // Success callback - Optionally refetch or let router.refresh handle it
+        }}
+      />
 
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
