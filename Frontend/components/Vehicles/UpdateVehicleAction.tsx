@@ -62,7 +62,7 @@ export default function UpdateVehicleAction({ vehicle, onActionComplete }: Updat
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-[#f5f5f7] dark:bg-[#1c1c1e] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/20 dark:border-white/5"
+              className="relative w-full max-w-4xl bg-[#f5f5f7] dark:bg-[#1c1c1e] rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/20 dark:border-white/5"
             >
               <EditVehicleForm vehicle={vehicle} onClose={handleClose} />
             </motion.div>
