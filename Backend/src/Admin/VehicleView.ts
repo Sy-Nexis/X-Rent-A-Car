@@ -4,7 +4,7 @@ import pool from '../db';
 const router = Router();
 
 // /api/vehicles/view
-router.get('/view', async (req: Request, res: Response): Promise<void> => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
 

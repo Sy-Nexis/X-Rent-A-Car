@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
+import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
 
 interface Vehicle {
   id: number;
@@ -41,6 +42,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [deletingVehicle, setDeletingVehicle] = useState<Vehicle | null>(null);
+  const [viewingVehicleId, setViewingVehicleId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -127,6 +129,12 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
         isLoading={isDeleting}
         vehicleLabel={`${deletingVehicle?.make} ${deletingVehicle?.model}`}
         vehiclePlate={deletingVehicle?.licensePlate || ""}
+      />
+
+      <VehicleDetailsModal
+        isOpen={!!viewingVehicleId}
+        onClose={() => setViewingVehicleId(null)}
+        vehicleId={viewingVehicleId}
       />
 
       <div className="bg-white dark:bg-[#2c2c2e] rounded-3xl shadow-sm border border-gray-200/50 dark:border-white/5 overflow-visible">
@@ -225,6 +233,10 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                             >
                               <div className="p-2">
                                 <button
+                                  onClick={() => {
+                                    setViewingVehicleId(vehicle.id);
+                                    setActiveMenu(null);
+                                  }}
                                   className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all group"
                                 >
                                   <ChevronRight size={16} className="text-blue-500" />
