@@ -18,7 +18,7 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const deleteQuery = `DELETE FROM client WHERE ()`;
+        const deleteQuery = `DELETE FROM client WHERE (government_id = ? )`;
 
         const [result]: any = await pool.execute(deleteQuery, [String(nic)]);
 
