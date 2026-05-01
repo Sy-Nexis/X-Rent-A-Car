@@ -89,32 +89,24 @@ export default async function AdminDashboardPage() {
             icon={<Activity size={24} />} 
             label="Total Active Clients" 
             value={activeClients.toString()} 
-            trend="+12%" 
-            trendType="up"
           />
           <DashboardStatCard 
             index={1}
             icon={<Car size={24} />} 
             label="Available Fleet" 
             value={availableFleet.toString()} 
-            trend="+3 units" 
-            trendType="up"
           />
           <DashboardStatCard 
             index={2}
             icon={<Users size={24} />} 
             label="Total Registry" 
             value={totalClients.toString()} 
-            trend="+8.4%" 
-            trendType="up"
           />
           <DashboardStatCard 
             index={3}
             icon={<ShieldCheck size={24} />} 
             label="Pending Verification" 
             value={pendingVerifications.toString()} 
-            trend="-2" 
-            trendType="down"
           />
         </div>
 
