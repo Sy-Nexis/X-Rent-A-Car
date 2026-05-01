@@ -22,9 +22,9 @@ app.use(express.json()); // Parse incoming JSON payloads
 
 
 
-app.use('/api/vehicles', vehicleInputRouter);
-app.use('/api/vehicles', vehicleViwRouter);
-app.use('/api/vehicles', vehicleDeleteRouter);
+app.use('/api/vehicles/add', vehicleInputRouter);
+app.use('/api/vehicles/view', vehicleViwRouter);
+app.use('/api/vehicles/del', vehicleDeleteRouter);
 
 // Health Check Route
 app.get('/api/health', (req: Request, res: Response) => {

@@ -60,17 +60,23 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/vehicles/view/${vehicleId}`);
-      if (!response.ok) throw new Error("Failed to fetch vehicle details");
+      const url = `http://127.0.0.1:5000/api/vehicles/view/${vehicleId}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server Error (${response.status}): ${response.statusText}`);
+      }
+
       const result = await response.json();
       if (result.success) {
         setVehicle(result.data);
       } else {
-        throw new Error(result.message || "Unknown error");
+        throw new Error(result.message || "Unknown error occurred");
       }
     } catch (err: any) {
       console.error("Fetch Details Error:", err);
-      setError(err.message);
+      setError(err.message || "Failed to connect to the fleet registry.");
     } finally {
       setLoading(false);
     }

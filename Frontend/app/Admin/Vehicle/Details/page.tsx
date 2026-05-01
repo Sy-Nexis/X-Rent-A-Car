@@ -34,7 +34,7 @@ export default async function VehiclesPage() {
   return (
     <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-[1400px] mx-auto">
-        
+
         {/* BREADCRUMBS */}
         <nav className="flex items-center gap-2 text-xs font-bold text-[#6e6e73] uppercase tracking-widest mb-8">
           <span>Admin</span>
@@ -60,13 +60,13 @@ export default async function VehiclesPage() {
           </div>
 
           <div className="flex items-center gap-4 bg-white/50 dark:bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-gray-200/50 dark:border-white/5">
-             <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">Database Status</span>
-                <div className="flex items-center gap-2 mt-1">
-                   <div className={`w-2 h-2 rounded-full ${vehicleData.length > 0 ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-                   <span className="text-sm font-bold">{vehicleData.length > 0 ? 'Connected' : 'Offline / No Data'}</span>
-                </div>
-             </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">Database Status</span>
+              <div className="flex items-center gap-2 mt-1">
+                <div className={`w-2 h-2 rounded-full ${vehicleData.length > 0 ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+                <span className="text-sm font-bold">{vehicleData.length > 0 ? 'Connected' : 'Offline / No Data'}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -75,19 +75,19 @@ export default async function VehiclesPage() {
 
         {/* FOOTER SYSTEM INFO */}
         <div className="mt-16 pt-8 border-t border-gray-200/50 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-           <div className="flex items-center gap-6 text-[10px] font-bold text-[#6e6e73] uppercase tracking-[0.2em]">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={14} className="text-blue-500" />
-                <span>Verified Cloud Registry</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-blue-500" />
-                <span>Active Branch Sync</span>
-              </div>
-           </div>
-           <p className="text-[10px] text-[#86868b] font-medium tracking-widest">
-             XNRENT ENTERPRISE ASSET MANAGEMENT · V3.1
-           </p>
+          <div className="flex items-center gap-6 text-[10px] font-bold text-[#6e6e73] uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={14} className="text-blue-500" />
+              <span>Verified Cloud Registry</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-blue-500" />
+              <span>Active Branch Sync</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-[#86868b] font-medium tracking-widest">
+            XNRENT ENTERPRISE ASSET MANAGEMENT · V3.1
+          </p>
         </div>
 
       </div>
