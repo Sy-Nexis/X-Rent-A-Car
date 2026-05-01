@@ -3,16 +3,16 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Fingerprint, 
-  CreditCard, 
-  ShieldCheck, 
-  Loader2, 
-  CheckCircle2, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Fingerprint,
+  CreditCard,
+  ShieldCheck,
+  Loader2,
+  CheckCircle2,
   AlertCircle,
   Save,
   Navigation,
@@ -72,10 +72,10 @@ export default function AddClientForm() {
 
       setSuccess(true);
       reset();
-      
+
       // Auto-redirect after success
       setTimeout(() => {
-        router.push("/Admin/Client/Details");
+        router.push("/Admin/Client");
       }, 2000);
 
     } catch (err: any) {
@@ -118,28 +118,28 @@ export default function AddClientForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="bg-[#2c2c2e] rounded-[40px] border border-white/5 shadow-2xl overflow-hidden">
         <div className="p-12 space-y-12">
-          
+
           {/* SECTION 01: PERSONAL INFORMATION */}
           <section className="space-y-8">
             <header className="flex items-center gap-4">
-               <div className="w-1 h-8 bg-blue-600 rounded-full" />
-               <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">01. Personal Information</h4>
+              <div className="w-1 h-8 bg-blue-600 rounded-full" />
+              <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">01. Personal Information</h4>
             </header>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <InputGroup label="First Name" icon={<User size={14}/>} error={errors.first_name}>
+              <InputGroup label="First Name" icon={<User size={14} />} error={errors.first_name}>
                 <input {...register("first_name", { required: "First name is required" })} className="input-field" placeholder="John" />
               </InputGroup>
-              
-              <InputGroup label="Last Name" icon={<User size={14}/>} error={errors.last_name}>
+
+              <InputGroup label="Last Name" icon={<User size={14} />} error={errors.last_name}>
                 <input {...register("last_name", { required: "Last name is required" })} className="input-field" placeholder="Doe" />
               </InputGroup>
 
-              <InputGroup label="Email Address" icon={<Mail size={14}/>} error={errors.email}>
+              <InputGroup label="Email Address" icon={<Mail size={14} />} error={errors.email}>
                 <input {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })} className="input-field" placeholder="john.doe@example.com" />
               </InputGroup>
 
-              <InputGroup label="Phone Number" icon={<Phone size={14}/>} error={errors.phone}>
+              <InputGroup label="Phone Number" icon={<Phone size={14} />} error={errors.phone}>
                 <input {...register("phone", { required: "Phone number is required" })} className="input-field" placeholder="+94 77 XXX XXXX" />
               </InputGroup>
             </div>
@@ -148,24 +148,24 @@ export default function AddClientForm() {
           {/* SECTION 02: RESIDENTIAL ADDRESS */}
           <section className="space-y-8">
             <header className="flex items-center gap-4">
-               <div className="w-1 h-8 bg-blue-600 rounded-full" />
-               <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">02. Residential Address</h4>
+              <div className="w-1 h-8 bg-blue-600 rounded-full" />
+              <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">02. Residential Address</h4>
             </header>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <InputGroup label="Street Address" icon={<MapPin size={14}/>} className="md:col-span-2">
+              <InputGroup label="Street Address" icon={<MapPin size={14} />} className="md:col-span-2">
                 <input {...register("address")} className="input-field" placeholder="123 Luxury Lane" />
               </InputGroup>
 
-              <InputGroup label="City" icon={<Navigation size={14}/>}>
+              <InputGroup label="City" icon={<Navigation size={14} />}>
                 <input {...register("city")} className="input-field" placeholder="Colombo" />
               </InputGroup>
 
-              <InputGroup label="State / Province" icon={<Globe size={14}/>}>
+              <InputGroup label="State / Province" icon={<Globe size={14} />}>
                 <input {...register("state")} className="input-field" placeholder="Western" />
               </InputGroup>
 
-              <InputGroup label="Zip / Postal Code" icon={<Hash size={14}/>}>
+              <InputGroup label="Zip / Postal Code" icon={<Hash size={14} />}>
                 <input {...register("zip_code")} className="input-field" placeholder="00100" />
               </InputGroup>
             </div>
@@ -174,20 +174,20 @@ export default function AddClientForm() {
           {/* SECTION 03: IDENTITY & STATUS */}
           <section className="space-y-8">
             <header className="flex items-center gap-4">
-               <div className="w-1 h-8 bg-blue-600 rounded-full" />
-               <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">03. Identity & Status</h4>
+              <div className="w-1 h-8 bg-blue-600 rounded-full" />
+              <h4 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">03. Identity & Status</h4>
             </header>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <InputGroup label="Government ID (NIC)" icon={<Fingerprint size={14}/>} error={errors.government_id}>
+              <InputGroup label="Government ID (NIC)" icon={<Fingerprint size={14} />} error={errors.government_id}>
                 <input {...register("government_id", { required: "NIC is required" })} className="input-field" placeholder="19XXXXXXXXXX" />
               </InputGroup>
 
-              <InputGroup label="Driving License" icon={<CreditCard size={14}/>}>
+              <InputGroup label="Driving License" icon={<CreditCard size={14} />}>
                 <input {...register("license_number")} className="input-field" placeholder="B1234567" />
               </InputGroup>
 
-              <InputGroup label="Initial Status" icon={<ShieldCheck size={14}/>}>
+              <InputGroup label="Initial Status" icon={<ShieldCheck size={14} />}>
                 <select {...register("status")} className="input-field appearance-none cursor-pointer">
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -200,12 +200,12 @@ export default function AddClientForm() {
 
         {/* FORM FOOTER ACTION */}
         <div className="p-12 bg-black/20 border-t border-white/5 flex items-center justify-between">
-           <div className="hidden sm:block">
-              <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">Policy Agreement</p>
-              <p className="text-[9px] text-[#424245] mt-1 max-w-[200px] leading-relaxed">By registering, you confirm the asset's identity has been verified against national records.</p>
-           </div>
-           
-           <button
+          <div className="hidden sm:block">
+            <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">Policy Agreement</p>
+            <p className="text-[9px] text-[#424245] mt-1 max-w-[200px] leading-relaxed">By registering, you confirm the asset's identity has been verified against national records.</p>
+          </div>
+
+          <button
             type="submit"
             disabled={isSubmitting || success}
             className={`
@@ -214,10 +214,10 @@ export default function AddClientForm() {
                 ? 'bg-white/5 text-[#424245] cursor-not-allowed'
                 : 'bg-blue-600 text-white shadow-2xl shadow-blue-600/20 hover:shadow-blue-600/40 hover:-translate-y-1 active:scale-95'}
             `}
-           >
+          >
             {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : success ? <CheckCircle2 size={18} /> : <Save size={18} />}
             {isSubmitting ? "Syncing..." : success ? "Onboarded" : "Register Client"}
-           </button>
+          </button>
         </div>
       </form>
 
