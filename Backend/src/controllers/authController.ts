@@ -1,0 +1,68 @@
+import { Request, Response } from 'express';
+import db from '../db';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+
+export const login = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    try {
+        const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM staff WHERE email = ?', [email]);
+
+
+
+        const staff = rows[0];
+
+
+        if (!staff || staff.status !== 'Active') {
+            return res.status(401).json({ message: 'Invalid credentials or inactive account' });
+        }
+
+
+
+
+        const isMatch = await bcrypt.compare(password, staff.password_hash);
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        const token = jwt.sign(
+            { id: staff.id, role: staff.role },
+            process.env.JWT_SECRET as string,
+            { expiresIn: '12h' }
+        );
+
+        res.status(200).json({
+            token,
+            user: {
+                id: staff.id,
+                name: `${staff.first_name} ${staff.last_name}`,
+                role: staff.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+export const register = async (req: Request, res: Response) => {
+    const { first_name, last_name, email, password, role } = req.body;
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        await db.execute<ResultSetHeader>('INSERT INTO staff (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)', [first_name, last_name, email, hashedPassword, role]);
+
+
+
+        res.status(201).json({ message: 'Staff member registered' });
+
+
+    } catch (error: any) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+        res.status(500).json({ message: 'Registration failed' });
+    }
+};
