@@ -1,47 +1,67 @@
 import React from "react";
-import TopNav from "@/components/Dashboard/TopNav";
-import StatsRow from "@/components/Dashboard/StatsRow";
-import LiveFleetMap from "@/components/Dashboard/LiveFleetMap";
-import DriverRoster from "@/components/Dashboard/DriverRoster";
-import { DriverDetailHero, GPSTracker } from "@/components/Dashboard/DriverInfo";
-import ActivityLog from "@/components/Dashboard/ActivityLog";
-import { TripsBarChart, FleetStatusDonut, ActiveAlerts } from "@/components/Dashboard/Charts";
+import MainDashboardClient from "@/components/Dashboard/MainDashboardClient";
 
-export const metadata = {
-  title: 'Fleet Operations Dashboard | XNRENT CAR',
-  description: 'Real-time monitoring and management of XNRENT fleet operations.',
-};
+// --- SERVER-SIDE DATA FETCHING ---
 
-export default function DashboardPage() {
+async function getDashboardData() {
+  try {
+    // Concurrent fetching for optimal speed
+    const [vehiclesRes, clientsRes] = await Promise.all([
+      fetch("http://localhost:5000/api/vehicles/view", { cache: "no-store" }),
+      fetch("http://localhost:5000/api/clients/view", { cache: "no-store" })
+    ]);
+
+    if (!vehiclesRes.ok || !clientsRes.ok) {
+      console.warn("One or more API endpoints failed. Rendering with partial data.");
+    }
+
+    const vehiclesResult = await vehiclesRes.json().catch(() => ({ data: [] }));
+    const clientsResult = await clientsRes.json().catch(() => ({ data: [] }));
+
+    const vehicles = vehiclesResult.data || [];
+    const clients = clientsResult.data || [];
+
+    // Calculate Summary Statistics
+    const stats = {
+      totalFleet: vehicles.length,
+      availableFleet: vehicles.filter((v: any) => v.status === 'Active' || v.status === 'Available').length,
+      totalClients: clients.length,
+      activeClients: clients.filter((c: any) => c.status === 'Active').length,
+    };
+
+    return {
+      stats,
+      recentVehicles: vehicles.slice(0, 5),
+      recentClients: clients.slice(0, 5)
+    };
+  } catch (error) {
+    console.error("Critical Dashboard Fetch Error:", error);
+    // Return safe fallback values to prevent UI crash
+    return {
+      stats: { totalFleet: 0, availableFleet: 0, totalClients: 0, activeClients: 0 },
+      recentVehicles: [],
+      recentClients: []
+    };
+  }
+}
+
+// --- MAIN SERVER PAGE ---
+
+export default async function RootDashboardPage() {
+  const { stats, recentVehicles, recentClients } = await getDashboardData();
+
   return (
-    <div className="min-h-screen bg-bg-base">
-      <TopNav />
-
-      <main className="max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8">
-        <StatsRow />
-
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-6">
-          {/* Left Column - Core Operations */}
-          <div className="xl:col-span-8 flex flex-col gap-6">
-            <LiveFleetMap />
-            <DriverRoster />
-          </div>
-
-          {/* Right Column - Intelligence & Monitoring */}
-          <div className="xl:col-span-4 flex flex-col gap-6">
-            <DriverDetailHero />
-            <GPSTracker />
-            <ActivityLog />
-          </div>
-        </div>
-
-        {/* Bottom Row - Analytics & Alerts */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 pb-12">
-          <TripsBarChart />
-          <FleetStatusDonut />
-          <ActiveAlerts />
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen bg-[#1c1c1e] selection:bg-blue-500/30">
+      {/* 
+          Because the root dashboard is a high-level overview, 
+          we render the MainDashboardClient which handles 
+          the staggered Framer Motion animations and interactive states.
+      */}
+      <MainDashboardClient 
+        stats={stats} 
+        recentVehicles={recentVehicles} 
+        recentClients={recentClients} 
+      />
+    </main>
   );
 }
