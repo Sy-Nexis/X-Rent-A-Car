@@ -74,10 +74,10 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center gap-6 px-8 py-4 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-xl">
              <div className="text-right">
                 <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">System Status</p>
-                <p className="text-sm font-bold text-green-500 uppercase flex items-center gap-2">
+                <div className="text-sm font-bold text-green-500 uppercase flex items-center gap-2">
                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                    All Systems Nominal
-                </p>
+                </div>
              </div>
           </div>
         </header>
