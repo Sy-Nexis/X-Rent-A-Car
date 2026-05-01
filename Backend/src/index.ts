@@ -30,8 +30,7 @@ app.use('/api/vehicles/update', vehicleInputRouter);
 app.use('/api/vehicles/view', vehicleViwRouter);
 app.use('/api/vehicles/del', vehicleDeleteRouter);
 
-app.use('/api/clients/add', clientInputRouter);
-app.use('/api/clients/update', clientInputRouter);
+app.use('/api/clients/', clientInputRouter);
 app.use('/api/clients/view', clientViwRouter);
 app.use('/api/clients/del', clientDeleteRouter);
 

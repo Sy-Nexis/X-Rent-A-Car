@@ -3,8 +3,8 @@ import pool from '../db';
 
 const router = Router();
 
-// /api/client/add
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+// /api/clients/add
+router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
         const { first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status } = req.body;
         // Secure SQL --> ? -- SQL INJECTION Can't
@@ -29,7 +29,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
         const { government } = req.query;
 
@@ -59,10 +59,9 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
             city ?? null,
             state ?? null,
             zip_code ?? null,
-            government_id ?? null,
             license_number ?? null,
             status ?? null,
-            String(government_id)
+            String(government)
         ]);
 
         if (result.affectedRows === 0) {
