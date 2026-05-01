@@ -13,6 +13,7 @@ import {
   ShieldCheck, 
   Loader2, 
   CheckCircle2, 
+  AlertCircle,
   Fingerprint, 
   CreditCard,
   Save,
@@ -61,6 +62,7 @@ interface FormValues {
 export default function UpdateClientModal({ isOpen, onClose, client, onActionComplete }: UpdateClientModalProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -86,12 +88,14 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
       });
       setIsSuccess(false);
       setIsUpdating(false);
+      setError(null);
     }
   }, [client, reset]);
 
   const onSubmit = async (data: FormValues) => {
     if (!client) return;
     setIsUpdating(true);
+    setError(null);
 
     try {
       // Endpoint mapping: http://localhost:5000/api/clients/update/:id
@@ -114,8 +118,9 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
         router.refresh();
       }, 1500);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Update Error:", error);
+      setError(error.message); // Assuming there's an error state
       setIsUpdating(false);
     }
   };
@@ -124,9 +129,10 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 overflow-y-auto custom-scrollbar">
+      <div key="modal-overlay" className="fixed inset-0 z-[1000] flex items-center justify-center p-6 overflow-y-auto custom-scrollbar">
         {/* BACKDROP */}
         <motion.div
+          key="backdrop"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -136,6 +142,7 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
         {/* MODAL CONTAINER */}
         <motion.div
+          key="modal-card"
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -213,6 +220,21 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
             {/* SCROLLABLE FORM AREA */}
             <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+               {/* ERROR NOTIFICATION */}
+               <AnimatePresence>
+                 {error && (
+                   <motion.div
+                     initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                     animate={{ height: "auto", opacity: 1, marginBottom: 32 }}
+                     exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                     className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3 text-red-500 text-xs font-medium"
+                   >
+                     <AlertCircle size={16} />
+                     {error}
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+
                <form id="update-client-form" onSubmit={handleSubmit(onSubmit)} className="space-y-12">
                   
                   {/* CONTACT INFO */}
