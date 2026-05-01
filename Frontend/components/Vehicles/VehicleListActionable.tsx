@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Car, 
-  Fuel, 
-  Gauge, 
-  MoreHorizontal, 
-  Trash2, 
+import {
+  Car,
+  Fuel,
+  Gauge,
+  MoreHorizontal,
+  Trash2,
   ChevronRight,
   AlertCircle
 } from "lucide-react";
@@ -51,38 +51,51 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
     setError(null);
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:5000/api/vehicles/del?vin=${deletingVehicle.vin}&plate=${deletingVehicle.licensePlate}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      /**
+       * 1. SECURE URL CONSTRUCTION
+       * Using URLSearchParams ensures that special characters in License Plates 
+       * (like spaces or dashes) are properly encoded for the URL.
+       */
+      const queryParams = new URLSearchParams({
+        vin: deletingVehicle.vin,
+        plate: deletingVehicle.licensePlate
+      }).toString();
+
+      // Ensure the endpoint matches your Backend exactly (e.g., /del vs /delete)
+      const API_BASE_URL = "http://127.0.0.1:5000";
+      const url = `${API_BASE_URL}/api/vehicles/del?${queryParams}`;
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
+        // If 404, it means the URL above doesn't exist on the server
+        if (response.status === 404) {
+          throw new Error(`Endpoint not found: Check if the Flask route is correct.`);
+        }
+
         const contentType = response.headers.get("content-type");
-        let errorMessage = "Failed to delete vehicle";
+        let errorMessage = `Error ${response.status}: ${response.statusText}`;
 
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
-        } else {
-          // If response is not JSON (e.g. HTML 404), use the status text
-          errorMessage = `Error ${response.status}: ${response.statusText}`;
         }
-        
+
         throw new Error(errorMessage);
       }
 
-      // Success
+      // Success: Reset UI and refresh data
       setDeletingVehicle(null);
-      router.refresh(); // Refresh server component data
+      router.refresh();
+
     } catch (err: any) {
-      console.error("Delete Error:", err);
+      console.error("Delete Error details:", err);
       setError(err.message || "An unexpected error occurred");
-      // Auto-hide error
       setTimeout(() => setError(null), 5000);
     } finally {
       setIsDeleting(false);
@@ -200,8 +213,8 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                       <AnimatePresence>
                         {activeMenu === vehicle.id && (
                           <>
-                            <div 
-                              className="fixed inset-0 z-40" 
+                            <div
+                              className="fixed inset-0 z-40"
                               onClick={() => setActiveMenu(null)}
                             />
                             <motion.div
@@ -239,7 +252,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
             </tbody>
           </table>
         </div>
-        
+
         {/* TABLE FOOTER */}
         <div className="px-8 py-5 bg-gray-50/50 dark:bg-white/[0.02] border-t border-gray-200/50 dark:border-white/5 flex items-center justify-between">
           <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">
