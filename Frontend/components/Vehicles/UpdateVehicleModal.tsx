@@ -6,12 +6,9 @@ import { useForm } from "react-hook-form";
 import {
   X,
   PencilLine,
-  ShieldCheck,
-  Lock,
   Car,
   Zap,
   Loader2,
-  Check,
   Fuel,
   Gauge,
   Palette,
@@ -19,11 +16,12 @@ import {
   Calendar,
   DollarSign,
   Activity,
-  ArrowRight,
-  Database
+  Database,
+  ShieldCheck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+// --- TYPES ---
 interface Vehicle {
   id: number;
   make: string;
@@ -46,10 +44,10 @@ interface UpdateVehicleModalProps {
   onActionComplete?: () => void;
 }
 
+// --- MAIN COMPONENT ---
 export default function UpdateVehicleModal({ vehicle, onActionComplete }: UpdateVehicleModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -57,7 +55,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty },
+    formState: { isDirty },
   } = useForm({
     defaultValues: {
       year: vehicle.year,
@@ -68,10 +66,12 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
       engineCapacity: vehicle.engineCapacity || "",
       color: vehicle.color || "",
       mileage: vehicle.mileage || 0,
-      branch: vehicle.branch || "Colombo HQ",
+      branch: vehicle.branch || "Main",
+      licensePlate: vehicle.licensePlate,
     },
   });
 
+  // Re-sync form if the prop changes
   useEffect(() => {
     if (isOpen) {
       reset({
@@ -83,7 +83,8 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         engineCapacity: vehicle.engineCapacity || "",
         color: vehicle.color || "",
         mileage: vehicle.mileage || 0,
-        branch: vehicle.branch || "Colombo HQ",
+        branch: vehicle.branch || "Main",
+        licensePlate: vehicle.licensePlate,
       });
     }
   }, [isOpen, vehicle, reset]);
@@ -92,7 +93,6 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
     if (isUpdating) return;
     setIsOpen(false);
     setError(null);
-    setShowSuccess(false);
   };
 
   const onSubmit = async (data: any) => {
@@ -118,13 +118,10 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         throw new Error(result.message || "Failed to update record");
       }
 
-      setShowSuccess(true);
+      // Success workflow
       router.refresh();
-
-      setTimeout(() => {
-        handleClose();
-        if (onActionComplete) onActionComplete();
-      }, 1500);
+      handleClose();
+      if (onActionComplete) onActionComplete();
 
     } catch (err: any) {
       setError(err.message);
@@ -134,201 +131,195 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
   return (
     <>
+      {/* TRIGGER BUTTON (Matches Dropdown Menu Style) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl transition-all"
+        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all group"
       >
-        <PencilLine size={14} />
-        Manage Asset
+        <PencilLine size={16} className="text-blue-500" />
+        Edit Asset
       </button>
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* BACKDROP (Matches Delete Modal exactly) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClose}
-              className="fixed inset-0 bg-[#000000]/80 backdrop-blur-2xl"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm"
             />
 
+            {/* MODAL CONTAINER */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-6xl h-full max-h-[800px] bg-[#1c1c1e] rounded-[40px] shadow-[0_0_100px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col md:flex-row"
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-[#2c2c2e] rounded-3xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-white/5 flex flex-col"
             >
 
-              {/* LEFT SIDEBAR: IDENTITY PANEL (40%) */}
-              <div className="w-full md:w-[38%] bg-[#1c1c1e] p-10 md:p-14 flex flex-col justify-between border-r border-white/5">
-                <div className="space-y-12">
-                  <div className="w-16 h-16 bg-[#2c2c2e] rounded-2xl flex items-center justify-center text-blue-500 border border-white/5 shadow-inner">
-                    <Car size={32} />
+              {/* HEADER */}
+              <div className="p-8 pb-6 flex justify-between items-start shrink-0">
+                <div className="flex gap-4 items-center">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                    <Car size={24} />
                   </div>
-
-                  <div className="space-y-2">
-                    <h2 className="text-5xl font-black text-white tracking-tighter leading-tight">
-                      {vehicle.make} <span className="text-[#86868b]">{vehicle.model}</span>
+                  <div>
+                    <h2 className="text-xl font-bold text-[#1d1d1f] dark:text-white">
+                      Edit {vehicle.make} {vehicle.model}
                     </h2>
-                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.4em]">Registry ID: {vehicle.id}</p>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <ShieldCheck size={18} className="text-green-500" />
-                      <span className="text-[11px] font-bold text-[#86868b] uppercase tracking-widest">Verified Asset</span>
-                    </div>
-
-                    <div className="p-6 bg-[#2c2c2e] rounded-3xl border border-white/5">
-                      <p className="text-[9px] font-black text-[#6e6e73] uppercase tracking-widest mb-3">Status</p>
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-xs font-black text-white uppercase tracking-widest">{vehicle.status}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-6 bg-black/20 rounded-3xl border border-white/5">
-                    <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Lock size={10} /> VIN Number
+                    <p className="text-[#6e6e73] text-sm mt-0.5">
+                      Registry ID: {vehicle.id} • VIN: {vehicle.vin}
                     </p>
-                    <p className="text-xs font-mono font-black text-white tracking-widest uppercase opacity-80">{vehicle.vin}</p>
                   </div>
                 </div>
-              </div>
-
-              {/* RIGHT CONTENT: INPUT GRID (62%) */}
-              <div className="flex-1 bg-[#2c2c2e]/30 flex flex-col relative">
                 <button
                   onClick={handleClose}
-                  className="absolute top-10 right-10 w-10 h-10 bg-white/5 hover:bg-white/10 rounded-full flex items-center justify-center text-[#86868b] transition-all z-10"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors text-[#6e6e73]"
                 >
                   <X size={20} />
                 </button>
-
-                <div className="flex-1 overflow-y-auto px-10 md:px-14 py-14 custom-scrollbar">
-                  <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
-
-                    <InputGroup label="Year" icon={<Calendar size={14} />}>
-                      <input type="number" {...register("year")} className="raw-input" />
-                    </InputGroup>
-
-                    <InputGroup label="License Plate" icon={<Database size={14} />} disabled>
-                      <input value={vehicle.licensePlate} disabled className="raw-input opacity-50" />
-                    </InputGroup>
-
-                    <InputGroup label="Fuel Type" icon={<Fuel size={14} />}>
-                      <select {...register("fuelType")} className="raw-input bg-transparent">
-                        <option value="Hybrid">Hybrid</option>
-                        <option value="Petrol">Petrol</option>
-                        <option value="Electric">Electric</option>
-                        <option value="Diesel">Diesel</option>
-                      </select>
-                    </InputGroup>
-
-                    <InputGroup label="Transmission" icon={<Gauge size={14} />}>
-                      <select {...register("transmission")} className="raw-input bg-transparent">
-                        <option value="Automatic">Automatic</option>
-                        <option value="Manual">Manual</option>
-                      </select>
-                    </InputGroup>
-
-                    <InputGroup label="Engine" icon={<Zap size={14} />}>
-                      <input {...register("engineCapacity")} className="raw-input" placeholder="e.g. 1800cc" />
-                    </InputGroup>
-
-                    <InputGroup label="Color" icon={<Palette size={14} />}>
-                      <input {...register("color")} className="raw-input" />
-                    </InputGroup>
-
-                    <InputGroup label="Mileage" icon={<Activity size={14} />}>
-                      <div className="flex items-baseline gap-1">
-                        <input type="number" {...register("mileage")} className="raw-input" />
-                        <span className="text-[10px] font-black text-[#6e6e73]">KM</span>
-                      </div>
-                    </InputGroup>
-
-                    <InputGroup label="Branch" icon={<MapPin size={14} />}>
-                      <input {...register("branch")} className="raw-input" />
-                    </InputGroup>
-
-                    <InputGroup label="Daily Rate" icon={<DollarSign size={14} />} className="col-span-2 border-blue-500/20 bg-blue-500/5">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-xs font-black text-blue-500">Rs.</span>
-                        <input type="number" step="0.01" {...register("dailyRate")} className="raw-input text-blue-500 text-xl" />
-                      </div>
-                    </InputGroup>
-                  </form>
-                </div>
-
-                {/* FOOTER ACTION BAR */}
-                <div className="p-10 md:p-14 border-t border-white/5 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${isDirty ? 'bg-orange-500' : 'bg-green-500'}`} />
-                    <span className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">
-                      {isDirty ? "Sync Pending" : "Records Synced"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-8">
-                    <button onClick={handleClose} className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest hover:text-white transition-colors">
-                      Discard
-                    </button>
-                    <button
-                      form="update-form"
-                      type="submit"
-                      disabled={!isDirty || isUpdating}
-                      className={`px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${!isDirty || isUpdating
-                          ? 'bg-white/5 text-[#424245] cursor-not-allowed'
-                          : 'bg-blue-600 text-white hover:bg-blue-500 shadow-2xl shadow-blue-600/20 active:scale-95'
-                        }`}
-                    >
-                      {isUpdating ? <Loader2 size={14} className="animate-spin" /> : showSuccess ? <Check size={14} /> : <Database size={14} />}
-                      {showSuccess ? "Success" : isUpdating ? "Processing" : "Update Asset"}
-                    </button>
-                  </div>
-                </div>
               </div>
+
+              {/* SCROLLABLE FORM BODY */}
+              <div className="p-8 pt-0 overflow-y-auto custom-scrollbar flex-1">
+                {error && (
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-sm font-bold">
+                    {error}
+                  </div>
+                )}
+
+                <form id="update-form" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormGroup label="Year" icon={<Calendar size={14} />}>
+                    <input type="number" {...register("year")} className="input-field" />
+                  </FormGroup>
+
+                  <FormGroup label="License Plate" icon={<Database size={14} />} disabled>
+                    <input {...register("licensePlate")} disabled className="input-field opacity-50 cursor-not-allowed" />
+                  </FormGroup>
+
+                  <FormGroup label="Fuel Type" icon={<Fuel size={14} />}>
+                    <select {...register("fuelType")} className="input-field appearance-none cursor-pointer">
+                      <option value="Petrol">Petrol</option>
+                      <option value="Diesel">Diesel</option>
+                      <option value="Hybrid">Hybrid</option>
+                      <option value="Electric">Electric</option>
+                    </select>
+                  </FormGroup>
+
+                  <FormGroup label="Transmission" icon={<Gauge size={14} />}>
+                    <select {...register("transmission")} className="input-field appearance-none cursor-pointer">
+                      <option value="Automatic">Automatic</option>
+                      <option value="Manual">Manual</option>
+                      <option value="Tiptronic">Tiptronic</option>
+                    </select>
+                  </FormGroup>
+
+                  <FormGroup label="Engine Capacity" icon={<Zap size={14} />}>
+                    <input {...register("engineCapacity")} placeholder="e.g. 1500cc" className="input-field" />
+                  </FormGroup>
+
+                  <FormGroup label="Exterior Color" icon={<Palette size={14} />}>
+                    <input {...register("color")} className="input-field" />
+                  </FormGroup>
+
+                  <FormGroup label="Mileage (KM)" icon={<Activity size={14} />}>
+                    <input type="number" {...register("mileage")} className="input-field" />
+                  </FormGroup>
+
+                  <FormGroup label="Branch" icon={<MapPin size={14} />}>
+                    <input {...register("branch")} className="input-field" />
+                  </FormGroup>
+
+                  <FormGroup label="Daily Rate (Rs.)" icon={<DollarSign size={14} />}>
+                    <input type="number" step="0.01" {...register("dailyRate")} className="input-field font-black text-blue-500" />
+                  </FormGroup>
+
+                  <FormGroup label="Status" icon={<ShieldCheck size={14} />}>
+                    <select {...register("status")} className="input-field appearance-none cursor-pointer">
+                      <option value="Active">Active</option>
+                      <option value="Maintenance">Maintenance</option>
+                      <option value="In Prep">In Prep</option>
+                      <option value="Retired">Retired</option>
+                    </select>
+                  </FormGroup>
+                </form>
+              </div>
+
+              {/* FOOTER (Matches Delete Modal exactly) */}
+              <div className="p-6 bg-gray-50 dark:bg-white/[0.02] border-t border-gray-200/50 dark:border-white/5 flex gap-3 shrink-0">
+                <button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={handleClose}
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-sm bg-gray-100 dark:bg-white/5 text-[#1d1d1f] dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  form="update-form"
+                  type="submit"
+                  disabled={!isDirty || isUpdating}
+                  className="flex-1 py-4 px-6 rounded-2xl font-bold text-sm bg-blue-500 text-white hover:bg-blue-600 transition-all active:scale-95 shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:scale-100"
+                >
+                  {isUpdating ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
+              </div>
+
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
       <style jsx>{`
-        .raw-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 14px;
-            font-weight: 800;
-            padding: 0;
-            margin-top: 4px;
+        .input-field {
+          width: 100%;
+          background: transparent;
+          border: none;
+          color: inherit;
+          font-size: 0.875rem;
+          font-weight: 700;
+          outline: none;
+          padding: 0;
+          margin-top: 0.25rem;
         }
+        .input-field::placeholder {
+          color: #86868b;
+          font-weight: 500;
+        }
+        /* Custom Scrollbar for form body */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+          width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+          background: rgba(150, 150, 150, 0.3);
+          border-radius: 10px;
         }
       `}</style>
     </>
   );
 }
 
-function InputGroup({ label, icon, children, className = "", disabled = false }: any) {
+// --- HELPER COMPONENT ---
+function FormGroup({ label, icon, children, className = "", disabled = false }: any) {
   return (
-    <div className={`p-6 bg-[#2c2c2e]/50 rounded-3xl border border-white/5 transition-all group focus-within:border-blue-500/30 ${className} ${disabled ? 'opacity-80' : ''}`}>
-      <div className="flex items-center gap-2 mb-1 opacity-40 group-focus-within:opacity-100 transition-opacity">
+    <div className={`p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-200/50 dark:border-white/5 focus-within:border-blue-500/50 transition-all group ${className} ${disabled ? 'opacity-70' : ''}`}>
+      <div className="flex items-center gap-2 mb-1 text-[#6e6e73]">
         <span className="text-blue-500">{icon}</span>
-        <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest">{label}</label>
+        <label className="text-[10px] font-bold uppercase tracking-widest">{label}</label>
       </div>
-      {children}
+      <div className="text-[#1d1d1f] dark:text-white">
+        {children}
+      </div>
     </div>
   );
 }

@@ -9,7 +9,8 @@ import {
   MoreHorizontal,
   Trash2,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  PencilLine
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
@@ -243,9 +244,9 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                                   <ChevronRight size={16} className="text-blue-500" />
                                   View Details
                                 </button>
-                                <UpdateVehicleModal 
-                                  vehicle={vehicle} 
-                                  onActionComplete={() => setActiveMenu(null)} 
+                                <UpdateVehicleModal
+                                  vehicle={vehicle}
+                                  onActionComplete={() => setActiveMenu(null)}
                                 />
                                 <button
                                   onClick={() => {
