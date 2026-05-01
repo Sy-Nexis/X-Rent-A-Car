@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Search, Filter, AlertCircle, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import VehicleTable from "./VehicleTable";
+import VehicleListActionable from "./VehicleListActionable";
 
 interface Vehicle {
   id: number;
@@ -137,7 +137,7 @@ export default function FleetManager({ initialData }: FleetManagerProps) {
       </div>
 
       {/* DATA TABLE */}
-      <VehicleTable vehicles={filteredVehicles} />
+      <VehicleListActionable vehicles={filteredVehicles} />
     </div>
   );
 }
