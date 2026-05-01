@@ -3,7 +3,7 @@ import pool from '../db';
 
 const router = Router();
 
-// /api/client/view
+// /api/clients/view
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const [rows] = await pool.query('SELECT * FROM client ORDER BY created_at DESC');
