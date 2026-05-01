@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { Loader2, AlertCircle, Save, X, Info, ShieldCheck, Zap, Fuel, Gauge, MapPin, Palette } from "lucide-react";
+import { Loader2, AlertCircle, Save, X, Info, ShieldCheck, Zap, Fuel, Gauge, MapPin, Palette, Car } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Vehicle {
