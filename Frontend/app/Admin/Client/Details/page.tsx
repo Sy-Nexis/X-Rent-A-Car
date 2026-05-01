@@ -63,8 +63,8 @@ export default async function ClientDetailsPage() {
             <StatCard icon={<Users size={20} />} label="Total Clients" value={clients.length.toString()} color="blue" />
             <StatCard 
               icon={<Activity size={20} />} 
-              label="Total Rentals" 
-              value={clients.reduce((acc: number, c: any) => acc + (c.total_rentals || 0), 0).toString()} 
+              label="Active Clients" 
+              value={clients.filter((c: any) => c.status === "Active").length.toString()} 
               color="green" 
             />
           </div>
