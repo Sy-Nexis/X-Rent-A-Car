@@ -191,7 +191,6 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                                 />
                               </Link>
                               <div className="h-px bg-white/5 my-2" />
-                              <MenuButton icon={<UserX size={16} />} label="Ban Client" variant="danger" />
                               <MenuButton 
                                 icon={<Trash2 size={16} />} 
                                 label="Remove Record" 
