@@ -152,28 +152,28 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
             {/* MODAL CARD */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-6xl bg-white/90 dark:bg-[#2c2c2e]/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/20 dark:border-white/5 overflow-hidden flex flex-col max-h-[90vh]"
+              exit={{ opacity: 0, scale: 0.95, y: 30 }}
+              transition={{ type: "spring", damping: 30, stiffness: 400 }}
+              className="relative w-[95vw] h-[95vh] bg-white dark:bg-[#1c1c1e] rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/20 dark:border-white/5 overflow-hidden flex flex-col"
             >
-              {/* STICKY HEADER */}
-              <div className="px-12 py-10 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-transparent backdrop-blur-md z-10">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-xl shadow-blue-500/20">
-                    <Zap size={32} />
+              {/* STICKY HEADER - MUCH LARGER */}
+              <div className="px-24 py-12 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white dark:bg-[#1c1c1e] z-10">
+                <div className="flex items-center gap-10">
+                  <div className="w-24 h-24 rounded-[32px] bg-blue-600 flex items-center justify-center text-white shadow-2xl shadow-blue-500/40">
+                    <Zap size={48} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-[#1d1d1f] dark:text-white">Edit Vehicle Specifications</h2>
-                    <p className="text-xs font-bold text-[#6e6e73] uppercase tracking-widest mt-1">Enterprise Fleet Asset Management</p>
+                    <h2 className="text-4xl font-black text-[#1d1d1f] dark:text-white tracking-tight">Edit Vehicle Specifications</h2>
+                    <p className="text-sm font-bold text-[#6e6e73] uppercase tracking-[0.4em] mt-2">Enterprise Fleet Console v2.0</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2.5 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all text-[#6e6e73]"
+                  className="p-5 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all text-[#6e6e73] scale-125"
                 >
-                  <X size={20} />
+                  <X size={28} />
                 </button>
               </div>
 
@@ -184,19 +184,19 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                   {/* SECTION 01: IDENTIFICATION */}
                   <section>
                     <SectionHeader number="01" title="IDENTIFICATION" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-12">
                       <div className="relative group">
-                        <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 mb-2 block">VIN Number</label>
+                        <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 mb-4 block">VIN Number</label>
                         <div className="relative">
-                          <input disabled value={vehicle.vin} className="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-white/5 rounded-2xl border border-transparent text-sm font-mono font-bold text-[#8e8e93] cursor-not-allowed" />
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={18} />
+                          <input disabled value={vehicle.vin} className="w-full pl-24 pr-8 py-8 bg-gray-100 dark:bg-white/5 rounded-[32px] border-4 border-transparent text-2xl font-mono font-black text-[#8e8e93] cursor-not-allowed" />
+                          <Lock className="absolute left-8 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={32} />
                         </div>
                       </div>
                       <div className="relative group">
-                        <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 mb-2 block">License Plate</label>
+                        <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 mb-4 block">License Plate</label>
                         <div className="relative">
-                          <input disabled value={vehicle.licensePlate} className="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-white/5 rounded-2xl border border-transparent text-sm font-mono font-bold text-[#8e8e93] cursor-not-allowed" />
-                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={18} />
+                          <input disabled value={vehicle.licensePlate} className="w-full pl-24 pr-8 py-8 bg-gray-100 dark:bg-white/5 rounded-[32px] border-4 border-transparent text-2xl font-mono font-black text-[#8e8e93] cursor-not-allowed" />
+                          <Lock className="absolute left-8 top-1/2 -translate-y-1/2 text-[#8e8e93]" size={32} />
                         </div>
                       </div>
                     </div>
@@ -254,17 +254,17 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                 </form>
               </div>
 
-              {/* STICKY FOOTER */}
-              <div className="px-10 py-8 border-t border-gray-200/50 dark:border-white/5 flex items-center justify-between bg-white/50 dark:bg-transparent backdrop-blur-md">
-                <p className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">
-                  {error ? <span className="text-red-500">{error}</span> : "Review changes before syncing"}
+              {/* STICKY FOOTER - MUCH LARGER */}
+              <div className="px-24 py-12 border-t-2 border-gray-200/50 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#1c1c1e]">
+                <p className="text-xl font-black text-[#6e6e73] uppercase tracking-[0.3em]">
+                  {error ? <span className="text-red-500">{error}</span> : "Enterprise Registry Sync"}
                 </p>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-10">
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}
                     disabled={isUpdating}
-                    className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white transition-colors"
+                    className="px-10 py-6 text-sm font-black uppercase tracking-[0.4em] text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -273,14 +273,14 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                     type="submit"
                     disabled={!isDirty || isUpdating || showSuccess}
                     className={`
-                      flex items-center gap-3 px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all
+                      flex items-center gap-6 px-16 py-8 rounded-[32px] text-sm font-black uppercase tracking-[0.4em] transition-all
                       ${!isDirty || isUpdating || showSuccess
                         ? 'bg-gray-200 dark:bg-white/5 text-[#6e6e73] cursor-not-allowed'
-                        : 'bg-blue-500 text-white shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-1 active:scale-95'}
+                        : 'bg-blue-600 text-white shadow-[0_20px_50px_rgba(37,99,235,0.3)] hover:shadow-[0_20px_50px_rgba(37,99,235,0.5)] hover:-translate-y-2 active:scale-95'}
                     `}
                   >
-                    {isUpdating ? <Loader2 size={18} className="animate-spin" /> : showSuccess ? <Check size={18} /> : null}
-                    <span>{showSuccess ? "Sync Successful" : isUpdating ? "Updating..." : "Save Changes"}</span>
+                    {isUpdating ? <Loader2 size={24} className="animate-spin" /> : showSuccess ? <Check size={24} /> : null}
+                    <span>{showSuccess ? "Sync Successful" : isUpdating ? "Syncing..." : "Update Specifications"}</span>
                   </button>
                 </div>
               </div>
@@ -294,40 +294,40 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
 function SectionHeader({ number, title }: { number: string; title: string }) {
   return (
-    <div className="flex items-center gap-4 border-b border-gray-200/50 dark:border-white/5 pb-3">
-      <span className="text-xs font-black text-blue-500 tracking-tighter">{number}</span>
-      <h3 className="text-xs font-black text-[#1d1d1f] dark:text-white uppercase tracking-[0.25em]">{title}</h3>
+    <div className="flex items-center gap-6 border-b-2 border-gray-200/50 dark:border-white/10 pb-6">
+      <span className="text-2xl font-black text-blue-500 tracking-tighter">{number}</span>
+      <h3 className="text-2xl font-black text-[#1d1d1f] dark:text-white uppercase tracking-[0.4em]">{title}</h3>
     </div>
   );
 }
 
 const FormInput = React.forwardRef(({ label, icon, error, ...props }: any, ref: any) => (
-  <div className="space-y-3">
-    <label className="text-[11px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
-    <div className="relative">
-      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
-        {React.cloneElement(icon as React.ReactElement, { size: 20 })}
+  <div className="space-y-4">
+    <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 block">{label}</label>
+    <div className="relative group">
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
+        {React.cloneElement(icon as React.ReactElement, { size: 32 })}
       </div>
       <input
         ref={ref}
         {...props}
-        className={`w-full pl-14 pr-6 py-5 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 text-base font-bold transition-all outline-none ${error ? 'border-red-500/50 ring-4 ring-red-500/10' : ''}`}
+        className={`w-full pl-20 pr-8 py-8 bg-white dark:bg-[#121214] rounded-[32px] border-4 border-transparent focus:border-blue-600 focus:ring-[20px] focus:ring-blue-600/5 text-2xl font-bold transition-all outline-none ${error ? 'border-red-500/50 ring-[20px] ring-red-500/5' : ''}`}
       />
     </div>
   </div>
 ));
 
 const FormSelect = React.forwardRef(({ label, icon, children, ...props }: any, ref: any) => (
-  <div className="space-y-3">
-    <label className="text-[11px] font-black text-[#6e6e73] uppercase tracking-widest ml-1 block">{label}</label>
-    <div className="relative">
-      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6e6e73]">
-        {React.cloneElement(icon as React.ReactElement, { size: 20 })}
+  <div className="space-y-4">
+    <label className="text-sm font-black text-[#6e6e73] uppercase tracking-[0.2em] ml-2 block">{label}</label>
+    <div className="relative group">
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#6e6e73] group-focus-within:text-blue-500 transition-colors">
+        {React.cloneElement(icon as React.ReactElement, { size: 32 })}
       </div>
       <select
         ref={ref}
         {...props}
-        className="w-full pl-14 pr-10 py-5 bg-white dark:bg-[#1c1c1e] rounded-2xl border-2 border-transparent focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5 text-base font-bold transition-all outline-none appearance-none"
+        className="w-full pl-20 pr-12 py-8 bg-white dark:bg-[#121214] rounded-[32px] border-4 border-transparent focus:border-blue-600 focus:ring-[20px] focus:ring-blue-600/5 text-2xl font-bold transition-all outline-none appearance-none"
       >
         {children}
       </select>
