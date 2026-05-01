@@ -115,7 +115,7 @@ export default function EditClientPage() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/clients/update/${id}`, {
+      const response = await fetch(`http://localhost:5000/api/clients/update?government=${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
