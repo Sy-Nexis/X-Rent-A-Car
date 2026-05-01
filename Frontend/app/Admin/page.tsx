@@ -1,9 +1,8 @@
-import React from "react";
-import AdminFleetClient from "@/components/Dashboard/AdminFleetClient";
+import AdminHubClient from "@/components/Admin/AdminHubClient";
 
 // --- SERVER-SIDE DATA FETCHING ---
 
-async function getAdminData() {
+async function getAdminHubData() {
   try {
     const [vehiclesRes, clientsRes] = await Promise.all([
       fetch("http://localhost:5000/api/vehicles/view", { cache: "no-store" }),
@@ -13,30 +12,22 @@ async function getAdminData() {
     const vehiclesResult = await vehiclesRes.json().catch(() => ({ data: [] }));
     const clientsResult = await clientsRes.json().catch(() => ({ data: [] }));
 
-    const vehicles = vehiclesResult.data || [];
-    const clients = clientsResult.data || [];
-
     return {
-      vehicles,
-      clients
+      vehicles: vehiclesResult.data || [],
+      clients: clientsResult.data || []
     };
   } catch (error) {
-    console.error("Admin Dashboard Fetch Error:", error);
-    return {
-      vehicles: [],
-      clients: []
-    };
+    console.error("Admin Hub Fetch Error:", error);
+    return { vehicles: [], clients: [] };
   }
 }
 
-// --- MAIN SERVER PAGE ---
-
 export default async function AdminDashboardPage() {
-  const { vehicles, clients } = await getAdminData();
+  const { vehicles, clients } = await getAdminHubData();
 
   return (
     <div className="min-h-screen bg-[#1c1c1e]">
-      <AdminFleetClient initialVehicles={vehicles} initialClients={clients} />
+      <AdminHubClient vehicles={vehicles} clients={clients} />
     </div>
   );
 }

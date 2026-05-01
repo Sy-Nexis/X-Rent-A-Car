@@ -1,44 +1,24 @@
-import React from "react";
-import RootSummaryClient from "@/components/Dashboard/RootSummaryClient";
+import MainDashboardClient from "@/components/Dashboard/MainDashboardClient";
 
 // --- SERVER-SIDE DATA FETCHING ---
 
-async function getSummaryData() {
+async function getFleetData() {
   try {
-    const [vehiclesRes, clientsRes] = await Promise.all([
-      fetch("http://localhost:5000/api/vehicles/view", { cache: "no-store" }),
-      fetch("http://localhost:5000/api/clients/view", { cache: "no-store" })
-    ]);
-
-    const vehiclesResult = await vehiclesRes.json().catch(() => ({ data: [] }));
-    const clientsResult = await clientsRes.json().catch(() => ({ data: [] }));
-
-    const vehicles = vehiclesResult.data || [];
-    const clients = clientsResult.data || [];
-
-    return {
-      stats: {
-        totalFleet: vehicles.length,
-        availableFleet: vehicles.filter((v: any) => v.status === 'Active' || v.status === 'Available').length,
-        totalClients: clients.length,
-      }
-    };
+    const response = await fetch("http://localhost:5000/api/vehicles/view", { cache: "no-store" });
+    const result = await response.json().catch(() => ({ data: [] }));
+    return result.data || [];
   } catch (error) {
-    console.error("Summary Dashboard Fetch Error:", error);
-    return {
-      stats: { totalFleet: 0, availableFleet: 0, totalClients: 0 }
-    };
+    console.error("Fleet Data Fetch Error:", error);
+    return [];
   }
 }
 
-// --- MAIN SERVER PAGE ---
-
 export default async function RootPage() {
-  const { stats } = await getSummaryData();
+  const vehicles = await getFleetData();
 
   return (
     <main>
-      <RootSummaryClient stats={stats} />
+      <MainDashboardClient vehicles={vehicles} />
     </main>
   );
 }
