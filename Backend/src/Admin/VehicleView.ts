@@ -4,7 +4,7 @@ import pool from '../db';
 const router = Router();
 
 // /api/vehicles/view
-router.get('/', async (req: Request, res: Response): Promise<void> => {
+router.get('/view', async (req: Request, res: Response): Promise<void> => {
     try {
         const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
 
@@ -24,7 +24,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+router.get('/view/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         const [rows]: any = await pool.query('SELECT * FROM vehicles WHERE id = ?', [id]);
@@ -39,7 +39,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            data: rows[0]
+            data: rows[rows]
         });
 
     } catch (error: any) {

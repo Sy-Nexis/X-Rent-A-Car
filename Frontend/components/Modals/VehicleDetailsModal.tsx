@@ -57,25 +57,47 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
   }, [isOpen, vehicleId]);
 
   const fetchDetails = async () => {
+    // 1. EXTRA GUARD: Ensure vehicleId is a valid number/string before fetching
+    if (vehicleId === null || vehicleId === undefined) {
+      console.warn("fetchDetails called without a valid vehicleId");
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
     try {
       const url = `http://localhost:5000/api/vehicles/view/${vehicleId}`;
-      const response = await fetch(url);
+
+      // Log this! Check your browser console to see the ACTUAL URL being called.
+      console.log("Fetching vehicle details from:", url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
 
       if (!response.ok) {
+        // 2. IMPROVED ERROR HANDLING
+        if (response.status === 404) {
+          throw new Error(`Vehicle Registry Error (404): The endpoint '${url}' was not found on the server.`);
+        }
+
         const errorText = await response.text();
         throw new Error(`Server Error (${response.status}): ${response.statusText}`);
       }
 
       const result = await response.json();
+
       if (result.success) {
         setVehicle(result.data);
       } else {
-        throw new Error(result.message || "Unknown error occurred");
+        throw new Error(result.message || "The registry returned an unsuccessful response.");
       }
     } catch (err: any) {
-      console.error("Fetch Details Error:", err);
+      console.error("Detailed Fetch Error:", err);
       setError(err.message || "Failed to connect to the fleet registry.");
     } finally {
       setLoading(false);
