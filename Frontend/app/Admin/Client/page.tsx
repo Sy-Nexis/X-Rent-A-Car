@@ -1,11 +1,12 @@
 import React from "react";
-import ClientDashboardClient from "@/components/Clients/ClientDashboardClient";
-import { ShieldCheck, Plus, Users, Activity } from "lucide-react";
-import Link from "next/link";
+import ClientListActionable from "@/components/Clients/ClientListActionable";
+import { ErrorStateUI, EmptyRegistryUI } from "@/components/Clients/RegistryStatusStates";
+import { ShieldCheck, Users, Activity, UserPlus } from "lucide-react";
 
 // --- SERVER-SIDE DATA FETCHING ---
 async function getClients() {
   try {
+    // Attempt to fetch the client registry
     const response = await fetch("http://localhost:5000/api/clients/view", {
       cache: "no-store",
       next: { revalidate: 0 }
@@ -13,72 +14,88 @@ async function getClients() {
 
     if (!response.ok) {
       console.error(`API Error: ${response.status} ${response.statusText}`);
-      return []; 
+      return null; // Triggers ErrorStateUI
     }
 
     const result = await response.json();
     return result.data || [];
   } catch (error) {
     console.error("Client Fetch Exception:", error);
-    return [];
+    return null; // Triggers ErrorStateUI
   }
 }
 
 // --- MAIN SERVER COMPONENT ---
-export default async function ClientPage() {
+export default async function ClientDetailsPage() {
   const clients = await getClients();
 
+  // 1. ERROR STATE (Handled via Client Component for interactivity)
+  if (clients === null) {
+    return <ErrorStateUI />;
+  }
+
+  // 2. EMPTY STATE (Handled via Client Component for onboarding)
+  if (clients.length === 0) {
+    return <EmptyRegistryUI />;
+  }
+
+  // 3. SUCCESS STATE
   return (
-    <main className="min-h-screen bg-[#1c1c1e] text-white p-8 md:p-12 lg:p-16 relative overflow-hidden">
-      <div className="max-w-[1600px] mx-auto space-y-12 relative z-10">
+    <div className="min-h-screen bg-[#1c1c1e] text-white p-8 md:p-12 lg:p-16">
+      <div className="max-w-[1600px] mx-auto space-y-12">
         
         {/* HEADER SECTION */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-blue-500 font-black text-[10px] uppercase tracking-[0.4em]">
               <ShieldCheck size={16} />
-              XNRENT ADMINISTRATIVE CONSOLE
+              XNRENT SECURE ASSETS
             </div>
             <h1 className="text-6xl font-black tracking-tighter leading-tight">
               Client <span className="text-[#6e6e73]">Registry</span>
             </h1>
             <p className="text-[#86868b] text-lg font-medium max-w-xl">
-              Centralized hub for monitoring fleet members, security credentials, and global rental status.
+              Manage and monitor all registered customers, rental histories, and security clearances in one central fleet console.
             </p>
           </div>
 
-          <div className="flex items-center gap-6">
-             <div className="hidden md:flex gap-4">
-                <StatSimple label="Total Registry" value={clients.length} />
-                <StatSimple label="Active Passports" value={clients.filter((c: any) => c.status === 'Active').length} />
-             </div>
-             <Link 
-                href="/Admin/Client/Data"
-                className="flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 active:scale-95"
-              >
-                <Plus size={18} />
-                Add New Client
-              </Link>
+          <div className="flex flex-wrap gap-4">
+            <StatCard icon={<Users size={20} />} label="Total Clients" value={clients.length.toString()} color="blue" />
+            <StatCard 
+              icon={<Activity size={20} />} 
+              label="Active Clients" 
+              value={clients.filter((c: any) => c.status === "Active").length.toString()} 
+              color="green" 
+            />
           </div>
         </header>
 
-        {/* CLIENT-SIDE INTERACTIVE DASHBOARD */}
-        <ClientDashboardClient initialClients={clients} />
+        {/* INTERACTIVE TABLE */}
+        <ClientListActionable initialClients={clients} />
 
       </div>
 
-      {/* AMBIENT BACKGROUND GLOWS */}
-      <div className="fixed top-0 right-0 w-[1000px] h-[1000px] bg-blue-600/5 blur-[150px] rounded-full -z-10 pointer-events-none" />
-      <div className="fixed bottom-0 left-0 w-[800px] h-[800px] bg-blue-900/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
-    </main>
+      <div className="fixed top-0 right-0 w-[800px] h-[800px] bg-blue-600/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/5 blur-[100px] rounded-full -z-10 pointer-events-none" />
+    </div>
   );
 }
 
-function StatSimple({ label, value }: { label: string; value: number }) {
+// --- STAT CARD HELPER ---
+function StatCard({ icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
+  const colors: any = {
+    blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+    green: "text-green-500 bg-green-500/10 border-green-500/20",
+    orange: "text-orange-500 bg-orange-500/10 border-orange-500/20",
+  };
+
   return (
-    <div className="px-6 py-3 bg-white/[0.02] border border-white/5 rounded-2xl">
-       <p className="text-[9px] font-black text-[#6e6e73] uppercase tracking-widest">{label}</p>
-       <p className="text-xl font-black text-white">{value}</p>
+    <div className={`px-8 py-6 rounded-3xl border ${colors[color]} backdrop-blur-xl flex flex-col gap-4 min-w-[220px]`}>
+      <div className="flex items-center justify-between">
+        <div className="p-3 bg-white/5 rounded-2xl">{icon}</div>
+        <span className="text-3xl font-black tracking-tighter">{value}</span>
+      </div>
+      <p className="text-[10px] font-black uppercase tracking-widest opacity-60">{label}</p>
     </div>
   );
 }
