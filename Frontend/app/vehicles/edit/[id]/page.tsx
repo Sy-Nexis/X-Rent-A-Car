@@ -382,8 +382,8 @@ export default function EditVehiclePage() {
              </div>
 
              {/* FOOTER ACTIONS */}
-             <div className="px-14 py-12 bg-gray-50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
-                <div className="hidden lg:block">
+             <div className="px-14 py-12 bg-gray-50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5 flex items-center justify-end gap-8">
+                <div className="hidden lg:block mr-auto">
                    <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.3em]">Editor Policy</p>
                    <p className="text-[9px] text-[#8e8e93] font-bold mt-1.5 max-w-[280px] leading-relaxed uppercase">Manual registry overrides require double-verification of asset identity.</p>
                 </div>
@@ -460,7 +460,9 @@ function FormGroup({ label, icon, children, className = "" }: any) {
   return (
     <div className={`p-8 bg-gray-50 dark:bg-[#121214]/40 rounded-[32px] border border-gray-100 dark:border-white/5 focus-within:border-blue-500/50 focus-within:bg-blue-500/[0.05] shadow-sm transition-all group ${className}`}>
       <div className="flex items-center gap-3 mb-2 opacity-50 group-focus-within:opacity-100 transition-opacity">
-        <span className="text-blue-500">{icon}</span>
+        <div className="w-6 h-6 flex items-center justify-center text-blue-500">
+          {icon}
+        </div>
         <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.2em]">{label}</label>
       </div>
       <div className="relative">
