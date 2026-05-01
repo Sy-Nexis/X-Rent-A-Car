@@ -8,11 +8,10 @@ import {
   LayoutDashboard, 
   CarFront, 
   Users, 
-  PieChart, 
-  Settings, 
   LogOut,
   Car,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from "lucide-react";
 
 // --- NAV LINKS CONFIG ---
@@ -33,6 +32,12 @@ const navLinks = [
     path: "/Admin/Client", 
     icon: Users 
   },
+  {
+    name: "Main Website",
+    path: "/",
+    icon: Globe,
+    exact: true
+  }
 ];
 
 // --- MAIN COMPONENT ---
