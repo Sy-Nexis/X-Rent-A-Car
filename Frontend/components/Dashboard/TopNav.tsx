@@ -29,10 +29,10 @@ export default function TopNav() {
               Live
             </span>
           </div>
-          
+
           <div className="flex items-center gap-6 text-sm font-medium">
             <span className="text-blue-apple border-b-2 border-blue-apple pb-0.5 cursor-pointer">Dashboard</span>
-            <Link href="/admin" className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer">Admin Portal</Link>
+            <Link href="/Admin" className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer">Admin Portal</Link>
           </div>
 
           <div className="h-6 w-px bg-border-subtle hidden sm:block"></div>
