@@ -61,8 +61,12 @@ export default async function ClientDetailsPage() {
 
           <div className="flex flex-wrap gap-4">
             <StatCard icon={<Users size={20} />} label="Total Clients" value={clients.length.toString()} color="blue" />
-            <StatCard icon={<Activity size={20} />} label="Active Rentals" value="12" color="green" />
-            <StatCard icon={<UserPlus size={20} />} label="New This Month" value="8" color="orange" />
+            <StatCard 
+              icon={<Activity size={20} />} 
+              label="Total Rentals" 
+              value={clients.reduce((acc: number, c: any) => acc + (c.total_rentals || 0), 0).toString()} 
+              color="green" 
+            />
           </div>
         </header>
 
