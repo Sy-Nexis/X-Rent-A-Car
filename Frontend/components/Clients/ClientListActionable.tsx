@@ -15,7 +15,6 @@ import {
   Plus
 } from "lucide-react";
 import Link from "next/link";
-import UpdateClientModal from "./UpdateClientModal";
 
 // --- TYPES ---
 interface Client {
@@ -43,10 +42,6 @@ export default function ClientListActionable({ initialClients }: ClientListActio
   const [clients, setClients] = useState<Client[]>(initialClients);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
-  
-  // Modal States
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   
   // Filtering Logic (Instant Search)
   const filteredClients = clients.filter((client) => {
@@ -184,15 +179,12 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                           >
                             <div className="p-2 space-y-1">
                               <MenuButton icon={<Eye size={16} />} label="View Profile" />
-                              <MenuButton 
-                                icon={<Edit3 size={16} />} 
-                                label="Edit Details" 
-                                onClick={() => {
-                                  setSelectedClient(client);
-                                  setIsUpdateModalOpen(true);
-                                  setActiveMenu(null);
-                                }}
-                              />
+                              <Link href={`/clients/edit/${client.government_id}`}>
+                                <MenuButton 
+                                  icon={<Edit3 size={16} />} 
+                                  label="Edit Details" 
+                                />
+                              </Link>
                               <div className="h-px bg-white/5 my-2" />
                               <MenuButton icon={<UserX size={16} />} label="Ban Client" variant="danger" />
                               <MenuButton icon={<Trash2 size={16} />} label="Remove Record" variant="danger" />
@@ -220,16 +212,6 @@ export default function ClientListActionable({ initialClients }: ClientListActio
           )}
         </div>
       </div>
-
-      {/* UPDATE MODAL INTEGRATION */}
-      <UpdateClientModal 
-        isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-        client={selectedClient}
-        onActionComplete={() => {
-           // Optionally refetch or let router.refresh handle it
-        }}
-      />
 
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
