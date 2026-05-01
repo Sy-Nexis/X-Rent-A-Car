@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import DeleteClientConfirmModal from "../Modals/DeleteClientConfirmModal";
+import ViewClientModal from "./ViewClientModal";
 
 // --- TYPES ---
 interface Client {
@@ -32,6 +33,7 @@ interface Client {
   license_number: string;
   status: string;
   total_rentals?: number;
+  created_at?: string;
 }
 
 interface ClientListActionableProps {
@@ -47,6 +49,8 @@ export default function ClientListActionable({ initialClients }: ClientListActio
   // Modal States
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   
   // Filtering Logic (Instant Search)
   const filteredClients = clients.filter((client) => {
@@ -183,7 +187,15 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                             className="absolute right-10 top-20 w-60 bg-[#2c2c2e] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100] overflow-hidden"
                           >
                             <div className="p-2 space-y-1">
-                              <MenuButton icon={<Eye size={16} />} label="View Profile" />
+                              <MenuButton 
+                                icon={<Eye size={16} />} 
+                                label="View Profile" 
+                                onClick={() => {
+                                  setSelectedClient(client);
+                                  setIsViewModalOpen(true);
+                                  setActiveMenu(null);
+                                }}
+                              />
                               <Link href={`/clients/edit/${client.government_id}`}>
                                 <MenuButton 
                                   icon={<Edit3 size={16} />} 
@@ -225,6 +237,13 @@ export default function ClientListActionable({ initialClients }: ClientListActio
           )}
         </div>
       </div>
+
+      {/* VIEW MODAL INTEGRATION */}
+      <ViewClientModal 
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        client={selectedClient}
+      />
 
       {/* DELETE CONFIRMATION MODAL */}
       <DeleteClientConfirmModal 
