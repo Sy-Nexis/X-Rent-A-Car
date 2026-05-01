@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ChevronRight, 
-  Car, 
-  Upload, 
-  FileText, 
-  CheckCircle2, 
-  Loader2, 
+import {
+  ChevronRight,
+  Car,
+  Upload,
+  FileText,
+  CheckCircle2,
+  Loader2,
   Trash2,
   AlertCircle
 } from "lucide-react";
@@ -49,7 +49,7 @@ export default function VehicleDataEntry() {
     setTimeout(() => {
       setIsSubmitting(false);
       setShowSuccess(true);
-      
+
       // Auto-hide success message and reset form
       setTimeout(() => {
         setShowSuccess(false);
@@ -60,7 +60,7 @@ export default function VehicleDataEntry() {
 
   return (
     <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500/30">
-      
+
       {/* SUCCESS NOTIFICATION */}
       <AnimatePresence>
         {showSuccess && (
@@ -82,7 +82,7 @@ export default function VehicleDataEntry() {
       </AnimatePresence>
 
       <div className="max-w-4xl mx-auto">
-        
+
         {/* BREADCRUMBS */}
         <nav className="flex items-center gap-2 text-xs font-medium text-[#6e6e73] uppercase tracking-widest mb-8">
           <span>Admin</span>
@@ -103,13 +103,13 @@ export default function VehicleDataEntry() {
         </div>
 
         {/* MAIN FORM CARD */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-[#2c2c2e] rounded-3xl shadow-sm border border-gray-200/50 dark:border-white/5 overflow-hidden"
         >
           <form onSubmit={handleSubmit(onSubmit)}>
-            
+
             {/* SECTION 1: CORE IDENTIFICATION */}
             <div className="p-8">
               <header className="mb-8">
@@ -125,7 +125,7 @@ export default function VehicleDataEntry() {
                     placeholder="e.g. Toyota"
                     className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent focus:border-[#0071e3] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all text-sm"
                   />
-                  {errors.make && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><AlertCircle size={10}/> This field is required</p>}
+                  {errors.make && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1"><AlertCircle size={10} /> This field is required</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-wider ml-1">Model</label>
