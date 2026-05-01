@@ -62,8 +62,18 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete vehicle");
+        const contentType = response.headers.get("content-type");
+        let errorMessage = "Failed to delete vehicle";
+
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } else {
+          // If response is not JSON (e.g. HTML 404), use the status text
+          errorMessage = `Error ${response.status}: ${response.statusText}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       // Success
