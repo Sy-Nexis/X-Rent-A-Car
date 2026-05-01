@@ -6,7 +6,7 @@ const router = Router();
 // /api/clients/view
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const [rows] = await pool.query('SELECT * FROM client ORDER BY created_at DESC');
+        const [rows] = await pool.query('SELECT * FROM clients ORDER BY created_at DESC');
 
         res.status(200).json({
             success: true,
@@ -27,7 +27,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const [rows]: any = await pool.query('SELECT * FROM client WHERE id = ?', [id]);
+        const [rows]: any = await pool.query('SELECT * FROM clients WHERE id = ?', [id]);
 
 
         if (rows.length === 0) {
