@@ -6,10 +6,10 @@ const router = Router();
 // /api/client/add
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status } = req.body;
+        const { id, first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status } = req.body;
         // Secure SQL --> ? -- SQL INJECTION Can't
-        const insertQuery = `INSERT INTO clients ( make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const [result] = await pool.execute(insertQuery, [make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status]);
+        const insertQuery = `INSERT INTO clients ( id , first_name , last_name , email , phone , address , city , state , zip_code , government_id , license_number , status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await pool.execute(insertQuery, [id, first_name, last_name, email, phone, address, city, state, zip_code, government_id, license_number, status]);
 
 
 
