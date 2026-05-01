@@ -78,12 +78,14 @@ export default function VehicleTable({ vehicles }: VehicleTableProps) {
                     <div className="flex items-center justify-center gap-4 text-[#6e6e73]">
                       <div className="flex flex-col items-center gap-1">
                         <Fuel size={14} />
-                        <span className="text-[9px] font-bold uppercase">{vehicle.fuelType}</span>
+                        <span className="text-[9px] font-bold uppercase">{vehicle.fuelType || 'N/A'}</span>
                       </div>
                       <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
                       <div className="flex flex-col items-center gap-1">
                         <Gauge size={14} />
-                        <span className="text-[9px] font-bold uppercase">{vehicle.transmission[0]}</span>
+                        <span className="text-[9px] font-bold uppercase">
+                          {vehicle.transmission ? vehicle.transmission[0] : 'N/A'}
+                        </span>
                       </div>
                     </div>
                   </td>

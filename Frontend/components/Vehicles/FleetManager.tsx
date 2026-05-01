@@ -30,9 +30,9 @@ export default function FleetManager({ initialData }: FleetManagerProps) {
   const vehicles = useMemo(() => {
     return initialData.map(v => ({
       ...v,
-      dailyRate: typeof v.daily_rate === 'string' ? parseFloat(v.daily_rate) : v.daily_rate,
-      licensePlate: v.license_plate,
-      fuelType: v.fuel_type,
+      dailyRate: v.daily_rate ? (typeof v.daily_rate === 'string' ? parseFloat(v.daily_rate) : v.daily_rate) : 0,
+      licensePlate: v.license_plate || 'No Plate',
+      fuelType: v.fuel_type || 'Unknown',
     }));
   }, [initialData]);
 
