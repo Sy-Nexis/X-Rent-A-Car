@@ -52,7 +52,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/vehicles/del?vin=${deletingVehicle.vin}&plate=${deletingVehicle.licensePlate}`,
+        `http://127.0.0.1:5000/api/vehicles/del?vin=${deletingVehicle.vin}&plate=${deletingVehicle.licensePlate}`,
         {
           method: "DELETE",
           headers: {

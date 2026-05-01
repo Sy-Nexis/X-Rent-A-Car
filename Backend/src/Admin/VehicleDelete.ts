@@ -7,6 +7,7 @@ const router = Router();
 router.delete('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const { vin, plate } = req.query;
+        console.log(`DELETE request received for VIN: ${vin}, Plate: ${plate}`);
 
         // Validation: Ensure both are provided
         if (!vin || !plate) {
