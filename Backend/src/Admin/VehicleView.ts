@@ -24,4 +24,31 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const [rows]: any = await pool.query('SELECT * FROM vehicles WHERE id = ?', [id]);
+
+        if (rows.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: 'Vehicle not found'
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            data: rows[0]
+        });
+
+    } catch (error: any) {
+        console.error('Error fetching vehicle details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+});
+
 export default router;
