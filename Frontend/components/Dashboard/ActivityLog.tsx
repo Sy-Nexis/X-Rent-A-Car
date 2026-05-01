@@ -1,7 +1,17 @@
-import React from "react";
-import { activityLog } from "./mockData";
+"use client";
 
-export default function ActivityLog() {
+import React from "react";
+import { activityLog as mockLogs } from "./mockData";
+
+interface ActivityLogProps {
+  vehicle?: any;
+}
+
+export default function ActivityLog({ vehicle }: ActivityLogProps) {
+  // If a vehicle is selected, we could filter or show specific logs. 
+  // For now, we'll show the stream but with the updated aesthetics.
+  const displayLogs = mockLogs;
+
   const getColor = (type: string) => {
     switch(type) {
       case 'start': return 'bg-green-apple ring-green-apple/20';
@@ -13,16 +23,25 @@ export default function ActivityLog() {
   };
 
   return (
-    <div className="bg-bg-surface rounded-card border border-border-subtle p-5 shadow-sm">
-      <h3 className="text-base font-semibold text-text-primary mb-5">Activity Log</h3>
-      <div className="relative pl-3 border-l-2 border-border-subtle space-y-6">
-        {activityLog.map((log, i) => (
+    <div className="bg-bg-surface rounded-card border border-border-subtle p-6 shadow-sm">
+      <div className="mb-6">
+         <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Activity Stream</h3>
+         <p className="text-[8px] font-bold text-text-secondary uppercase tracking-[0.3em]">Operational Chronology</p>
+      </div>
+
+      <div className="relative pl-4 border-l border-border-subtle/50 space-y-8">
+        {displayLogs.map((log, i) => (
           <div key={i} className="relative">
-            <div className={`absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full ring-4 ${getColor(log.type)}`}></div>
-            <div className="text-xs text-text-secondary mb-0.5 font-medium">{log.time}</div>
-            <div className="text-sm text-text-primary leading-snug">{log.text}</div>
+            <div className={`absolute -left-[20.5px] top-1 w-2.5 h-2.5 rounded-full ring-4 ${getColor(log.type)} shadow-sm`}></div>
+            <div className="text-[10px] font-black text-text-secondary mb-1 uppercase tabular-nums tracking-widest">{log.time}</div>
+            <div className="text-xs font-bold text-text-primary leading-relaxed uppercase tracking-tight">{log.text}</div>
           </div>
         ))}
+        {vehicle && (
+           <div className="pt-4 border-t border-border-subtle/30">
+              <p className="text-[9px] font-black text-blue-apple uppercase tracking-widest">Monitoring: {vehicle.make} {vehicle.model}</p>
+           </div>
+        )}
       </div>
     </div>
   );
