@@ -13,6 +13,7 @@ import {
   PencilLine
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
 import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
 import UpdateVehicleModal from "./UpdateVehicleModal";
@@ -244,10 +245,14 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                                   <ChevronRight size={16} className="text-blue-500" />
                                   View Details
                                 </button>
-                                <UpdateVehicleModal
-                                  vehicle={vehicle}
-                                  onActionComplete={() => setActiveMenu(null)}
-                                />
+                                
+                                <Link
+                                  href={`/vehicles/edit/${vehicle.id}`}
+                                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all group"
+                                >
+                                  <PencilLine size={16} className="text-blue-500" />
+                                  Edit Specifications
+                                </Link>
                                 <button
                                   onClick={() => {
                                     setDeletingVehicle(vehicle);
