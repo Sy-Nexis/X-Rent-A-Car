@@ -132,19 +132,20 @@ export default function EditVehiclePage() {
     setError(null);
     
     try {
-      // Format Payload: map back to snake_case for Backend API
+      // Format Payload: match the backend's req.body destructuring (camelCase)
       const payload = {
         make: data.make,
         model: data.model,
         year: parseInt(data.year.toString()),
         transmission: data.transmission,
-        fuel_type: data.fuelType,
-        engine_capacity: data.engineCapacity,
+        fuelType: data.fuelType,
+        engineCapacity: data.engineCapacity,
         color: data.color,
         mileage: parseInt(data.mileage.toString()),
-        daily_rate: parseFloat(data.dailyRate.toString()),
+        dailyRate: parseFloat(data.dailyRate.toString()),
         branch: data.branch,
         status: data.status,
+        licensePlate: data.licensePlate
       };
 
       const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
