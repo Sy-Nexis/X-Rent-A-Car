@@ -14,6 +14,9 @@ import {
   Globe
 } from "lucide-react";
 
+import Cookies from "js-cookie";
+import { useRouter, usePathname } from "next/navigation";
+
 // --- NAV LINKS CONFIG ---
 const navLinks = [
   { 
@@ -43,6 +46,14 @@ const navLinks = [
 // --- MAIN COMPONENT ---
 export default function AdminNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    Cookies.remove("xnrent_token");
+    localStorage.removeItem("xnrent_user");
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <aside className="w-72 h-screen fixed top-0 left-0 bg-[#1c1c1e] border-r border-white/5 flex flex-col z-50">
@@ -110,7 +121,10 @@ export default function AdminNavbar() {
               </div>
            </div>
            
-           <button className="p-2.5 text-[#6e6e73] hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+           <button 
+            onClick={handleLogout}
+            className="p-2.5 text-[#6e6e73] hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+           >
               <LogOut size={18} />
            </button>
         </div>

@@ -1,11 +1,20 @@
 import React from "react";
 import AdminNavbar from "@/components/Navigation/AdminNavbar";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default async function AdminLayout({ children }: AdminLayoutProps) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("xnrent_token");
+
+  if (!token) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-[#000000] flex">
       {/* PERSISTENT SIDEBAR NAVIGATION */}

@@ -1,0 +1,28 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/request';
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('xnrent_token')?.value;
+  const isAuthPage = request.nextUrl.pathname === '/login';
+  const isAdminPage = request.nextUrl.pathname.startsWith('/Admin');
+
+  // 1. If trying to access Admin and NO TOKEN -> Redirect to Login
+  if (isAdminPage && !token) {
+    const loginUrl = new URL('/login', request.url);
+    // Optional: add a returnUrl so we can redirect back after login
+    loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 2. If trying to access Login and HAS TOKEN -> Redirect to Admin
+  if (isAuthPage && token) {
+    return NextResponse.redirect(new URL('/Admin', request.url));
+  }
+
+  return NextResponse.next();
+}
+
+// MATCHING STRATEGY
+export const config = {
+  matcher: ['/Admin/:path*', '/login'],
+};
