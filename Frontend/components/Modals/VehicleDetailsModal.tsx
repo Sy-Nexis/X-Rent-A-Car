@@ -80,12 +80,19 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
       });
 
       if (!response.ok) {
-        // 2. IMPROVED ERROR HANDLING
-        if (response.status === 404) {
-          throw new Error(`Vehicle Registry Error (404): The endpoint '${url}' was not found on the server.`);
+        const contentType = response.headers.get("content-type");
+        
+        // If the server returned a JSON error (like "Vehicle not found"), use that first!
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Error ${response.status}`);
         }
 
-        const errorText = await response.text();
+        // Fallback for true 404s (wrong URL)
+        if (response.status === 404) {
+          throw new Error(`Registry URL Error: The endpoint '${url}' is not correctly mapped on your server. Please restart your backend.`);
+        }
+
         throw new Error(`Server Error (${response.status}): ${response.statusText}`);
       }
 
