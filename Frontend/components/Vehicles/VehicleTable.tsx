@@ -91,7 +91,7 @@ export default function VehicleTable({ vehicles }: VehicleTableProps) {
                   </td>
                   <td className="px-8 py-6">
                     <div className="text-sm font-black text-[#1d1d1f] dark:text-white">
-                      ${vehicle.dailyRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      Rs. {vehicle.dailyRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       <span className="text-[10px] text-[#6e6e73] font-medium ml-1">/ day</span>
                     </div>
                   </td>

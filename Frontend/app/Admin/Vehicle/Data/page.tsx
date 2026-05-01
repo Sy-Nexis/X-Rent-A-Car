@@ -240,7 +240,7 @@ export default function VehicleDataEntry() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-wider ml-1">Daily Rental Rate</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73] text-sm font-medium">$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73] text-sm font-medium">Rs.</span>
                     <input
                       {...register("dailyRate")}
                       type="number"
