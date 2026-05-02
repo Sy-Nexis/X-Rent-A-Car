@@ -170,6 +170,18 @@ export default function LoginForm() {
         </AnimatePresence>
       </motion.div>
 
+      {/* FOOTER */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="mt-10 text-center relative z-10"
+      >
+         <Link href="/register" className="text-[10px] font-black text-[#6e6e73] hover:text-white uppercase tracking-widest transition-colors">
+            New personnel? <span className="text-blue-500">Register account</span>
+         </Link>
+      </motion.div>
+
       <p className="mt-12 text-[9px] font-black text-[#424245] uppercase tracking-[0.5em] relative z-10">
         System V4.0 // Secured by XNRENT Core
       </p>
