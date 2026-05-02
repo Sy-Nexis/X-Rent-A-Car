@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { 
-  X, 
-  PencilLine, 
-  ShieldCheck, 
-  Lock, 
-  Car, 
-  Zap, 
-  Loader2, 
+import {
+  X,
+  PencilLine,
+  ShieldCheck,
+  Lock,
+  Car,
+  Zap,
+  Loader2,
   Check,
   Fuel,
   Gauge,
@@ -116,7 +116,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         mileage: parseInt(data.mileage),
       };
 
-      const response = await fetch(`http://localhost:5001/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -129,7 +129,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
       setShowSuccess(true);
       router.refresh();
-      
+
       setTimeout(() => {
         handleClose();
         if (onActionComplete) onActionComplete();
@@ -174,44 +174,44 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="relative w-full max-w-[1200px] h-full max-h-[900px] bg-[#1c1c1e] rounded-[48px] shadow-[0_0_100px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col md:flex-row"
             >
-              
+
               {/* --- LEFT: IDENTITY SIDEBAR (35%) --- */}
               <div className="md:w-[35%] bg-gradient-to-b from-[#2c2c2e] to-[#1c1c1e] p-16 flex flex-col justify-between border-r border-white/5">
                 <div>
                   <div className="w-24 h-24 rounded-[32px] bg-blue-600 flex items-center justify-center text-white shadow-2xl shadow-blue-500/40 mb-12">
                     <Car size={48} />
                   </div>
-                  
+
                   <div className="space-y-3">
                     <h2 className="text-5xl font-black text-white tracking-tighter">{vehicle.make}</h2>
                     <p className="text-2xl font-bold text-[#86868b]">{vehicle.model}</p>
                   </div>
 
                   <div className="mt-12 space-y-6">
-                    <Badge icon={<ShieldCheck size={16}/>} label="Verified Asset" color="blue" />
+                    <Badge icon={<ShieldCheck size={16} />} label="Verified Asset" color="blue" />
                     <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
-                       <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.3em] mb-3">Asset Registry ID</p>
-                       <p className="text-xl font-mono font-black text-white">{vehicle.id}</p>
+                      <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.3em] mb-3">Asset Registry ID</p>
+                      <p className="text-xl font-mono font-black text-white">{vehicle.id}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-8">
-                   <div className="p-6 bg-black/40 rounded-3xl border border-white/5">
-                      <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-                        <Lock size={12} />
-                        SECURE IDENTIFIER
-                      </p>
-                      <div className="space-y-1">
-                        <p className="text-[9px] font-bold text-blue-500 uppercase tracking-widest">VIN</p>
-                        <p className="text-sm font-mono font-black text-white tracking-tighter">{vehicle.vin}</p>
-                      </div>
-                   </div>
-                   
-                   <div className="flex items-center gap-3 text-[9px] font-black text-[#424245] uppercase tracking-[0.4em]">
-                      <Zap size={14} />
-                      XNRENT FLEET CONSOLE
-                   </div>
+                  <div className="p-6 bg-black/40 rounded-3xl border border-white/5">
+                    <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+                      <Lock size={12} />
+                      SECURE IDENTIFIER
+                    </p>
+                    <div className="space-y-1">
+                      <p className="text-[9px] font-bold text-blue-500 uppercase tracking-widest">VIN</p>
+                      <p className="text-sm font-mono font-black text-white tracking-tighter">{vehicle.vin}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-[9px] font-black text-[#424245] uppercase tracking-[0.4em]">
+                    <Zap size={14} />
+                    XNRENT FLEET CONSOLE
+                  </div>
                 </div>
               </div>
 
@@ -234,46 +234,46 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                     )}
 
                     <div className="grid grid-cols-2 gap-x-10 gap-y-10">
-                      <InputCard label="Production Year" icon={<Calendar size={18}/>} {...register("year")} />
-                      <InputCard label="License Plate" icon={<Database size={18}/>} {...register("licensePlate")} />
-                      <InputCard label="Fuel Architecture" icon={<Fuel size={18}/>} {...register("fuelType")} isSelect options={['Petrol', 'Diesel', 'Hybrid', 'Electric']} />
-                      <InputCard label="Transmission" icon={<Gauge size={18}/>} {...register("transmission")} isSelect options={['Automatic', 'Manual', 'Tiptronic']} />
-                      <InputCard label="Engine Capacity" icon={<Zap size={18}/>} {...register("engineCapacity")} />
-                      <InputCard label="Exterior Palette" icon={<Palette size={18}/>} {...register("color")} />
-                      <InputCard label="Operational Mileage" icon={<Activity size={18}/>} {...register("mileage")} type="number" />
-                      <InputCard label="Daily Rental Rate (Rs.)" icon={<DollarSign size={18}/>} {...register("dailyRate")} type="number" step="0.01" />
+                      <InputCard label="Production Year" icon={<Calendar size={18} />} {...register("year")} />
+                      <InputCard label="License Plate" icon={<Database size={18} />} {...register("licensePlate")} />
+                      <InputCard label="Fuel Architecture" icon={<Fuel size={18} />} {...register("fuelType")} isSelect options={['Petrol', 'Diesel', 'Hybrid', 'Electric']} />
+                      <InputCard label="Transmission" icon={<Gauge size={18} />} {...register("transmission")} isSelect options={['Automatic', 'Manual', 'Tiptronic']} />
+                      <InputCard label="Engine Capacity" icon={<Zap size={18} />} {...register("engineCapacity")} />
+                      <InputCard label="Exterior Palette" icon={<Palette size={18} />} {...register("color")} />
+                      <InputCard label="Operational Mileage" icon={<Activity size={18} />} {...register("mileage")} type="number" />
+                      <InputCard label="Daily Rental Rate (Rs.)" icon={<DollarSign size={18} />} {...register("dailyRate")} type="number" step="0.01" />
                     </div>
 
                     <div className="pt-10 border-t border-white/5">
-                       <InputCard label="Fleet Status" icon={<ShieldCheck size={18}/>} {...register("status")} isSelect options={['Active', 'Maintenance', 'In Prep', 'Retired']} />
+                      <InputCard label="Fleet Status" icon={<ShieldCheck size={18} />} {...register("status")} isSelect options={['Active', 'Maintenance', 'In Prep', 'Retired']} />
                     </div>
                   </form>
                 </div>
 
                 {/* STICKY FOOTER */}
                 <div className="px-16 py-12 bg-[#1c1c1e] border-t border-white/10 flex items-center justify-between shrink-0">
-                   <p className="text-xs font-black text-[#6e6e73] uppercase tracking-[0.3em]">
-                      {isDirty ? "UNSAVED CHANGES DETECTED" : "REGISTRY IN SYNC"}
-                   </p>
-                   <div className="flex items-center gap-8">
-                      <button type="button" onClick={handleClose} className="text-xs font-black text-[#6e6e73] hover:text-white uppercase tracking-[0.3em] transition-colors">
-                        Dismiss
-                      </button>
-                      <button
-                        form="update-form"
-                        type="submit"
-                        disabled={!isDirty || isUpdating || showSuccess}
-                        className={`
+                  <p className="text-xs font-black text-[#6e6e73] uppercase tracking-[0.3em]">
+                    {isDirty ? "UNSAVED CHANGES DETECTED" : "REGISTRY IN SYNC"}
+                  </p>
+                  <div className="flex items-center gap-8">
+                    <button type="button" onClick={handleClose} className="text-xs font-black text-[#6e6e73] hover:text-white uppercase tracking-[0.3em] transition-colors">
+                      Dismiss
+                    </button>
+                    <button
+                      form="update-form"
+                      type="submit"
+                      disabled={!isDirty || isUpdating || showSuccess}
+                      className={`
                           flex items-center gap-4 px-16 py-6 rounded-[24px] text-xs font-black uppercase tracking-[0.4em] transition-all
                           ${!isDirty || isUpdating || showSuccess
-                            ? 'bg-white/5 text-[#424245] cursor-not-allowed shadow-none'
-                            : 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-1 active:scale-95'}
+                          ? 'bg-white/5 text-[#424245] cursor-not-allowed shadow-none'
+                          : 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-1 active:scale-95'}
                         `}
-                      >
-                        {isUpdating ? <Loader2 size={20} className="animate-spin" /> : showSuccess ? <Check size={20} /> : <Zap size={20} />}
-                        <span>{showSuccess ? "Success" : isUpdating ? "Syncing..." : "Sync Registry"}</span>
-                      </button>
-                   </div>
+                    >
+                      {isUpdating ? <Loader2 size={20} className="animate-spin" /> : showSuccess ? <Check size={20} /> : <Zap size={20} />}
+                      <span>{showSuccess ? "Success" : isUpdating ? "Syncing..." : "Sync Registry"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -307,8 +307,8 @@ function Badge({ icon, label, color }: any) {
 const InputCard = React.forwardRef(({ label, icon, isSelect, options, ...props }: any, ref: any) => (
   <div className="p-8 bg-white/5 rounded-[32px] border border-white/5 focus-within:border-blue-500/50 focus-within:bg-blue-500/[0.02] transition-all group">
     <div className="flex items-center gap-3 mb-4 opacity-50 group-focus-within:opacity-100 transition-opacity">
-       <span className="text-blue-500">{icon}</span>
-       <label className="text-[10px] font-black text-[#86868b] uppercase tracking-[0.3em]">{label}</label>
+      <span className="text-blue-500">{icon}</span>
+      <label className="text-[10px] font-black text-[#86868b] uppercase tracking-[0.3em]">{label}</label>
     </div>
     {isSelect ? (
       <select ref={ref} {...props} className="w-full bg-transparent text-xl font-bold text-white outline-none appearance-none cursor-pointer">

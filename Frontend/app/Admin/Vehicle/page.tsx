@@ -9,7 +9,7 @@ export const metadata = {
 
 async function getVehicles() {
   try {
-    const response = await fetch('http://localhost:5001/api/vehicles/view', {
+    const response = await fetch('http://localhost:5000/api/vehicles/view', {
       cache: 'no-store', // Always fetch fresh data
       headers: {
         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export default async function VehiclesPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <Link 
+            <Link
               href="/Admin/Vehicle/Data"
               className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95 group"
             >

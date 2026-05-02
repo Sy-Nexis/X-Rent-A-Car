@@ -76,7 +76,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
       };
 
       // 2. API CALL
-      const response = await fetch(`http://localhost:5001/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +134,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
       {/* FORM CONTENT (SCROLLABLE) */}
       <div className="flex-1 overflow-y-auto px-10 py-10 custom-scrollbar space-y-10">
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-4 text-red-500"
@@ -146,27 +146,27 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
           {/* IDENTIFICATION GROUP */}
-          <SectionTitle icon={<ShieldCheck size={16}/>} title="Immutable Identity" />
-          
+          <SectionTitle icon={<ShieldCheck size={16} />} title="Immutable Identity" />
+
           <div className="space-y-6 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FormInput 
-              label="VIN Number" 
-              value={vehicle.vin} 
-              disabled 
-              icon={<Info size={14}/>}
+            <FormInput
+              label="VIN Number"
+              value={vehicle.vin}
+              disabled
+              icon={<Info size={14} />}
               isMono
             />
-            <FormInput 
-              label="License Plate" 
+            <FormInput
+              label="License Plate"
               {...register("licensePlate")}
-              icon={<Info size={14}/>}
+              icon={<Info size={14} />}
               isMono
             />
           </div>
 
           {/* BASIC SPECIFICATIONS */}
-          <SectionTitle icon={<Car size={16}/>} title="Core Specifications" />
-          
+          <SectionTitle icon={<Car size={16} />} title="Core Specifications" />
+
           <div className="space-y-2">
             <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Make</label>
             <input
@@ -206,7 +206,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
           </div>
 
           {/* TECHNICAL GROUP */}
-          <SectionTitle icon={<Zap size={16}/>} title="Technical details" />
+          <SectionTitle icon={<Zap size={16} />} title="Technical details" />
 
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-1 ml-1">
@@ -262,7 +262,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
           </div>
 
           {/* FINANCIALS */}
-          <SectionTitle icon={<Save size={16}/>} title="Financial Control" />
+          <SectionTitle icon={<Save size={16} />} title="Financial Control" />
 
           <div className="space-y-2 md:col-span-2">
             <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Daily Rental Rate (Rs.)</label>
@@ -284,7 +284,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
         <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-widest">
           {isDirty ? "Unsaved changes detected" : "All specifications are up to date"}
         </p>
-        
+
         <div className="flex items-center gap-4">
           <button
             type="button"

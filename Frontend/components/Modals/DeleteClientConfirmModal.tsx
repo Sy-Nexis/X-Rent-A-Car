@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  AlertTriangle, 
-  Trash2, 
-  Loader2, 
+import {
+  AlertTriangle,
+  Trash2,
+  Loader2,
   X,
   ShieldAlert
 } from "lucide-react";
@@ -27,11 +27,11 @@ interface DeleteClientConfirmModalProps {
 }
 
 // --- MAIN COMPONENT ---
-export default function DeleteClientConfirmModal({ 
-  isOpen, 
-  onClose, 
-  client, 
-  onConfirm 
+export default function DeleteClientConfirmModal({
+  isOpen,
+  onClose,
+  client,
+  onConfirm
 }: DeleteClientConfirmModalProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,13 +39,13 @@ export default function DeleteClientConfirmModal({
 
   const handleDelete = async () => {
     if (!client) return;
-    
+
     setIsDeleting(true);
     setError(null);
 
     try {
-      // Endpoint mapping: DELETE http://localhost:5001/api/clients/del/del?nic={id}
-      const response = await fetch(`http://localhost:5001/api/clients/del/del?nic=${client.government_id}`, {
+      // Endpoint mapping: DELETE http://localhost:5000/api/clients/del/del?nic={id}
+      const response = await fetch(`http://localhost:5000/api/clients/del/del?nic=${client.government_id}`, {
         method: "DELETE",
       });
 
@@ -106,25 +106,25 @@ export default function DeleteClientConfirmModal({
 
               {/* CLIENT IDENTITY CARD */}
               <div className="p-6 bg-black/40 rounded-2xl border border-white/5 space-y-3">
-                 <div className="flex items-center gap-3 text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">
-                    <ShieldAlert size={12} className="text-[#ff453a]" />
-                    Target Identity
-                 </div>
-                 <div className="space-y-1">
-                    <p className="text-sm font-bold text-white uppercase tracking-tight">
-                      {client.first_name} {client.last_name}
-                    </p>
-                    <p className="text-[11px] font-mono text-[#86868b] truncate">
-                      {client.email}
-                    </p>
-                 </div>
+                <div className="flex items-center gap-3 text-[10px] font-black text-[#6e6e73] uppercase tracking-widest">
+                  <ShieldAlert size={12} className="text-[#ff453a]" />
+                  Target Identity
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-white uppercase tracking-tight">
+                    {client.first_name} {client.last_name}
+                  </p>
+                  <p className="text-[11px] font-mono text-[#86868b] truncate">
+                    {client.email}
+                  </p>
+                </div>
               </div>
 
               {/* ERROR FEEDBACK */}
               {error && (
-                <motion.p 
-                  initial={{ opacity: 0, y: -5 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                <motion.p
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="text-[10px] font-black text-[#ff453a] uppercase tracking-widest text-center"
                 >
                   {error}
@@ -138,8 +138,8 @@ export default function DeleteClientConfirmModal({
                   disabled={isDeleting}
                   className={`
                     w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3
-                    ${isDeleting 
-                      ? 'bg-white/5 text-[#424245] cursor-not-allowed' 
+                    ${isDeleting
+                      ? 'bg-white/5 text-[#424245] cursor-not-allowed'
                       : 'bg-[#ff453a] text-white hover:bg-red-600 shadow-xl shadow-red-500/20 active:scale-95'}
                   `}
                 >

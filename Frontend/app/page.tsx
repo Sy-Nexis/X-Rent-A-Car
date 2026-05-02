@@ -13,7 +13,7 @@ async function getFleetData() {
   }
 
   try {
-    const response = await fetch("http://localhost:5001/api/vehicles/view", { 
+    const response = await fetch("http://localhost:5000/api/vehicles/view", {
       cache: "no-store",
       headers: { "Authorization": `Bearer ${token}` }
     });

@@ -22,15 +22,15 @@ export function ErrorStateUI() {
           </p>
         </div>
         <div className="flex flex-col gap-4">
-          <button 
-            onClick={handleRetry} 
+          <button
+            onClick={handleRetry}
             className="w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-black uppercase tracking-widest text-white transition-all flex items-center justify-center gap-3"
           >
             <RefreshCcw size={16} />
             Retry Connection
           </button>
           <div className="p-4 bg-black/40 rounded-2xl border border-white/5 text-[10px] font-mono text-[#424245] uppercase">
-            TARGET_URL: http://localhost:5001/api/clients/view
+            TARGET_URL: http://localhost:5000/api/clients/view
           </div>
         </div>
       </div>
@@ -56,8 +56,8 @@ export function EmptyRegistryUI() {
             There are currently no clients registered in the XNRENT system. Start by onboarding your first customer to build your fleet network.
           </p>
         </div>
-        <Link 
-          href="/Admin/Client/Register" 
+        <Link
+          href="/Admin/Client/Register"
           className="inline-flex items-center gap-4 px-10 py-5 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30 hover:bg-blue-500 hover:-translate-y-1 transition-all"
         >
           <UserPlus size={18} />

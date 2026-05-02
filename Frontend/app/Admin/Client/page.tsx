@@ -7,7 +7,7 @@ import { ShieldCheck, Users, Activity, UserPlus } from "lucide-react";
 async function getClients() {
   try {
     // Attempt to fetch the client registry
-    const response = await fetch("http://localhost:5001/api/clients/view", {
+    const response = await fetch("http://localhost:5000/api/clients/view", {
       cache: "no-store",
       next: { revalidate: 0 }
     });
@@ -43,7 +43,7 @@ export default async function ClientDetailsPage() {
   return (
     <div className="min-h-screen bg-[#1c1c1e] text-white p-8 md:p-12 lg:p-16">
       <div className="max-w-[1600px] mx-auto space-y-12">
-        
+
         {/* HEADER SECTION */}
         <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <div className="space-y-4">
@@ -61,11 +61,11 @@ export default async function ClientDetailsPage() {
 
           <div className="flex flex-wrap gap-4">
             <StatCard icon={<Users size={20} />} label="Total Clients" value={clients.length.toString()} color="blue" />
-            <StatCard 
-              icon={<Activity size={20} />} 
-              label="Active Clients" 
-              value={clients.filter((c: any) => c.status === "Active").length.toString()} 
-              color="green" 
+            <StatCard
+              icon={<Activity size={20} />}
+              label="Active Clients"
+              value={clients.filter((c: any) => c.status === "Active").length.toString()}
+              color="green"
             />
           </div>
         </header>

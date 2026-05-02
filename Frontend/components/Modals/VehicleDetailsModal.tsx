@@ -67,7 +67,7 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
     setError(null);
 
     try {
-      const url = `http://localhost:5001/api/vehicles/view/${vehicleId}`;
+      const url = `http://localhost:5000/api/vehicles/view/${vehicleId}`;
 
       // Log this! Check your browser console to see the ACTUAL URL being called.
       console.log("Fetching vehicle details from:", url);
@@ -81,7 +81,7 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
-        
+
         // If the server returned a JSON error (like "Vehicle not found"), use that first!
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
