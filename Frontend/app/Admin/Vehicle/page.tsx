@@ -1,6 +1,6 @@
-import React from "react";
+import Link from "next/link";
 import FleetManager from "@/components/Vehicles/FleetManager";
-import { ChevronRight, LayoutGrid, ShieldCheck, MapPin } from "lucide-react";
+import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
 
 export const metadata = {
   title: 'Fleet Management | XNRENT CAR',
@@ -59,12 +59,22 @@ export default async function VehiclesPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white/50 dark:bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-gray-200/50 dark:border-white/5">
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">Database Status</span>
-              <div className="flex items-center gap-2 mt-1">
-                <div className={`w-2 h-2 rounded-full ${vehicleData.length > 0 ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-                <span className="text-sm font-bold">{vehicleData.length > 0 ? 'Connected' : 'Offline / No Data'}</span>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Link 
+              href="/Admin/Vehicle/Data"
+              className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-600/20 transition-all active:scale-95 group"
+            >
+              <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
+              Add Unit to Fleet
+            </Link>
+
+            <div className="flex items-center gap-4 bg-white/50 dark:bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-gray-200/50 dark:border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">Database Status</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className={`w-2 h-2 rounded-full ${vehicleData.length > 0 ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+                  <span className="text-sm font-bold">{vehicleData.length > 0 ? 'Connected' : 'Offline / No Data'}</span>
+                </div>
               </div>
             </div>
           </div>
