@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Loader2, AlertCircle, Car, ArrowRight } from "lucide-react";
 import { setCookie } from "@/lib/cookies";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
