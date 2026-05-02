@@ -38,6 +38,14 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         if (error) {
             console.error('Supabase INSERT error:', error);
+            try {
+                const fs = require('fs');
+                fs.writeFileSync('supabase_error.log', JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    error,
+                    payload: vehicleData
+                }, null, 2));
+            } catch (e) {}
 
             if (error.code === '23505') {
                 res.status(400).json({

@@ -50,10 +50,13 @@ export default function VehicleDataEntry() {
       // with all versions of the backend API.
       const payload = {
         ...data,
+        year: Number(data.year),
+        mileage: Number(data.mileage),
+        daily_rate: Number(data.dailyRate),
+        dailyRate: Number(data.dailyRate),
         license_plate: data.licensePlate,
         fuel_type: data.fuelType,
         engine_capacity: data.engineCapacity,
-        daily_rate: data.dailyRate,
         branch: data.location,
       };
 
