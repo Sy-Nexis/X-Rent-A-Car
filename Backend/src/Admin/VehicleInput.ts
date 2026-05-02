@@ -1,26 +1,52 @@
 import { Router, Request, Response } from 'express';
-import pool from '../db';
+import { supabase } from '../db';
 
 const router = Router();
 
 // /api/vehicles/add
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status } = req.body;
-        // Secure SQL --> ? -- SQL INJECTION Can't
-        const insertQuery = `INSERT INTO vehicles ( make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        const [result] = await pool.execute(insertQuery, [make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status]);
+        const {
+            make, model, year, vin, license_plate, transmission,
+            fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
+        } = req.body;
 
+        const { data, error } = await supabase
+            .from('vehicles')
+            .insert([
+                {
+                    make, model, year, vin, license_plate, transmission,
+                    fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
+                }
+            ])
+            .select();
 
+        if (error) {
+            console.error('Supabase INSERT error:', error);
+
+            if (error.code === '23505') { // Postgres Unique Violation code
+                res.status(400).json({
+                    success: false,
+                    message: 'A vehicle with that VIN or License Plate already exists.'
+                });
+                return;
+            }
+
+            res.status(500).json({
+                success: false,
+                message: 'Database Error while saving vehicle data.'
+            });
+            return;
+        }
 
         res.status(201).json({
             success: true,
             message: 'Vehicle successfully registered to the fleet.',
-            data: result
+            data: data
         });
 
     } catch (error: any) {
-        console.error('Error inserting vehicle:', error);
+        console.error('Unexpected error inserting vehicle:', error);
 
         res.status(500).json({
             success: false,
@@ -29,6 +55,7 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+// /api/vehicles/update
 router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
         const { vin } = req.query;
@@ -36,37 +63,50 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         if (!vin) {
             res.status(400).json({
                 success: false,
-                message: 'Please provide the vehicle VIN'
+                message: 'Please provide the vehicle VIN in the query parameters.'
             });
             return;
         }
 
-        const { make, model, year, licensePlate, transmission, fuelType, engineCapacity, color, mileage, dailyRate, branch, status } = req.body;
+        const {
+            make, model, year, licensePlate, transmission, fuelType,
+            engineCapacity, color, mileage, dailyRate, branch, status
+        } = req.body;
+
+        // Map camelCase body payload to snake_case database columns.
+        // Supabase automatically ignores undefined values, acting like your old COALESCE logic!
+        const updateData = {
+            make,
+            model,
+            year,
+            transmission,
+            color,
+            mileage,
+            branch,
+            status,
+            license_plate: licensePlate,
+            fuel_type: fuelType,
+            engine_capacity: engineCapacity,
+            daily_rate: dailyRate
+        };
+
+        const { data, error } = await supabase
+            .from('vehicles')
+            .update(updateData)
+            .eq('vin', String(vin))
+            .select();
+
+        if (error) {
+            console.error('Supabase UPDATE error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Database Error while attempting to update vehicle data.'
+            });
+            return;
+        }
 
 
-        //COALESCE(?, nameee) --> if NULL NO UPDATE
-        const updateQuery = `
-            UPDATE vehicles 
-            SET  make = COALESCE(?, make), model = COALESCE(?, model), year = COALESCE(?, year), license_plate = COALESCE(?, license_plate), transmission = COALESCE(?, transmission), fuel_type = COALESCE(?, fuel_type), engine_capacity = COALESCE(?, engine_capacity), color = COALESCE(?, color), mileage = COALESCE(?, mileage), daily_rate = COALESCE(?, daily_rate), branch = COALESCE(?, branch), status = COALESCE(?, status)
-            WHERE vin = ? `;
-
-        const [result]: any = await pool.execute(updateQuery, [
-            make ?? null,
-            model ?? null,
-            year ?? null,
-            licensePlate ?? null,
-            transmission ?? null,
-            fuelType ?? null,
-            engineCapacity ?? null,
-            color ?? null,
-            mileage ?? null,
-            dailyRate ?? null,
-            branch ?? null,
-            status ?? null,
-            String(vin)
-        ]);
-
-        if (result.affectedRows === 0) {
+        if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
                 message: 'No vehicle found matching that VIN.'
@@ -76,11 +116,12 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `Vehicle with VIN ${vin} has been successfully updated.`
+            message: `Vehicle with VIN ${vin} has been successfully updated.`,
+            data: data
         });
 
     } catch (error: any) {
-        console.error('Error updating vehicle:', error);
+        console.error('Unexpected error updating vehicle:', error);
 
         res.status(500).json({
             success: false,
