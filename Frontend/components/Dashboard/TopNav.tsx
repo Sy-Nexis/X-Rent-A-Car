@@ -3,9 +3,19 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Car } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { deleteCookie } from "@/lib/cookies";
 
 export default function TopNav() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    deleteCookie("xnrent_token");
+    localStorage.removeItem("xnrent_user");
+    window.location.href = "/login";
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-bg-base/80 border-b border-border-subtle">
       <div className="flex h-16 items-center justify-between px-6 max-w-[1600px] mx-auto">
@@ -37,9 +47,23 @@ export default function TopNav() {
 
           <div className="h-6 w-px bg-border-subtle hidden sm:block"></div>
 
-          <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-apple to-purple-apple flex items-center justify-center text-white font-semibold text-sm shadow-md transition-transform group-hover:scale-105">
-              AK
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col items-end hidden md:flex">
+               <p className="text-[10px] font-black text-text-primary uppercase tracking-wider">Admin Staff</p>
+               <p className="text-[9px] font-bold text-text-tertiary uppercase tracking-widest">Connected</p>
+            </div>
+            <div className="flex items-center gap-3 cursor-pointer group">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-apple to-purple-apple flex items-center justify-center text-white font-semibold text-sm shadow-md transition-transform group-hover:scale-105">
+                AD
+              </div>
+              
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-text-tertiary hover:text-red-apple hover:bg-red-apple/10 rounded-lg transition-all"
+                title="Initialize System Logout"
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           </div>
         </div>
