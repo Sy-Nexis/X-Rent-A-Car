@@ -10,7 +10,8 @@ import clientViwRouter from './Admin/ClientView';
 import clientDeleteRouter from './Admin/ClientDelete';
 import authRoutes from './routes/authRoutes';
 import { protect } from './middleware/authMiddleware';
-// Load environment variables
+
+import { supabase } from './db';
 dotenv.config();
 
 const app: Application = express();
@@ -33,7 +34,6 @@ app.use('/api/clients/', clientInputRouter);
 app.use('/api/clients/view', clientViwRouter);
 app.use('/api/clients/del', clientDeleteRouter);
 
-// Health Check Route
 app.get('/api/health', (req: Request, res: Response) => {
     res.status(200).json({
         status: 'Active',
@@ -46,10 +46,14 @@ app.listen(PORT, async () => {
     console.log(`API Server running on http://localhost:${PORT}`);
 
     try {
-        const connection = await pool.getConnection();
-        console.log('DB successfully');
-        connection.release();
+        const { error } = await supabase.from('staff').select('id').limit(1);
+
+        if (error) {
+            console.error('Supabase connection failed. Check your .env keys:', error.message);
+        } else {
+            console.log('Supabase DB connected successfully');
+        }
     } catch (error) {
-        console.error('DB failed:', error);
+        console.error('Unexpected Supabase connection error:', error);
     }
 });
