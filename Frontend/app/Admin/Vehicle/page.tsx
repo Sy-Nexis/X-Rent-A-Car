@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FleetManager from "@/components/Vehicles/FleetManager";
+import { VehicleErrorState, VehicleEmptyState } from "@/components/Vehicles/VehicleStatusStates";
 import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
 
 export const metadata = {
@@ -17,20 +18,32 @@ async function getVehicles() {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch vehicles: ${response.status}`);
+      console.error(`API Error: ${response.status} ${response.statusText}`);
+      return null; // Triggers VehicleErrorState
     }
 
     const result = await response.json();
     return result.success ? result.data : [];
   } catch (error) {
     console.error("Error fetching vehicles:", error);
-    return []; // Return empty array as fallback
+    return null; // Triggers VehicleErrorState
   }
 }
 
 export default async function VehiclesPage() {
   const vehicleData = await getVehicles();
 
+  // 1. ERROR STATE (Offline or API Failure)
+  if (vehicleData === null) {
+    return <VehicleErrorState />;
+  }
+
+  // 2. EMPTY STATE (No units in database)
+  if (vehicleData.length === 0) {
+    return <VehicleEmptyState />;
+  }
+
+  // 3. SUCCESS STATE
   return (
     <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-[1400px] mx-auto">
@@ -72,8 +85,8 @@ export default async function VehiclesPage() {
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-widest">Database Status</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className={`w-2 h-2 rounded-full ${vehicleData.length > 0 ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-                  <span className="text-sm font-bold">{vehicleData.length > 0 ? 'Connected' : 'Offline / No Data'}</span>
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-sm font-bold text-green-500">Connected</span>
                 </div>
               </div>
             </div>
