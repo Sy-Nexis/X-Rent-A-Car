@@ -1,18 +1,22 @@
 import { Request, Response } from 'express';
-import db from '../db';
+import { supabase } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     try {
-        const [rows] = await db.execute<RowDataPacket[]>('SELECT * FROM staff WHERE email = ?', [email]);
+        const { data: staff, error } = await supabase
+            .from('staff')
+            .select('*')
+            .eq('email', email)
+            .maybeSingle();
 
-
-
-        const staff = rows[0];
+        if (error) {
+            console.error("SUPABASE_LOGIN_ERROR:", error);
+            return res.status(500).json({ message: 'Database error' });
+        }
 
         if (!staff) {
             console.log(`LOGIN_FAIL: User not found for email ${email}`);
@@ -24,14 +28,12 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Account is inactive' });
         }
 
-
-
-
         const isMatch = await bcrypt.compare(password, staff.password_hash);
         if (!isMatch) {
             console.log(`LOGIN_FAIL: Password mismatch for ${email}`);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+
         const token = jwt.sign(
             { id: staff.id, role: staff.role },
             process.env.JWT_SECRET as string,
@@ -60,19 +62,32 @@ export const register = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const finalStatus = status || 'Active';
-        await db.execute<ResultSetHeader>('INSERT INTO staff (first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?)', [first_name, last_name, email, hashedPassword, role, finalStatus]);
+        const { error } = await supabase
+            .from('staff')
+            .insert([
+                {
+                    first_name,
+                    last_name,
+                    email,
+                    password_hash: hashedPassword,
+                    role,
+                    status: finalStatus
+                }
+            ]);
 
-
+        if (error) {
+            if (error.code === '23505') {
+                console.log(`REGISTRATION_FAIL: Email already exists - ${email}`);
+                return res.status(400).json({ message: 'Email already exists' });
+            }
+            console.error("SUPABASE_REGISTRATION_ERROR:", error);
+            throw error;
+        }
 
         res.status(201).json({ message: 'Staff member registered' });
 
-
     } catch (error: any) {
         console.error("REGISTRATION_ERROR:", error);
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ message: 'Email already exists' });
-        }
         res.status(500).json({ message: 'Registration failed' });
     }
 };

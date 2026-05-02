@@ -8,7 +8,6 @@ import vehicleDeleteRouter from './Admin/VehicleDelete';
 import clientInputRouter from './Admin/ClientInput';
 import clientViwRouter from './Admin/ClientView';
 import clientDeleteRouter from './Admin/ClientDelete';
-import pool from './db';
 import authRoutes from './routes/authRoutes';
 import { protect } from './middleware/authMiddleware';
 // Load environment variables
