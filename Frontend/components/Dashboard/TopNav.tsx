@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { Car, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { deleteCookie } from "@/lib/cookies";
 
