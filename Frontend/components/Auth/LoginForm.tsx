@@ -54,9 +54,8 @@ export default function LoginForm() {
       // Save user info for UI (optional but helpful)
       localStorage.setItem("xnrent_user", JSON.stringify(result.user));
 
-      // Redirect to Admin or returnUrl
-      router.push(returnUrl);
-      router.refresh(); // Force refresh to update server components
+      // Redirect to Admin or returnUrl (Hard redirect to ensure middleware sees the cookie)
+      window.location.href = returnUrl;
 
     } catch (err: any) {
       setError(err.message);
