@@ -1,4 +1,4 @@
-# 🚗 XNRENT CAR: Enterprise Fleet Operations Center
+# 🚗 X RENT A CAR: Enterprise Fleet Operations Center
 ### *Powered by Sy Nexis*
 
 **XNRENT CAR** is a production-grade, real-time fleet management ecosystem designed for the next generation of logistics and rental operations. Developed by **Sy Nexis**, this platform bridges the gap between complex telemetry data and intuitive user experience through a high-performance, Apple-inspired interface.
