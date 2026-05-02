@@ -6,19 +6,32 @@ const router = Router();
 // /api/vehicles/add
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
+        console.log("VEHICLE_ADD_REQUEST:", req.body);
         const {
-            make, model, year, vin, license_plate, transmission,
-            fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
+            make, model, year, vin, licensePlate, license_plate, transmission,
+            fuelType, fuel_type, engineCapacity, engine_capacity, color, mileage, dailyRate, daily_rate, location, branch, status
         } = req.body;
+
+        // Map incoming fields (support both camelCase from frontend and snake_case if used elsewhere)
+        const vehicleData = {
+            make,
+            model,
+            year: Number(year),
+            vin,
+            license_plate: licensePlate || license_plate,
+            transmission,
+            fuel_type: fuelType || fuel_type,
+            engine_capacity: engineCapacity || engine_capacity,
+            color,
+            mileage: Number(mileage),
+            daily_rate: Number(dailyRate) || Number(daily_rate),
+            branch: location || branch,
+            status: status || 'Active'
+        };
 
         const { data, error } = await supabase
             .from('vehicles')
-            .insert([
-                {
-                    make, model, year, vin, license_plate, transmission,
-                    fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
-                }
-            ])
+            .insert([vehicleData])
             .select();
 
         if (error) {
@@ -34,7 +47,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
             res.status(500).json({
                 success: false,
-                message: 'Database Error while saving vehicle data.'
+                message: 'Database Error while saving vehicle data.',
+                detail: error.message
             });
             return;
         }
@@ -50,7 +64,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while saving vehicle data.'
+            message: 'Internal Server Error while saving vehicle data.',
+            detail: error.message
         });
     }
 });

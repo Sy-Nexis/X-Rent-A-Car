@@ -33,6 +33,7 @@ type VehicleFormData = {
 export default function VehicleDataEntry() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -41,30 +42,49 @@ export default function VehicleDataEntry() {
     formState: { errors },
   } = useForm<VehicleFormData>();
 
-  const onSubmit = (data: VehicleFormData) => {
+  const onSubmit = async (data: VehicleFormData) => {
     setIsSubmitting(true);
-    console.log("Mock Submission Data:", data);
+    setError(null);
+    console.log("SUBMITTING_VEHICLE_DATA:", data);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("http://localhost:5000/api/vehicles/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to register vehicle");
+      }
+
+      console.log("VEHICLE_REGISTERED_SUCCESSFULLY:", result);
       setShowSuccess(true);
+      reset();
 
-      // Auto-hide success message and reset form
+      // Auto-hide success message
       setTimeout(() => {
         setShowSuccess(false);
-        reset();
-      }, 3000);
-    }, 2000);
+      }, 5000);
+
+    } catch (err: any) {
+      console.error("VEHICLE_REGISTRATION_ERROR:", err);
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500/30">
 
       {/* SUCCESS NOTIFICATION */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showSuccess && (
           <motion.div
+            key="success-notification"
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 20 }}
             exit={{ opacity: 0, y: -100 }}
@@ -77,6 +97,27 @@ export default function VehicleDataEntry() {
               <h4 className="font-bold text-sm">Vehicle Registered Successfully</h4>
               <p className="text-xs text-[#6e6e73]">The record has been added to the XNRENT fleet.</p>
             </div>
+          </motion.div>
+        )}
+
+        {error && (
+          <motion.div
+            key="error-notification"
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 20 }}
+            exit={{ opacity: 0, y: -100 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-white dark:bg-[#2c2c2e] border border-red-500/30 shadow-2xl rounded-2xl px-6 py-4 flex items-center gap-4"
+          >
+            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white">
+              <AlertCircle size={24} />
+            </div>
+            <div>
+              <h4 className="font-bold text-sm">Registration Failed</h4>
+              <p className="text-xs text-[#6e6e73]">{error}</p>
+            </div>
+            <button onClick={() => setError(null)} className="ml-4 text-[#6e6e73] hover:text-[#1d1d1f] dark:hover:text-white">
+              <Trash2 size={16} />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
