@@ -3,130 +3,57 @@ import { supabase } from '../db';
 
 const router = Router();
 
-// /api/vehicles/add
-router.post('/add', async (req: Request, res: Response): Promise<void> => {
+// /api/vehicles/del
+router.delete('/del', async (req: Request, res: Response): Promise<void> => {
     try {
-        const {
-            make, model, year, vin, license_plate, transmission,
-            fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
-        } = req.body;
+        const { vin, plate } = req.query;
+        console.log(`DELETE request received for VIN: ${vin}, Plate: ${plate}`);
 
-        const { data, error } = await supabase
-            .from('vehicles')
-            .insert([
-                {
-                    make, model, year, vin, license_plate, transmission,
-                    fuel_type, engine_capacity, color, mileage, daily_rate, branch, status
-                }
-            ])
-            .select();
-
-        if (error) {
-            console.error('Supabase INSERT error:', error);
-
-            if (error.code === '23505') { // Postgres Unique Violation code
-                res.status(400).json({
-                    success: false,
-                    message: 'A vehicle with that VIN or License Plate already exists.'
-                });
-                return;
-            }
-
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while saving vehicle data.'
-            });
-            return;
-        }
-
-        res.status(201).json({
-            success: true,
-            message: 'Vehicle successfully registered to the fleet.',
-            data: data
-        });
-
-    } catch (error: any) {
-        console.error('Unexpected error inserting vehicle:', error);
-
-        res.status(500).json({
-            success: false,
-            message: 'Internal Server Error while saving vehicle data.'
-        });
-    }
-});
-
-// /api/vehicles/update
-router.put('/update', async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { vin } = req.query;
-
-        if (!vin) {
+        // Validation: Ensure both are provided
+        if (!vin || !plate) {
             res.status(400).json({
                 success: false,
-                message: 'Please provide the vehicle VIN in the query parameters.'
+                message: 'Both "vin" and "plate" query parameters are required to delete a record.'
             });
             return;
         }
 
-        const {
-            make, model, year, licensePlate, transmission, fuelType,
-            engineCapacity, color, mileage, dailyRate, branch, status
-        } = req.body;
-
-        // Map camelCase body payload to snake_case database columns.
-        // Supabase automatically ignores undefined values, acting like your old COALESCE logic!
-        const updateData = {
-            make,
-            model,
-            year,
-            transmission,
-            color,
-            mileage,
-            branch,
-            status,
-            license_plate: licensePlate,
-            fuel_type: fuelType,
-            engine_capacity: engineCapacity,
-            daily_rate: dailyRate
-        };
-
-        // Supabase: Update the record matching the VIN and select the updated row
         const { data, error } = await supabase
             .from('vehicles')
-            .update(updateData)
+            .delete()
             .eq('vin', String(vin))
+            .eq('license_plate', String(plate))
             .select();
 
         if (error) {
-            console.error('Supabase UPDATE error:', error);
+            console.error('Supabase DELETE error:', error);
             res.status(500).json({
                 success: false,
-                message: 'Database Error while attempting to update vehicle data.'
+                message: 'Database Error while attempting to delete vehicle record.'
             });
             return;
         }
 
-        // If no data is returned, the VIN didn't match any records (replaces affectedRows === 0)
+        // If data is empty, it means no rows matched the provided VIN & Plate combination
         if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
-                message: 'No vehicle found matching that VIN.'
+                message: 'No vehicle found with that VIN and License Plate combination.'
             });
             return;
         }
 
         res.status(200).json({
             success: true,
-            message: `Vehicle with VIN ${vin} has been successfully updated.`,
-            data: data
+            message: `Vehicle with VIN ${vin} and Plate ${plate} has been successfully deleted.`
         });
 
     } catch (error: any) {
-        console.error('Unexpected error updating vehicle:', error);
+        console.error('Unexpected error deleting vehicle:', error);
 
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while attempting to update vehicle data.'
+            message: 'Internal Server Error while deleting vehicle data.'
         });
     }
 });
