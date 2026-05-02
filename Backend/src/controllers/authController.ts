@@ -46,13 +46,13 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
-    const { first_name, last_name, email, password, role } = req.body;
+    const { first_name, last_name, email, password, role, status } = req.body;
 
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        await db.execute<ResultSetHeader>('INSERT INTO staff (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)', [first_name, last_name, email, hashedPassword, role]);
+        await db.execute<ResultSetHeader>('INSERT INTO staff (first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?)', [first_name, last_name, email, hashedPassword, role, status]);
 
 
 
