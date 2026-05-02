@@ -319,17 +319,21 @@ export default function VehicleDataEntry() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-wider ml-1">Initial Fleet Status</label>
                   <div className="flex gap-4">
-                    {["Active", "In Prep", "Maintenance"].map((status) => (
-                      <label key={status} className="flex-1 cursor-pointer">
+                    {[
+                      { id: "active", label: "Active" },
+                      { id: "in prep", label: "In Prep" },
+                      { id: "maintenance", label: "Maintenance" }
+                    ].map((st) => (
+                      <label key={st.id} className="flex-1 cursor-pointer">
                         <input
                           {...register("status")}
                           type="radio"
-                          value={status}
+                          value={st.id}
                           className="sr-only peer"
-                          defaultChecked={status === "Active"}
+                          defaultChecked={st.id === "active"}
                         />
                         <div className="px-4 py-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent peer-checked:border-blue-500 peer-checked:bg-blue-500/5 transition-all text-center text-xs font-semibold text-[#6e6e73] peer-checked:text-[#0071e3]">
-                          {status}
+                          {st.label}
                         </div>
                       </label>
                     ))}

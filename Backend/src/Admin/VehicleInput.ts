@@ -26,7 +26,7 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             mileage: Number(mileage) || 0,
             daily_rate: Number(dailyRate) || Number(daily_rate) || 0,
             branch: String(location || branch || 'Main'),
-            status: String(status || 'Active')
+            status: String(status || 'active').toLowerCase()
         };
 
         console.log("INSERTING_VEHICLE_DATA:", vehicleData);
