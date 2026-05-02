@@ -297,7 +297,7 @@ export default function VehicleDataEntry() {
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73] text-sm font-medium">Rs.</span>
                     <input
-                      {...register("dailyRate")}
+                      {...register("dailyRate", { min: 0, max: 99999999 })}
                       type="number"
                       placeholder="0.00"
                       className="w-full pl-8 pr-4 py-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-transparent focus:border-[#0071e3] outline-none transition-all text-sm"

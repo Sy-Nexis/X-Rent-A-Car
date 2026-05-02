@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-05-02T18:52:13.204Z",
+  "timestamp": "2026-05-02T19:09:40.279Z",
   "error": {
-    "code": "22P02",
-    "details": null,
+    "code": "22003",
+    "details": "A field with precision 10, scale 2 must round to an absolute value less than 10^8.",
     "hint": null,
-    "message": "invalid input value for enum vehicle_status: \"active\""
+    "message": "numeric field overflow"
   },
   "payload": {
     "make": "Toyota",
-    "model": "Prius",
-    "year": 2222,
-    "vin": "12345678909876543",
-    "license_plate": "ABA-1265",
+    "model": "Actyon",
+    "year": 2001,
+    "vin": "1234567890987654321211",
+    "license_plate": "ABC-1211",
     "transmission": "Automatic",
     "fuel_type": "Petrol",
-    "engine_capacity": "",
-    "color": "Silver",
-    "mileage": -1,
-    "daily_rate": 222,
+    "engine_capacity": "1000cc",
+    "color": "sdfdsf",
+    "mileage": 11,
+    "daily_rate": 100000000,
     "branch": "Colombo HQ",
-    "status": "active"
+    "status": "Available"
   }
 }

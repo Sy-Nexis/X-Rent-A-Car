@@ -13,6 +13,26 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
         } = req.body;
 
         // Map incoming fields with extreme robustness
+        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
+        const numericDailyRate = Number(dailyRate) || Number(daily_rate) || 0;
+        if (numericDailyRate >= 100000000) {
+            res.status(400).json({
+                success: false,
+                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
+            });
+            return;
+        }
+
+        // 2. MILEAGE GUARD: Prevent potential overflow
+        const numericMileage = Number(mileage) || 0;
+        if (numericMileage >= 1000000000) {
+            res.status(400).json({
+                success: false,
+                message: 'Mileage is too high.'
+            });
+            return;
+        }
+
         const vehicleData = {
             make: String(make || ''),
             model: String(model || ''),
@@ -23,8 +43,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             fuel_type: String(fuelType || fuel_type || 'Petrol'),
             engine_capacity: String(engineCapacity || engine_capacity || ''),
             color: String(color || ''),
-            mileage: Number(mileage) || 0,
-            daily_rate: Number(dailyRate) || Number(daily_rate) || 0,
+            mileage: numericMileage,
+            daily_rate: numericDailyRate,
             branch: String(branch || 'Main'),
             status: String(status || 'Available').trim()
         };
@@ -99,21 +119,30 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             engineCapacity, color, mileage, dailyRate, branch, status
         } = req.body;
 
+        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
+        if (dailyRate && Number(dailyRate) >= 100000000) {
+            res.status(400).json({
+                success: false,
+                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
+            });
+            return;
+        }
+
         // Map camelCase body payload to snake_case database columns.
         // Supabase automatically ignores undefined values, acting like your old COALESCE logic!
         const updateData = {
             make,
             model,
-            year,
+            year: year ? Number(year) : undefined,
             transmission,
             color,
-            mileage,
+            mileage: mileage ? Number(mileage) : undefined,
             branch,
             status,
             license_plate: licensePlate,
             fuel_type: fuelType,
             engine_capacity: engineCapacity,
-            daily_rate: dailyRate
+            daily_rate: dailyRate ? Number(dailyRate) : undefined
         };
 
         const { data, error } = await supabase
