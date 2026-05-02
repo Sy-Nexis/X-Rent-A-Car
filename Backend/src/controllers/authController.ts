@@ -61,10 +61,7 @@ export const register = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const finalStatus = status || 'Active';
-        await db.execute<ResultSetHeader>(
-            'INSERT INTO staff (first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?)', 
-            [first_name, last_name, email, hashedPassword, role, finalStatus]
-        );
+        await db.execute<ResultSetHeader>('INSERT INTO staff (first_name, last_name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?)', [first_name, last_name, email, hashedPassword, role, finalStatus]);
 
 
 
