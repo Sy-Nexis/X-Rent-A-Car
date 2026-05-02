@@ -83,7 +83,7 @@ export default function EditVehiclePage() {
     const fetchVehicle = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:5000/api/vehicles/view/${id}`);
+        const response = await fetch(`http://localhost:5001/api/vehicles/view/${id}`);
 
         if (!response.ok) {
           throw new Error(`Registry Error: Vehicle with ID ${id} not found.`);
@@ -148,7 +148,7 @@ export default function EditVehiclePage() {
         licensePlate: data.licensePlate
       };
 
-      const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`http://localhost:5001/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

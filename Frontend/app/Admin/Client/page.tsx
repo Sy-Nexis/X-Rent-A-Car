@@ -7,7 +7,7 @@ import { ShieldCheck, Users, Activity, UserPlus } from "lucide-react";
 async function getClients() {
   try {
     // Attempt to fetch the client registry
-    const response = await fetch("http://localhost:5000/api/clients/view", {
+    const response = await fetch("http://localhost:5001/api/clients/view", {
       cache: "no-store",
       next: { revalidate: 0 }
     });

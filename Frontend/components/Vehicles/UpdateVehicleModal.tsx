@@ -116,7 +116,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         mileage: parseInt(data.mileage),
       };
 
-      const response = await fetch(`http://localhost:5000/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`http://localhost:5001/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -9,7 +9,7 @@ export const metadata = {
 
 async function getVehicles() {
   try {
-    const response = await fetch('http://localhost:5000/api/vehicles/view', {
+    const response = await fetch('http://localhost:5001/api/vehicles/view', {
       cache: 'no-store', // Always fetch fresh data
       headers: {
         'Content-Type': 'application/json',
