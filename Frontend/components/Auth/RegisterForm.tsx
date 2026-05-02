@@ -64,10 +64,15 @@ export default function RegisterForm() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (e) {
+        throw new Error("Critical Server Failure: Invalid Response");
+      }
 
       if (!response.ok) {
-        throw new Error(result.message || "Registration failed");
+        throw new Error(result.message || result.error || "Registry Synchronization Failed");
       }
 
       setIsSuccess(true);
