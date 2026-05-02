@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import pool from '../db';
+import { supabase } from '../db';
+
 
 const router = Router();
 
@@ -9,7 +10,7 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
         const { nic } = req.query;
         console.log(`DELETE request received for NIC: ${nic}`);
 
-        // Validation: Ensure both are provided
+        // Validation: Ensure nic is provided
         if (!nic) {
             res.status(400).json({
                 success: false,
@@ -18,11 +19,23 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const deleteQuery = `DELETE FROM clients WHERE (government_id = ? )`;
+        const { data, error } = await supabase
+            .from('clients')
+            .delete()
+            .eq('government_id', String(nic))
+            .select();
 
-        const [result]: any = await pool.execute(deleteQuery, [String(nic)]);
+        if (error) {
+            console.error('Supabase DELETE error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Database Error while terminating client record.'
+            });
+            return;
+        }
 
-        if (result.affectedRows === 0) {
+        // If data is empty, it means no rows matched the provided NIC
+        if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
                 message: 'No client found with that NIC.'
@@ -32,11 +45,11 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `Client with ${nic} has been successfully deleted.`,
+            message: `Client with NIC ${nic} has been successfully deleted.`,
         });
 
     } catch (error: any) {
-        console.error('Error deleting client:', error);
+        console.error('Unexpected error deleting client:', error);
 
         res.status(500).json({
             success: false,
