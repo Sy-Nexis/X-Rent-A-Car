@@ -28,8 +28,8 @@ yarn-error.log*
 
 # local env files
 # This is crucial so you don't leak your MySQL credentials!
-.env*.local
-.env
+# .env*.local
+# .env
 
 # vercel
 .vercel
