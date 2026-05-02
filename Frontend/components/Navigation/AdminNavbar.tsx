@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
@@ -13,8 +14,7 @@ import {
   Globe
 } from "lucide-react";
 
-import Cookies from "js-cookie";
-import { useRouter, usePathname } from "next/navigation";
+import { deleteCookie } from "@/lib/cookies";
 
 // --- NAV LINKS CONFIG ---
 const navLinks = [
@@ -48,7 +48,7 @@ export default function AdminNavbar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    Cookies.remove("xnrent_token");
+    deleteCookie("xnrent_token");
     localStorage.removeItem("xnrent_user");
     router.push("/login");
     router.refresh();

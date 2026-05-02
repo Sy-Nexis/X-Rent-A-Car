@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Loader2, AlertCircle, Car, ArrowRight } from "lucide-react";
-import Cookies from "js-cookie";
+import { setCookie } from "@/lib/cookies";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
@@ -43,12 +43,8 @@ export default function LoginForm() {
         throw new Error(result.message || "Authentication failed");
       }
 
-      // SUCCESS: Set secure cookie (expires in 12h as per backend)
-      Cookies.set("xnrent_token", result.token, { 
-        expires: 0.5, // 12 hours
-        secure: true, 
-        sameSite: "strict" 
-      });
+      // SUCCESS: Set secure cookie using internal utility
+      setCookie("xnrent_token", result.token, 0.5); // 12 hours
 
       // Save user info for UI (optional but helpful)
       localStorage.setItem("xnrent_user", JSON.stringify(result.user));
@@ -59,7 +55,6 @@ export default function LoginForm() {
 
     } catch (err: any) {
       setError(err.message);
-      // Trigger shake animation via state if needed, here we'll just show the error
     } finally {
       setIsLoading(false);
     }
