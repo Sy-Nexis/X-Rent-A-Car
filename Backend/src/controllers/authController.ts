@@ -14,9 +14,14 @@ export const login = async (req: Request, res: Response) => {
 
         const staff = rows[0];
 
+        if (!staff) {
+            console.log(`LOGIN_FAIL: User not found for email ${email}`);
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
 
-        if (!staff || staff.status !== 'Active') {
-            return res.status(401).json({ message: 'Invalid credentials or inactive account' });
+        if (staff.status !== 'Active') {
+            console.log(`LOGIN_FAIL: Account status is ${staff.status} for ${email}`);
+            return res.status(401).json({ message: 'Account is inactive' });
         }
 
 
@@ -24,6 +29,7 @@ export const login = async (req: Request, res: Response) => {
 
         const isMatch = await bcrypt.compare(password, staff.password_hash);
         if (!isMatch) {
+            console.log(`LOGIN_FAIL: Password mismatch for ${email}`);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
         const token = jwt.sign(
@@ -41,12 +47,14 @@ export const login = async (req: Request, res: Response) => {
             }
         });
     } catch (error) {
+        console.error("LOGIN_ERROR:", error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
 export const register = async (req: Request, res: Response) => {
     const { first_name, last_name, email, password, role, status } = req.body;
+    const finalStatus = status || 'Active';
 
     try {
         const salt = await bcrypt.genSalt(10);
@@ -60,6 +68,7 @@ export const register = async (req: Request, res: Response) => {
 
 
     } catch (error: any) {
+        console.error("REGISTRATION_ERROR:", error);
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(400).json({ message: 'Email already exists' });
         }
