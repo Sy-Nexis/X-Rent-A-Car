@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-05-02T18:49:05.711Z",
+  "timestamp": "2026-05-02T18:52:13.204Z",
   "error": {
     "code": "22P02",
     "details": null,
     "hint": null,
-    "message": "invalid input value for enum vehicle_status: \"In Prep\""
+    "message": "invalid input value for enum vehicle_status: \"active\""
   },
   "payload": {
-    "make": "HOnda",
-    "model": "Aqua",
-    "year": 2024,
-    "vin": "123123124124124124124124124www",
+    "make": "Toyota",
+    "model": "Prius",
+    "year": 2222,
+    "vin": "12345678909876543",
     "license_plate": "ABA-1265",
     "transmission": "Automatic",
     "fuel_type": "Petrol",
-    "engine_capacity": "100",
-    "color": "Red",
-    "mileage": 1,
-    "daily_rate": 1,
+    "engine_capacity": "",
+    "color": "Silver",
+    "mileage": -1,
+    "daily_rate": 222,
     "branch": "Colombo HQ",
-    "status": "In Prep"
+    "status": "active"
   }
 }

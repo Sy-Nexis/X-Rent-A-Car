@@ -71,7 +71,7 @@ export default function VehicleDataEntry() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to register vehicle");
+        throw new Error(result.message + (result.detail ? ` (${result.detail})` : "") + (result.hint ? ` [Hint: ${result.hint}]` : "") || "Failed to register vehicle");
       }
 
       console.log("VEHICLE_REGISTERED_SUCCESSFULLY:", result);
@@ -320,9 +320,9 @@ export default function VehicleDataEntry() {
                   <label className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-wider ml-1">Initial Fleet Status</label>
                   <div className="flex gap-4">
                     {[
-                      { id: "active", label: "Active" },
-                      { id: "in prep", label: "In Prep" },
-                      { id: "maintenance", label: "Maintenance" }
+                      { id: "Available", label: "Active" },
+                      { id: "In Prep", label: "In Prep" },
+                      { id: "Maintenance", label: "Maintenance" }
                     ].map((st) => (
                       <label key={st.id} className="flex-1 cursor-pointer">
                         <input
