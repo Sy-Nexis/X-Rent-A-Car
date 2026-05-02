@@ -45,13 +45,24 @@ export default function VehicleDataEntry() {
   const onSubmit = async (data: VehicleFormData) => {
     setIsSubmitting(true);
     setError(null);
-    console.log("SUBMITTING_VEHICLE_DATA:", data);
-
     try {
+      // Map data to both camelCase and snake_case to ensure compatibility 
+      // with all versions of the backend API.
+      const payload = {
+        ...data,
+        license_plate: data.licensePlate,
+        fuel_type: data.fuelType,
+        engine_capacity: data.engineCapacity,
+        daily_rate: data.dailyRate,
+        branch: data.location,
+      };
+
+      console.log("SUBMITTING_VEHICLE_PAYLOAD:", payload);
+
       const response = await fetch("http://localhost:5000/api/vehicles/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();

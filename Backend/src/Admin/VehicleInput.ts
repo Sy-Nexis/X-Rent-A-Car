@@ -12,22 +12,24 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             fuelType, fuel_type, engineCapacity, engine_capacity, color, mileage, dailyRate, daily_rate, location, branch, status
         } = req.body;
 
-        // Map incoming fields (support both camelCase from frontend and snake_case if used elsewhere)
+        // Map incoming fields with extreme robustness
         const vehicleData = {
-            make,
-            model,
-            year: Number(year),
-            vin,
-            license_plate: licensePlate || license_plate,
-            transmission,
-            fuel_type: fuelType || fuel_type,
-            engine_capacity: engineCapacity || engine_capacity,
-            color,
-            mileage: Number(mileage),
-            daily_rate: Number(dailyRate) || Number(daily_rate),
-            branch: location || branch,
-            status: status || 'Active'
+            make: String(make || ''),
+            model: String(model || ''),
+            year: Number(year) || new Date().getFullYear(),
+            vin: String(vin || ''),
+            license_plate: String(licensePlate || license_plate || ''),
+            transmission: String(transmission || 'Automatic'),
+            fuel_type: String(fuelType || fuel_type || 'Petrol'),
+            engine_capacity: String(engineCapacity || engine_capacity || ''),
+            color: String(color || ''),
+            mileage: Number(mileage) || 0,
+            daily_rate: Number(dailyRate) || Number(daily_rate) || 0,
+            branch: String(location || branch || 'Main'),
+            status: String(status || 'Active')
         };
+
+        console.log("INSERTING_VEHICLE_DATA:", vehicleData);
 
         const { data, error } = await supabase
             .from('vehicles')
@@ -37,7 +39,7 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
         if (error) {
             console.error('Supabase INSERT error:', error);
 
-            if (error.code === '23505') { // Postgres Unique Violation code
+            if (error.code === '23505') {
                 res.status(400).json({
                     success: false,
                     message: 'A vehicle with that VIN or License Plate already exists.'
@@ -47,8 +49,9 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
             res.status(500).json({
                 success: false,
-                message: 'Database Error while saving vehicle data.',
-                detail: error.message
+                message: `Database Error: ${error.message}`,
+                detail: error.details,
+                hint: error.hint
             });
             return;
         }
