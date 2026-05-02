@@ -30,6 +30,7 @@ export default function LoginForm() {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     setError(null);
+    console.log("LOGIN_ATTEMPT: Initiating login request...");
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -41,8 +42,11 @@ export default function LoginForm() {
       const result = await response.json();
 
       if (!response.ok) {
+        console.error("LOGIN_ERROR_RESPONSE:", result);
         throw new Error(result.message || "Authentication failed");
       }
+
+      console.log("LOGIN_SUCCESS: Initializing Session...");
 
       // SUCCESS: Set secure cookie using internal utility
       setCookie("xnrent_token", result.token, 0.5); // 12 hours
