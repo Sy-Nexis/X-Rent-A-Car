@@ -57,7 +57,7 @@ export function EmptyRegistryUI() {
           </p>
         </div>
         <Link
-          href="/Admin/Client/Register"
+          href="/Admin/Client/Data"
           className="inline-flex items-center gap-4 px-10 py-5 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30 hover:bg-blue-500 hover:-translate-y-1 transition-all"
         >
           <UserPlus size={18} />
