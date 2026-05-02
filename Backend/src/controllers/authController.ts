@@ -4,7 +4,13 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response) => {
+    console.log("LOGIN_REQUEST_RECEIVED:", req.body);
     const { email, password } = req.body;
+
+    if (!email || !password) {
+        console.log("LOGIN_FAIL: Missing email or password");
+        return res.status(400).json({ message: 'Email and password are required' });
+    }
 
     try {
         const { data: staff, error } = await supabase
@@ -15,13 +21,15 @@ export const login = async (req: Request, res: Response) => {
 
         if (error) {
             console.error("SUPABASE_LOGIN_ERROR:", error);
-            return res.status(500).json({ message: 'Database error' });
+            return res.status(500).json({ message: 'Database error', detail: error.message });
         }
 
         if (!staff) {
             console.log(`LOGIN_FAIL: User not found for email ${email}`);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+
+        console.log(`LOGIN_USER_FOUND: ${staff.email}, Status: ${staff.status}`);
 
         if (staff.status !== 'Active') {
             console.log(`LOGIN_FAIL: Account status is ${staff.status} for ${email}`);
@@ -34,13 +42,20 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        if (!process.env.JWT_SECRET) {
+            console.error("JWT_SECRET is missing from environment variables");
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
+
         const token = jwt.sign(
             { id: staff.id, role: staff.role },
-            process.env.JWT_SECRET as string,
+            process.env.JWT_SECRET,
             { expiresIn: '12h' }
         );
 
-        res.status(200).json({
+        console.log(`LOGIN_SUCCESS: User ${email} authenticated successfully`);
+
+        return res.status(200).json({
             token,
             user: {
                 id: staff.id,
@@ -48,9 +63,9 @@ export const login = async (req: Request, res: Response) => {
                 role: staff.role
             }
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("LOGIN_ERROR:", error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error', detail: error.message || 'Unknown error' });
     }
 };
 

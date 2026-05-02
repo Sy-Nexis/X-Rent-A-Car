@@ -39,11 +39,20 @@ export default function LoginForm() {
         body: JSON.stringify({ email: data.email, password: data.password }),
       });
 
-      const result = await response.json();
+      let result;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        console.error("LOGIN_NON_JSON_RESPONSE:", text);
+        result = { message: `Server responded with non-JSON content (${response.status})` };
+      }
 
       if (!response.ok) {
+        console.error("LOGIN_ERROR_STATUS:", response.status);
         console.error("LOGIN_ERROR_RESPONSE:", result);
-        throw new Error(result.message || "Authentication failed");
+        throw new Error(result.message || result.detail || `Authentication failed (Status ${response.status})`);
       }
 
       console.log("LOGIN_SUCCESS: Initializing Session...");
