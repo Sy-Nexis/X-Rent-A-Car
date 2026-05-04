@@ -5,7 +5,7 @@ import { supabase } from '../db';
 const router = Router();
 
 // /api/clients/del
-router.delete('/del', async (req: Request, res: Response): Promise<void> => {
+router.delete('/', async (req: Request, res: Response): Promise<void> => {
     try {
         const { nic } = req.query;
         console.log(`DELETE request received for NIC: ${nic}`);

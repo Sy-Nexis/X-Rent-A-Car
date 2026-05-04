@@ -45,7 +45,7 @@ export default function DeleteClientConfirmModal({
 
     try {
       // Endpoint mapping: DELETE http://localhost:5000/api/clients/del/del?nic={id}
-      const response = await fetch(`http://localhost:5000/api/clients/del/del?nic=${client.government_id}`, {
+      const response = await fetch(`http://localhost:5000/api/clients/del?nic=${client.government_id}`, {
         method: "DELETE",
       });
 

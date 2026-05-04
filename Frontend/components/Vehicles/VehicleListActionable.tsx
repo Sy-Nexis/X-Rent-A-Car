@@ -80,7 +80,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
       if (!response.ok) {
         // If 404, it means the URL above doesn't exist on the server
         if (response.status === 404) {
-          throw new Error(`Endpoint not found: Check if the Flask route is correct.`);
+          throw new Error(`Endpoint not found: Check if the backend route is correct.`);
         }
 
         const contentType = response.headers.get("content-type");

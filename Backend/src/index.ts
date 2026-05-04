@@ -32,11 +32,11 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 
 
-app.use('/api/vehicles/', vehicleInputRouter);
+app.use('/api/vehicles', vehicleInputRouter);
 app.use('/api/vehicles/view', vehicleViwRouter);
 app.use('/api/vehicles/del', vehicleDeleteRouter);
 
-app.use('/api/clients/', clientInputRouter);
+app.use('/api/clients', clientInputRouter);
 app.use('/api/clients/view', clientViwRouter);
 app.use('/api/clients/del', clientDeleteRouter);
 
