@@ -109,7 +109,7 @@ export default function VehicleDataEntry() {
             </div>
             <div>
               <h4 className="font-bold text-sm">Vehicle Registered Successfully</h4>
-              <p className="text-xs text-[#6e6e73]">The record has been added to the XNRENT fleet.</p>
+              <p className="text-xs text-[#6e6e73]">The record has been added to the xrent fleet.</p>
             </div>
           </motion.div>
         )}
@@ -153,7 +153,7 @@ export default function VehicleDataEntry() {
             Register Fleet Vehicle
           </h1>
           <p className="text-[#6e6e73] font-medium leading-relaxed">
-            Enter comprehensive vehicle specifications for the XNRENT tracking system.
+            Enter comprehensive vehicle specifications for the xrent tracking system.
           </p>
         </div>
 
@@ -413,7 +413,7 @@ export default function VehicleDataEntry() {
 
         {/* FOOTER TEXT */}
         <p className="mt-8 text-center text-[10px] text-[#6e6e73] font-bold uppercase tracking-widest">
-          XNRENT Enterprise Fleet Management System · Data Integrity Unit
+          xrent Enterprise Fleet Management System · Data Integrity Unit
         </p>
       </div>
     </div>

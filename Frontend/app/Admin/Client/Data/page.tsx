@@ -22,13 +22,13 @@ export default function AddClientDataPage() {
                   <div className="space-y-2">
                      <div className="flex items-center gap-3 text-blue-500 font-black text-[10px] uppercase tracking-[0.4em] mb-2">
                         <ShieldCheck size={16} />
-                        XNRENT SECURE ONBOARDING
+                        xrent SECURE ONBOARDING
                      </div>
                      <h1 className="text-6xl font-black tracking-tighter leading-tight">
                         Register <span className="text-[#6e6e73]">Client</span>
                      </h1>
                      <p className="text-[#86868b] text-xl font-medium max-w-xl">
-                        Onboard a new customer to the XNRENT fleet management network. Ensure all identification data is verified against valid government records.
+                        Onboard a new customer to the xrent fleet management network. Ensure all identification data is verified against valid government records.
                      </p>
                   </div>
                </div>
@@ -55,7 +55,7 @@ export default function AddClientDataPage() {
 
             {/* --- PAGE FOOTER INFO --- */}
             <footer className="pt-12 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6 opacity-30 group-hover:opacity-100 transition-opacity">
-               <p className="text-[9px] font-black text-[#6e6e73] uppercase tracking-[0.5em]">© 2026 XNRENT FLEET OPERATIONS</p>
+               <p className="text-[9px] font-black text-[#6e6e73] uppercase tracking-[0.5em]">© 2026 xrent FLEET OPERATIONS</p>
                <div className="flex gap-8">
                   <span className="text-[9px] font-black text-[#6e6e73] uppercase tracking-[0.2em]">Privacy Protocols</span>
                   <span className="text-[9px] font-black text-[#6e6e73] uppercase tracking-[0.2em]">Terms of Service</span>

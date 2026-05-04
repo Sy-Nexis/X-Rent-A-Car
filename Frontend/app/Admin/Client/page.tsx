@@ -49,7 +49,7 @@ export default async function ClientDetailsPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-blue-500 font-black text-[10px] uppercase tracking-[0.4em]">
               <ShieldCheck size={16} />
-              XNRENT SECURE ASSETS
+              xrent SECURE ASSETS
             </div>
             <h1 className="text-6xl font-black tracking-tighter leading-tight">
               Client <span className="text-[#6e6e73]">Registry</span>

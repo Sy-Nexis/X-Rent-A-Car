@@ -58,7 +58,7 @@ export default function RootSummaryClient({ stats }: RootSummaryProps) {
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500">Live Operation System</span>
            </div>
            <h1 className="text-7xl lg:text-8xl font-black tracking-tighter leading-none italic">
-              XNRENT<span className="text-blue-500">.</span>
+              xrent<span className="text-blue-500">.</span>
            </h1>
            <p className="text-[#86868b] text-xl font-medium tracking-tight max-w-2xl mx-auto uppercase">
               Global Summary Overview & Central Command Hub

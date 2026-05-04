@@ -163,7 +163,7 @@ export default function RegisterForm() {
                   pattern: { value: /^\S+@\S+$/i, message: "Invalid email" }
                 })}
                 type="email"
-                placeholder="admin@xnrent.com"
+                placeholder="admin@xrent.com"
                 className="w-full bg-black/20 border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
               />
             </div>

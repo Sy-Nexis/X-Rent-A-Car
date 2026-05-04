@@ -18,7 +18,7 @@ export function ErrorStateUI() {
         <div className="space-y-3">
           <h2 className="text-3xl font-black tracking-tight text-white">Registry Offline</h2>
           <p className="text-[#6e6e73] font-medium leading-relaxed">
-            The XNRENT Fleet API is unreachable or returned a 404 error. Please ensure the backend is running and the Client Registry endpoint is mounted correctly.
+            The xrent Fleet API is unreachable or returned a 404 error. Please ensure the backend is running and the Client Registry endpoint is mounted correctly.
           </p>
         </div>
         <div className="flex flex-col gap-4">
@@ -53,7 +53,7 @@ export function EmptyRegistryUI() {
         <div className="space-y-3">
           <h2 className="text-4xl font-black tracking-tight text-white">Empty Registry</h2>
           <p className="text-[#86868b] font-medium leading-relaxed">
-            There are currently no clients registered in the XNRENT system. Start by onboarding your first customer to build your fleet network.
+            There are currently no clients registered in the xrent system. Start by onboarding your first customer to build your fleet network.
           </p>
         </div>
         <Link

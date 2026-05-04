@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('xnrent_token')?.value;
+  const token = request.cookies.get('xrent_token')?.value;
   const isAuthPage = request.nextUrl.pathname === '/login';
   const isAdminPage = request.nextUrl.pathname.startsWith('/Admin') || request.nextUrl.pathname === '/';
 

@@ -58,10 +58,10 @@ export default function LoginForm() {
       console.log("LOGIN_SUCCESS: Initializing Session...");
 
       // SUCCESS: Set secure cookie using internal utility
-      setCookie("xnrent_token", result.token, 0.5); // 12 hours
+      setCookie("xrent_token", result.token, 0.5); // 12 hours
 
       // Save user info for UI (optional but helpful)
-      localStorage.setItem("xnrent_user", JSON.stringify(result.user));
+      localStorage.setItem("xrent_user", JSON.stringify(result.user));
 
       // Always redirect to the Summary Dashboard (Root) after login
       window.location.href = "/";
@@ -96,7 +96,7 @@ export default function LoginForm() {
             <Car size={32} />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-black tracking-tighter text-white">XNRENT <span className="text-blue-500">CAR</span></h1>
+            <h1 className="text-2xl font-black tracking-tighter text-white">xrent <span className="text-blue-500">CAR</span></h1>
             <p className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.4em] mt-1">Authorized Access Only</p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function LoginForm() {
               <input
                 {...register("email", { required: "Identity required" })}
                 type="email"
-                placeholder="admin@xnrent.com"
+                placeholder="admin@xrent.com"
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-white text-sm placeholder:text-[#424245] focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.05] transition-all"
               />
             </div>
@@ -196,7 +196,7 @@ export default function LoginForm() {
       </motion.div>
 
       <p className="mt-12 text-[9px] font-black text-[#424245] uppercase tracking-[0.5em] relative z-10">
-        System V4.0 // Secured by XNRENT Core
+        System V4.0 // Secured by xrent Core
       </p>
     </div>
   );

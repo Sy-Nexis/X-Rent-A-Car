@@ -43,7 +43,7 @@ app.use('/api/clients/del', clientDeleteRouter);
 app.get('/api/health', (req: Request, res: Response) => {
     res.status(200).json({
         status: 'Active',
-        message: 'XNRENT Fleet API is running.'
+        message: 'xrent Fleet API is running.'
     });
 });
 

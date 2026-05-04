@@ -99,7 +99,7 @@ export default function DeleteClientConfirmModal({
                 <div className="space-y-2">
                   <h2 className="text-2xl font-black text-white tracking-tight">Delete Client Account?</h2>
                   <p className="text-[#86868b] text-sm font-medium leading-relaxed">
-                    This action is permanent and will immediately terminate the client's access to the XNRENT network.
+                    This action is permanent and will immediately terminate the client's access to the xrent network.
                   </p>
                 </div>
               </div>

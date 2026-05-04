@@ -6,7 +6,7 @@ import AdminHubClient from "@/components/Admin/AdminHubClient";
 
 async function getAdminHubData() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("xnrent_token")?.value;
+  const token = cookieStore.get("xrent_token")?.value;
 
   if (!token) {
     redirect("/login");

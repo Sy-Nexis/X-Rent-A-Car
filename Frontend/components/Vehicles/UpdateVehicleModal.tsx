@@ -210,7 +210,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
                   <div className="flex items-center gap-3 text-[9px] font-black text-[#424245] uppercase tracking-[0.4em]">
                     <Zap size={14} />
-                    XNRENT FLEET CONSOLE
+                    xrent FLEET CONSOLE
                   </div>
                 </div>
               </div>

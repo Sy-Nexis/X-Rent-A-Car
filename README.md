@@ -6,7 +6,7 @@
 ---
 
 ## 🏗 The Architecture of Speed
-At **Sy Nexis**, we prioritize "Time to Interactive" and robust security. XNRENT CAR is built on a **Zero-Footprint, Utility-First** strategy:
+At **Sy Nexis**, we prioritize "Time to Interactive" and robust security. xrent CAR is built on a **Zero-Footprint, Utility-First** strategy:
 
 *   **Hybrid Rendering Shell**: Leverages **Next.js 14+ App Router** to execute data fetching on the server, eliminating client-side API latency.
 *   **Edge-Level Security**: A custom **TypeScript Middleware** layer acts as a global "Vault" guard, intercepting unauthorized requests before page hydration.
@@ -57,14 +57,14 @@ PORT=5000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=xnrent_db
+DB_NAME=xrent_db
 JWT_SECRET=your_secure_hex_string
 ```
 
 ### 3. Setup
 ```bash
 # Clone the repository
-git clone https://github.com/sy-nexis/xnrent-car.git
+git clone https://github.com/sy-nexis/xrent-car.git
 
 # Install dependencies
 npm install

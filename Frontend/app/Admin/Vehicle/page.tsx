@@ -4,7 +4,7 @@ import { VehicleErrorState, VehicleEmptyState } from "@/components/Vehicles/Vehi
 import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
 
 export const metadata = {
-  title: 'Fleet Management | XNRENT CAR',
+  title: 'Fleet Management | xrent CAR',
   description: 'Manage and monitor your entire vehicle fleet in real-time.',
 };
 
@@ -68,7 +68,7 @@ export default async function VehiclesPage() {
               Fleet Inventory
             </h1>
             <p className="text-[#6e6e73] font-medium leading-relaxed max-w-xl text-sm md:text-base">
-              Real-time synchronization with the XNRENT fleet database. Monitor registration, specs, and status across all branches.
+              Real-time synchronization with the xrent fleet database. Monitor registration, specs, and status across all branches.
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export default async function VehiclesPage() {
             </div>
           </div>
           <p className="text-[10px] text-[#86868b] font-medium tracking-widest">
-            XNRENT ENTERPRISE ASSET MANAGEMENT · V3.1
+            xrent ENTERPRISE ASSET MANAGEMENT · V3.1
           </p>
         </div>
 

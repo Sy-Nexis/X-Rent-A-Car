@@ -23,7 +23,7 @@ export function VehicleErrorState() {
         <div className="space-y-3">
           <h2 className="text-3xl font-black tracking-tight text-white uppercase italic">Fleet Offline</h2>
           <p className="text-[#6e6e73] font-medium leading-relaxed">
-            The XNRENT Fleet API is unreachable or returned a critical error. Please ensure the backend is running and the vehicle registry endpoint is active.
+            The xrent Fleet API is unreachable or returned a critical error. Please ensure the backend is running and the vehicle registry endpoint is active.
           </p>
         </div>
         <div className="flex flex-col gap-4">

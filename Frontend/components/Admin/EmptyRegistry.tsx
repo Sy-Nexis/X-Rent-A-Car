@@ -24,7 +24,7 @@ interface EmptyRegistryProps {
 
 export default function EmptyRegistry({
   heading = "Empty Registry",
-  subtext = "There are currently no clients registered in the XNRENT system. Start by onboarding your first customer to build your fleet network.",
+  subtext = "There are currently no clients registered in the xrent system. Start by onboarding your first customer to build your fleet network.",
   buttonText = "ONBOARD FIRST CLIENT",
   href = "/Admin/Client",
   icon = <Database size={44} className="text-white" strokeWidth={1.5} />,
@@ -63,7 +63,7 @@ export default function EmptyRegistry({
       {/* METADATA: Server-Rendered */}
       <div className="mt-16 opacity-10">
         <p className="text-[9px] font-black text-white uppercase tracking-[0.6em]">
-          XNRENT // REGISTRY_CORE_NULL
+          xrent // REGISTRY_CORE_NULL
         </p>
       </div>
     </div>

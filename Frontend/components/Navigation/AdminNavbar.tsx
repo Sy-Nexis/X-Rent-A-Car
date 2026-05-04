@@ -48,8 +48,8 @@ export default function AdminNavbar() {
   const router = useRouter();
 
   const handleLogout = () => {
-    deleteCookie("xnrent_token");
-    localStorage.removeItem("xnrent_user");
+    deleteCookie("xrent_token");
+    localStorage.removeItem("xrent_user");
     router.push("/login");
     router.refresh();
   };
@@ -64,7 +64,7 @@ export default function AdminNavbar() {
             <Car size={24} />
           </div>
           <div className="flex flex-col">
-             <span className="text-xl font-black tracking-tighter text-white">XNRENT</span>
+             <span className="text-xl font-black tracking-tighter text-white">xrent</span>
              <span className="text-[9px] font-black text-blue-500 uppercase tracking-[0.3em]">Fleet Console</span>
           </div>
         </Link>
@@ -129,7 +129,7 @@ export default function AdminNavbar() {
         </div>
 
         <div className="flex items-center justify-center">
-           <p className="text-[8px] font-black text-[#424245] uppercase tracking-[0.5em]">System V3.0 // XNRENT</p>
+           <p className="text-[8px] font-black text-[#424245] uppercase tracking-[0.5em]">System V3.0 // xrent</p>
         </div>
       </div>
 

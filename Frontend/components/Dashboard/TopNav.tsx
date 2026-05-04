@@ -11,8 +11,8 @@ export default function TopNav() {
   const router = useRouter();
 
   const handleLogout = () => {
-    deleteCookie("xnrent_token");
-    localStorage.removeItem("xnrent_user");
+    deleteCookie("xrent_token");
+    localStorage.removeItem("xrent_user");
     window.location.href = "/login";
   };
 
@@ -24,7 +24,7 @@ export default function TopNav() {
             <Car size={20} />
           </div>
           <h1 className="font-bold text-xl tracking-tight text-text-primary">
-            XNRENT <span className="text-blue-apple">CAR</span>
+            xrent <span className="text-blue-apple">CAR</span>
           </h1>
         </div>
 

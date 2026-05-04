@@ -96,7 +96,7 @@ export default function AddClientForm() {
           <CheckCircle2 size={24} />
           <div>
             <p className="font-black uppercase tracking-widest text-xs">Registry Updated</p>
-            <p className="text-sm font-medium">Client has been successfully onboarded to XNRENT. Redirecting to registry...</p>
+            <p className="text-sm font-medium">Client has been successfully onboarded to xrent. Redirecting to registry...</p>
           </div>
         </div>
       </motion.div>

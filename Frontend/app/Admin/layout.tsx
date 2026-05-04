@@ -9,7 +9,7 @@ interface AdminLayoutProps {
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("xnrent_token");
+  const token = cookieStore.get("xrent_token");
 
   if (!token) {
     redirect("/login");

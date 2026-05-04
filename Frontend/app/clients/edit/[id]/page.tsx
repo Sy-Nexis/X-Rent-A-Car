@@ -74,7 +74,7 @@ export default function EditClientPage() {
     async function fetchClient() {
       try {
         setIsLoading(true);
-        // Using government_id as the lookup ID (standard for XNRENT)
+        // Using government_id as the lookup ID (standard for xrent)
         const response = await fetch(`http://localhost:5000/api/clients/view/${id}`);
 
         if (!response.ok) {

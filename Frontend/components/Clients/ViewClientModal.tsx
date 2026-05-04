@@ -151,7 +151,7 @@ export default function ViewClientModal({ isOpen, onClose, client }: ViewClientM
 
             {/* FOOTER ACTION */}
             <footer className="px-14 py-10 bg-black/20 border-t border-white/5 flex items-center justify-between">
-               <p className="text-[9px] font-black text-[#424245] uppercase tracking-[0.4em]">XNRENT SECURE DATA ACCESS PROTOCOL // {client.government_id}</p>
+               <p className="text-[9px] font-black text-[#424245] uppercase tracking-[0.4em]">xrent SECURE DATA ACCESS PROTOCOL // {client.government_id}</p>
                <button 
                   onClick={onClose}
                   className="px-10 py-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest transition-all shadow-xl"

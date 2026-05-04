@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "XNRENT CAR | Fleet Operations Dashboard",
-  description: "Real-time fleet operations dashboard for XNRENT CAR",
+  title: "xrent CAR | Fleet Operations Dashboard",
+  description: "Real-time fleet operations dashboard for xrent CAR",
 };
 
 export default function RootLayout({
