@@ -67,7 +67,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
       }).toString();
 
       // Ensure the endpoint matches your Backend exactly (e.g., /del vs /delete)
-      const API_BASE_URL = "http://localhost:5000";
+      const API_BASE_URL = "http://localhost:8801";
       const url = `${API_BASE_URL}/api/vehicles/del?${queryParams}`;
 
       const response = await fetch(url, {
@@ -101,7 +101,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
     } catch (err: any) {
       console.error("Delete Error details:", err);
       setError(err.message || "An unexpected error occurred");
-      setTimeout(() => setError(null), 5000);
+      setTimeout(() => setError(null), 8801);
     } finally {
       setIsDeleting(false);
     }

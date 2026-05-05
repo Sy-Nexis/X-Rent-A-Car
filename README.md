@@ -53,7 +53,7 @@ At **Sy Nexis**, we prioritize "Time to Interactive" and robust security. xrent 
 Configure your backend and database credentials. Generate a secure `JWT_SECRET` for production using `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`.
 
 ```env
-PORT=5000
+PORT=8801
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password

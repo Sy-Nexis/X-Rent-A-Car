@@ -30,7 +30,7 @@ export function ErrorStateUI() {
             Retry Connection
           </button>
           <div className="p-4 bg-black/40 rounded-2xl border border-white/5 text-[10px] font-mono text-[#424245] uppercase">
-            TARGET_URL: http://localhost:5000/api/clients/view
+            TARGET_URL: http://localhost:8801/api/clients/view
           </div>
         </div>
       </div>

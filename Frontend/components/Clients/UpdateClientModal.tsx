@@ -98,8 +98,8 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
     setError(null);
 
     try {
-      // Endpoint mapping: http://localhost:5000/api/clients/update?government={id}
-      const response = await fetch(`http://localhost:5000/api/clients/update?government=${client.government_id}`, {
+      // Endpoint mapping: http://localhost:8801/api/clients/update?government={id}
+      const response = await fetch(`http://localhost:8801/api/clients/update?government=${client.government_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

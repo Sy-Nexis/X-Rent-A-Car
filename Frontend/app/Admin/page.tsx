@@ -14,11 +14,11 @@ async function getAdminHubData() {
 
   try {
     const [vehiclesRes, clientsRes] = await Promise.all([
-      fetch("http://localhost:5000/api/vehicles/view", {
+      fetch("http://localhost:8801/api/vehicles/view", {
         cache: "no-store",
         headers: { "Authorization": `Bearer ${token}` }
       }),
-      fetch("http://localhost:5000/api/clients/view", {
+      fetch("http://localhost:8801/api/clients/view", {
         cache: "no-store",
         headers: { "Authorization": `Bearer ${token}` }
       })

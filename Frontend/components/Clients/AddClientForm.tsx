@@ -59,7 +59,7 @@ export default function AddClientForm() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/clients/add", {
+      const response = await fetch("http://localhost:8801/api/clients/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

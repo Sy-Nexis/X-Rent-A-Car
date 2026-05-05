@@ -75,7 +75,7 @@ export default function EditClientPage() {
       try {
         setIsLoading(true);
         // Using government_id as the lookup ID (standard for xrent)
-        const response = await fetch(`http://localhost:5000/api/clients/view/${id}`);
+        const response = await fetch(`http://localhost:8801/api/clients/view/${id}`);
 
         if (!response.ok) {
           throw new Error(`Registry Error: Client with ID ${id} not found.`);
@@ -115,7 +115,7 @@ export default function EditClientPage() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/clients/update?government=${id}`, {
+      const response = await fetch(`http://localhost:8801/api/clients/update?government=${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

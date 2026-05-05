@@ -62,7 +62,7 @@ export default function VehicleDataEntry() {
 
       console.log("SUBMITTING_VEHICLE_PAYLOAD:", payload);
 
-      const response = await fetch("http://localhost:5000/api/vehicles/add", {
+      const response = await fetch("http://localhost:8801/api/vehicles/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -81,7 +81,7 @@ export default function VehicleDataEntry() {
       // Auto-hide success message
       setTimeout(() => {
         setShowSuccess(false);
-      }, 5000);
+      }, 8801);
 
     } catch (err: any) {
       console.error("VEHICLE_REGISTRATION_ERROR:", err);

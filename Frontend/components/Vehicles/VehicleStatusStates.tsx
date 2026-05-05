@@ -35,7 +35,7 @@ export function VehicleErrorState() {
             Retry Connection
           </button>
           <div className="p-4 bg-black/40 rounded-2xl border border-white/5 text-[10px] font-mono text-[#424245] uppercase tracking-widest">
-            TARGET_ADDR: http://localhost:5000/api/vehicles/view
+            TARGET_ADDR: http://localhost:8801/api/vehicles/view
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@ export function VehicleErrorState() {
 export function VehicleEmptyState() {
   return (
     <div className="min-h-screen bg-[#1c1c1e] flex items-center justify-center">
-      <EmptyRegistry 
+      <EmptyRegistry
         heading="Fleet Registry Empty"
         subtext="Your fleet directory is currently unoccupied. Onboard your first unit to begin monitoring operational intelligence and asset status."
         buttonText="ONBOARD FIRST VEHICLE"
