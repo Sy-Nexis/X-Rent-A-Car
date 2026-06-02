@@ -1,16 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
-
+import pool from '../db';
 
 const router = Router();
 
 // /api/clients/del
-router.delete('/', async (req: Request, res: Response): Promise<void> => {
+router.delete('/del', async (req: Request, res: Response): Promise<void> => {
     try {
         const { nic } = req.query;
         console.log(`DELETE request received for NIC: ${nic}`);
 
-        // Validation: Ensure nic is provided
+        // Validation: Ensure both are provided
         if (!nic) {
             res.status(400).json({
                 success: false,
@@ -19,23 +18,11 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const { data, error } = await supabase
-            .from('clients')
-            .delete()
-            .eq('government_id', String(nic))
-            .select();
+        const deleteQuery = `DELETE FROM clients WHERE (government_id = ? )`;
 
-        if (error) {
-            console.error('Supabase DELETE error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while terminating client record.'
-            });
-            return;
-        }
+        const [result]: any = await pool.execute(deleteQuery, [String(nic)]);
 
-        // If data is empty, it means no rows matched the provided NIC
-        if (!data || data.length === 0) {
+        if (result.affectedRows === 0) {
             res.status(404).json({
                 success: false,
                 message: 'No client found with that NIC.'
@@ -45,11 +32,11 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `Client with NIC ${nic} has been successfully deleted.`,
+            message: `Client with ${nic} has been successfully deleted.`,
         });
 
     } catch (error: any) {
-        console.error('Unexpected error deleting client:', error);
+        console.error('Error deleting client:', error);
 
         res.status(500).json({
             success: false,

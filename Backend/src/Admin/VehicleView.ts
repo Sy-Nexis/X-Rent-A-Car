@@ -1,63 +1,36 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import pool from '../db';
 
 const router = Router();
 
 // /api/vehicles/view
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { data, error } = await supabase
-            .from('vehicles')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Supabase SELECT error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching vehicle data.'
-            });
-            return;
-        }
+        const [rows] = await pool.query('SELECT * FROM vehicles ORDER BY created_at DESC');
 
         res.status(200).json({
             success: true,
-            count: data ? data.length : 0,
-            data: data || []
+            count: (rows as any[]).length,
+            data: rows
         });
 
     } catch (error: any) {
-        console.error('Unexpected error fetching vehicles:', error);
+        console.error('Error inserting vehicle:', error);
 
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while fetching vehicle data.'
+            message: 'Internal Server Error while saving vehicle data.'
         });
     }
 });
 
-// /api/vehicles/view/:id
-// Get a single vehicle by ID
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
+        const [rows]: any = await pool.query('SELECT * FROM vehicles WHERE id = ?', [id]);
 
-        const { data, error } = await supabase
-            .from('vehicles')
-            .select('*')
-            .eq('id', id) // Assuming 'id' is a string or number that matches your DB schema
-            .maybeSingle(); // Returns the object directly, or null if not found
 
-        if (error) {
-            console.error('Supabase SELECT single vehicle error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching vehicle details.'
-            });
-            return;
-        }
-
-        if (!data) {
+        if (rows.length === 0) {
             res.status(404).json({
                 success: false,
                 message: 'Vehicle not found'
@@ -67,11 +40,11 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            data: data
+            data: rows[0]
         });
 
     } catch (error: any) {
-        console.error('Unexpected error fetching vehicle details:', error);
+        console.error('Error fetching vehicle details:', error);
         res.status(500).json({
             success: false,
             message: 'Internal Server Error'

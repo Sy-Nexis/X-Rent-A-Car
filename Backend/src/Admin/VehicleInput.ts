@@ -1,107 +1,34 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import pool from '../db';
 
 const router = Router();
 
 // /api/vehicles/add
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("VEHICLE_ADD_REQUEST:", req.body);
-        const {
-            make, model, year, vin, licensePlate, license_plate, transmission,
-            fuelType, fuel_type, engineCapacity, engine_capacity, color, mileage, dailyRate, daily_rate, location, branch, status
-        } = req.body;
+        const { make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status } = req.body;
+        // Secure SQL --> ? -- SQL INJECTION Can't
+        const insertQuery = `INSERT INTO vehicles ( make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await pool.execute(insertQuery, [make, model, year, vin, license_plate, transmission, fuel_type, engine_capacity, color, mileage, daily_rate, branch, status]);
 
-        // Map incoming fields with extreme robustness
-        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
-        const numericDailyRate = Number(dailyRate) || Number(daily_rate) || 0;
-        if (numericDailyRate >= 100000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
-            });
-            return;
-        }
 
-        // 2. MILEAGE GUARD: Prevent potential overflow
-        const numericMileage = Number(mileage) || 0;
-        if (numericMileage >= 1000000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Mileage is too high.'
-            });
-            return;
-        }
-
-        const vehicleData = {
-            make: String(make || ''),
-            model: String(model || ''),
-            year: Number(year) || new Date().getFullYear(),
-            vin: String(vin || ''),
-            license_plate: String(licensePlate || license_plate || ''),
-            transmission: String(transmission || 'Automatic'),
-            fuel_type: String(fuelType || fuel_type || 'Petrol'),
-            engine_capacity: String(engineCapacity || engine_capacity || ''),
-            color: String(color || ''),
-            mileage: numericMileage,
-            daily_rate: numericDailyRate,
-            branch: String(branch || 'Main'),
-            status: String(status || 'Available').trim()
-        };
-
-        console.log("INSERTING_VEHICLE_DATA:", vehicleData);
-
-        const { data, error } = await supabase
-            .from('vehicles')
-            .insert([vehicleData])
-            .select();
-
-        if (error) {
-            console.error('Supabase INSERT error:', error);
-            try {
-                const fs = require('fs');
-                fs.writeFileSync('supabase_error.log', JSON.stringify({
-                    timestamp: new Date().toISOString(),
-                    error,
-                    payload: vehicleData
-                }, null, 2));
-            } catch (e) {}
-
-            if (error.code === '23505') {
-                res.status(400).json({
-                    success: false,
-                    message: 'A vehicle with that VIN or License Plate already exists.'
-                });
-                return;
-            }
-
-            res.status(500).json({
-                success: false,
-                message: `Database Error: ${error.message}`,
-                detail: error.details,
-                hint: error.hint
-            });
-            return;
-        }
 
         res.status(201).json({
             success: true,
             message: 'Vehicle successfully registered to the fleet.',
-            data: data
+            data: result
         });
 
     } catch (error: any) {
-        console.error('Unexpected error inserting vehicle:', error);
+        console.error('Error inserting vehicle:', error);
 
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while saving vehicle data.',
-            detail: error.message
+            message: 'Internal Server Error while saving vehicle data.'
         });
     }
 });
 
-// /api/vehicles/update
 router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
         const { vin } = req.query;
@@ -109,59 +36,37 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         if (!vin) {
             res.status(400).json({
                 success: false,
-                message: 'Please provide the vehicle VIN in the query parameters.'
+                message: 'Please provide the vehicle VIN'
             });
             return;
         }
 
-        const {
-            make, model, year, licensePlate, transmission, fuelType,
-            engineCapacity, color, mileage, dailyRate, branch, status
-        } = req.body;
-
-        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
-        if (dailyRate && Number(dailyRate) >= 100000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
-            });
-            return;
-        }
-
-        // Map camelCase body payload to snake_case database columns.
-        // Supabase automatically ignores undefined values, acting like your old COALESCE logic!
-        const updateData = {
-            make,
-            model,
-            year: year ? Number(year) : undefined,
-            transmission,
-            color,
-            mileage: mileage ? Number(mileage) : undefined,
-            branch,
-            status,
-            license_plate: licensePlate,
-            fuel_type: fuelType,
-            engine_capacity: engineCapacity,
-            daily_rate: dailyRate ? Number(dailyRate) : undefined
-        };
-
-        const { data, error } = await supabase
-            .from('vehicles')
-            .update(updateData)
-            .eq('vin', String(vin))
-            .select();
-
-        if (error) {
-            console.error('Supabase UPDATE error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while attempting to update vehicle data.'
-            });
-            return;
-        }
+        const { make, model, year, licensePlate, transmission, fuelType, engineCapacity, color, mileage, dailyRate, branch, status } = req.body;
 
 
-        if (!data || data.length === 0) {
+        //COALESCE(?, nameee) --> if NULL NO UPDATE
+        const updateQuery = `
+            UPDATE vehicles 
+            SET  make = COALESCE(?, make), model = COALESCE(?, model), year = COALESCE(?, year), license_plate = COALESCE(?, license_plate), transmission = COALESCE(?, transmission), fuel_type = COALESCE(?, fuel_type), engine_capacity = COALESCE(?, engine_capacity), color = COALESCE(?, color), mileage = COALESCE(?, mileage), daily_rate = COALESCE(?, daily_rate), branch = COALESCE(?, branch), status = COALESCE(?, status)
+            WHERE vin = ? `;
+
+        const [result]: any = await pool.execute(updateQuery, [
+            make ?? null,
+            model ?? null,
+            year ?? null,
+            licensePlate ?? null,
+            transmission ?? null,
+            fuelType ?? null,
+            engineCapacity ?? null,
+            color ?? null,
+            mileage ?? null,
+            dailyRate ?? null,
+            branch ?? null,
+            status ?? null,
+            String(vin)
+        ]);
+
+        if (result.affectedRows === 0) {
             res.status(404).json({
                 success: false,
                 message: 'No vehicle found matching that VIN.'
@@ -171,12 +76,11 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `Vehicle with VIN ${vin} has been successfully updated.`,
-            data: data
+            message: `Vehicle with VIN ${vin} has been successfully updated.`
         });
 
     } catch (error: any) {
-        console.error('Unexpected error updating vehicle:', error);
+        console.error('Error updating vehicle:', error);
 
         res.status(500).json({
             success: false,
