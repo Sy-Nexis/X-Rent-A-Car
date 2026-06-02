@@ -287,13 +287,13 @@ function Sidebar({ activeView, onNavigate }) {
                     lineNumber: 87,
                     columnNumber: 11
                 }, this);
-            case "ClientRegistry":
+            case "FleetEmpty":
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-sm",
-                            children: "HQ"
+                            className: "relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-cyan-500 to-blue-550 flex items-center justify-center text-white font-semibold text-sm",
+                            children: "AR"
                         }, void 0, false, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
                             lineNumber: 100,
@@ -304,7 +304,7 @@ function Sidebar({ activeView, onNavigate }) {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     className: "text-white text-xs font-semibold truncate",
-                                    children: "Logistics HQ"
+                                    children: "Alex Rivers"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
                                     lineNumber: 104,
@@ -312,7 +312,7 @@ function Sidebar({ activeView, onNavigate }) {
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     className: "text-gray-400 text-[10px] truncate",
-                                    children: "Admin Account"
+                                    children: "Fleet Director"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
                                     lineNumber: 105,
@@ -328,6 +328,92 @@ function Sidebar({ activeView, onNavigate }) {
                 }, void 0, true, {
                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
                     lineNumber: 99,
+                    columnNumber: 11
+                }, this);
+            case "FleetList":
+                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-teal-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-sm",
+                            children: "SA"
+                        }, void 0, false, {
+                            fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                            lineNumber: 112,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex flex-col min-w-0",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-white text-xs font-semibold truncate",
+                                    children: "System Admin"
+                                }, void 0, false, {
+                                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                                    lineNumber: 116,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-gray-400 text-[10px] truncate",
+                                    children: "Logistics Tier 1"
+                                }, void 0, false, {
+                                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                                    lineNumber: 117,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                            lineNumber: 115,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                    lineNumber: 111,
+                    columnNumber: 11
+                }, this);
+            case "ClientRegistry":
+                return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-sm",
+                            children: "HQ"
+                        }, void 0, false, {
+                            fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                            lineNumber: 124,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex flex-col min-w-0",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-white text-xs font-semibold truncate",
+                                    children: "Logistics HQ"
+                                }, void 0, false, {
+                                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                                    lineNumber: 128,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-gray-400 text-[10px] truncate",
+                                    children: "Admin Account"
+                                }, void 0, false, {
+                                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                                    lineNumber: 129,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                            lineNumber: 127,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
+                    lineNumber: 123,
                     columnNumber: 11
                 }, this);
             case "RegisterClient":
@@ -348,17 +434,17 @@ function Sidebar({ activeView, onNavigate }) {
                                     d: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 114,
+                                    lineNumber: 138,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                lineNumber: 113,
+                                lineNumber: 137,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 112,
+                            lineNumber: 136,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -369,7 +455,7 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "FleetControl"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 118,
+                                    lineNumber: 142,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -377,19 +463,19 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "v4.2.0-stable"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 119,
+                                    lineNumber: 143,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 117,
+                            lineNumber: 141,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                    lineNumber: 111,
+                    lineNumber: 135,
                     columnNumber: 11
                 }, this);
             default:
@@ -401,7 +487,7 @@ function Sidebar({ activeView, onNavigate }) {
                             children: "FC"
                         }, void 0, false, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 126,
+                            lineNumber: 150,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -412,7 +498,7 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "FleetControl"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 130,
+                                    lineNumber: 154,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -420,19 +506,19 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "Precision Operations"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 131,
+                                    lineNumber: 155,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 129,
+                            lineNumber: 153,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                    lineNumber: 125,
+                    lineNumber: 149,
                     columnNumber: 11
                 }, this);
         }
@@ -459,17 +545,17 @@ function Sidebar({ activeView, onNavigate }) {
                                     d: "M13 10V3L4 14h7v7l9-11h-7z"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 145,
+                                    lineNumber: 169,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                lineNumber: 144,
+                                lineNumber: 168,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 143,
+                            lineNumber: 167,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -479,7 +565,7 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "FleetControl"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 149,
+                                    lineNumber: 173,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -487,33 +573,40 @@ function Sidebar({ activeView, onNavigate }) {
                                     children: "Precision Logistics"
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                    lineNumber: 150,
+                                    lineNumber: 174,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                            lineNumber: 148,
+                            lineNumber: 172,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                    lineNumber: 142,
+                    lineNumber: 166,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                lineNumber: 141,
+                lineNumber: 165,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
                 className: "flex-1 px-4 space-y-1",
                 children: navItems.map((item)=>{
-                    // Normalize active states (RegisterClient is a sub-view of ClientRegistry)
-                    const isActive = activeView === item.id || item.id === "ClientRegistry" && activeView === "RegisterClient";
+                    // Normalize active states (RegisterClient is sub-view of ClientRegistry, FleetList & FleetEmpty & FleetManagement are sub-views of FleetManagement)
+                    const isActive = activeView === item.id || item.id === "ClientRegistry" && activeView === "RegisterClient" || item.id === "FleetManagement" && (activeView === "FleetList" || activeView === "FleetEmpty" || activeView === "FleetManagement");
                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        onClick: ()=>onNavigate(item.id),
+                        onClick: ()=>{
+                            if (item.id === "FleetManagement") {
+                                // Switch between list view by default
+                                onNavigate("FleetList");
+                            } else {
+                                onNavigate(item.id);
+                            }
+                        },
                         className: `w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${isActive ? "bg-[#1e293b]/50 text-white" : "text-gray-400 hover:text-gray-200 hover:bg-white/5"}`,
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -524,39 +617,39 @@ function Sidebar({ activeView, onNavigate }) {
                                         children: item.icon
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 205,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         children: item.label
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                        lineNumber: 175,
+                                        lineNumber: 208,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                lineNumber: 171,
+                                lineNumber: 204,
                                 columnNumber: 15
                             }, this),
                             isActive && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 className: "absolute right-0 top-1/4 bottom-1/4 w-1 rounded-l-full bg-blue-500"
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                                lineNumber: 178,
+                                lineNumber: 211,
                                 columnNumber: 17
                             }, this)
                         ]
                     }, item.id, true, {
                         fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                        lineNumber: 162,
+                        lineNumber: 188,
                         columnNumber: 13
                     }, this);
                 })
             }, void 0, false, {
                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                lineNumber: 156,
+                lineNumber: 180,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -564,13 +657,13 @@ function Sidebar({ activeView, onNavigate }) {
                 children: renderFooterProfile()
             }, void 0, false, {
                 fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-                lineNumber: 186,
+                lineNumber: 219,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Frontend/WEB/components/Sidebar.tsx",
-        lineNumber: 139,
+        lineNumber: 163,
         columnNumber: 5
     }, this);
 }
@@ -590,7 +683,7 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Frontend/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 ;
-function Header({ activeView }) {
+function Header({ activeView, onAddUnit }) {
     // Dynamically configure search placeholder and user profile info to match the screenshots exactly
     const getHeaderConfig = ()=>{
         switch(activeView){
@@ -599,86 +692,81 @@ function Header({ activeView }) {
                     placeholder: "Search fleet or driver...",
                     profileText: null,
                     profileSubText: null,
-                    hasHamburger: true
+                    hasHamburger: true,
+                    showStatus: false
                 };
             case "AdminPortal":
                 return {
                     placeholder: "Search operational data...",
                     profileText: "Admin Controller",
                     profileSubText: "MANAGER PROFILE",
-                    hasHamburger: false
+                    hasHamburger: false,
+                    showStatus: false
                 };
             case "FleetManagement":
                 return {
                     placeholder: "Search fleet assets...",
                     profileText: "FleetControl",
                     profileSubText: null,
-                    hasHamburger: false
+                    hasHamburger: false,
+                    showStatus: false
+                };
+            case "FleetEmpty":
+                return {
+                    placeholder: "Search fleet registry...",
+                    profileText: null,
+                    profileSubText: null,
+                    hasHamburger: false,
+                    showStatus: false
+                };
+            case "FleetList":
+                return {
+                    placeholder: "Search registry...",
+                    profileText: null,
+                    profileSubText: null,
+                    hasHamburger: false,
+                    showStatus: true
                 };
             case "ClientRegistry":
                 return {
                     placeholder: "Search registry...",
                     profileText: null,
                     profileSubText: null,
-                    hasHamburger: false
+                    hasHamburger: false,
+                    showStatus: false
                 };
             case "RegisterClient":
                 return {
                     placeholder: "Search registry...",
                     profileText: "Alex Management",
                     profileSubText: "FLEET MANAGER",
-                    hasHamburger: false
+                    hasHamburger: false,
+                    showStatus: false
                 };
             default:
                 return {
                     placeholder: "Search...",
                     profileText: "Alex Management",
                     profileSubText: "FLEET MANAGER",
-                    hasHamburger: false
+                    hasHamburger: false,
+                    showStatus: false
                 };
         }
     };
     const config = getHeaderConfig();
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-        className: "h-16 border-b border-gray-200 bg-white flex items-center justify-between px-8 relative z-10",
+        className: "h-16 border-b border-gray-200 bg-white flex items-center justify-between px-8 relative z-10 flex-shrink-0",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex items-center gap-4 flex-1 max-w-xl",
+                className: "flex items-center gap-6 flex-1",
                 children: [
-                    config.hasHamburger && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        className: "text-gray-500 hover:text-gray-700 md:hidden block",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                            className: "w-6 h-6",
-                            fill: "none",
-                            stroke: "currentColor",
-                            viewBox: "0 0 24 24",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                                strokeLinecap: "round",
-                                strokeLinejoin: "round",
-                                strokeWidth: "2",
-                                d: "M4 6h16M4 12h16M4 18h16"
-                            }, void 0, false, {
-                                fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 65,
-                                columnNumber: 15
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                            lineNumber: 64,
-                            columnNumber: 13
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                        lineNumber: 63,
-                        columnNumber: 11
-                    }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "relative w-full",
+                        className: "flex items-center gap-4 flex-1 max-w-md",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400",
+                            config.hasHamburger && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                className: "text-gray-500 hover:text-gray-700 md:hidden block",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                                    className: "w-4 h-4",
+                                    className: "w-6 h-6",
                                     fill: "none",
                                     stroke: "currentColor",
                                     viewBox: "0 0 24 24",
@@ -686,41 +774,121 @@ function Header({ activeView }) {
                                         strokeLinecap: "round",
                                         strokeLinejoin: "round",
                                         strokeWidth: "2",
-                                        d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                        d: "M4 6h16M4 12h16M4 18h16"
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 72,
-                                        columnNumber: 15
+                                        lineNumber: 89,
+                                        columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                    lineNumber: 71,
-                                    columnNumber: 13
+                                    lineNumber: 88,
+                                    columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 70,
-                                columnNumber: 11
+                                lineNumber: 87,
+                                columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                type: "text",
-                                placeholder: config.placeholder,
-                                className: "w-full bg-[#f1f5f9] text-gray-800 placeholder-gray-400 text-xs font-medium pl-10 pr-4 py-2.5 rounded-lg border border-transparent focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
-                            }, void 0, false, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "relative w-full",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                                            className: "w-4 h-4",
+                                            fill: "none",
+                                            stroke: "currentColor",
+                                            viewBox: "0 0 24 24",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                                strokeLinecap: "round",
+                                                strokeLinejoin: "round",
+                                                strokeWidth: "2",
+                                                d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                                lineNumber: 96,
+                                                columnNumber: 17
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                            lineNumber: 95,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                        lineNumber: 94,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "text",
+                                        placeholder: config.placeholder,
+                                        className: "w-full bg-[#f1f5f9] text-gray-800 placeholder-gray-400 text-xs font-medium pl-10 pr-4 py-2 rounded-lg border border-transparent focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                        lineNumber: 99,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 75,
+                                lineNumber: 93,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                        lineNumber: 69,
+                        lineNumber: 85,
                         columnNumber: 9
+                    }, this),
+                    config.showStatus && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex items-center gap-5",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex items-center gap-1.5 text-[9px] font-extrabold uppercase text-gray-400 tracking-wider",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                        lineNumber: 111,
+                                        columnNumber: 15
+                                    }, this),
+                                    "Database Connected"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                lineNumber: 110,
+                                columnNumber: 13
+                            }, this),
+                            onAddUnit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: onAddUnit,
+                                className: "bg-[#0b1220] hover:bg-slate-800 active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer flex items-center gap-1",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                        children: "+"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                        lineNumber: 119,
+                                        columnNumber: 17
+                                    }, this),
+                                    " Add Unit to Fleet"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                                lineNumber: 115,
+                                columnNumber: 15
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/Frontend/WEB/components/Header.tsx",
+                        lineNumber: 109,
+                        columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                lineNumber: 61,
+                lineNumber: 84,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -744,25 +912,25 @@ function Header({ activeView }) {
                                             d: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                                         }, void 0, false, {
                                             fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                            lineNumber: 90,
+                                            lineNumber: 133,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 89,
+                                        lineNumber: 132,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 border border-white"
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 92,
+                                        lineNumber: 135,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 88,
+                                lineNumber: 131,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -779,23 +947,23 @@ function Header({ activeView }) {
                                         d: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 98,
+                                        lineNumber: 141,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                    lineNumber: 97,
+                                    lineNumber: 140,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 96,
+                                lineNumber: 139,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                        lineNumber: 86,
+                        lineNumber: 129,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -809,7 +977,7 @@ function Header({ activeView }) {
                                         children: config.profileText
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 107,
+                                        lineNumber: 150,
                                         columnNumber: 15
                                     }, this),
                                     config.profileSubText && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -817,13 +985,13 @@ function Header({ activeView }) {
                                         children: config.profileSubText
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 109,
+                                        lineNumber: 152,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 106,
+                                lineNumber: 149,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -833,7 +1001,7 @@ function Header({ activeView }) {
                                     children: config.profileText.charAt(0)
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                    lineNumber: 115,
+                                    lineNumber: 158,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Frontend$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "w-full h-full bg-gray-200 flex items-center justify-center text-gray-500",
@@ -849,40 +1017,40 @@ function Header({ activeView }) {
                                             d: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                         }, void 0, false, {
                                             fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                            lineNumber: 121,
+                                            lineNumber: 164,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                        lineNumber: 120,
+                                        lineNumber: 163,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                    lineNumber: 119,
+                                    lineNumber: 162,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                                lineNumber: 113,
+                                lineNumber: 156,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                        lineNumber: 104,
+                        lineNumber: 147,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Frontend/WEB/components/Header.tsx",
-                lineNumber: 84,
+                lineNumber: 127,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Frontend/WEB/components/Header.tsx",
-        lineNumber: 59,
+        lineNumber: 82,
         columnNumber: 5
     }, this);
 }

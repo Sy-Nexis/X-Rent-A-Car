@@ -2,9 +2,10 @@ import React from "react";
 
 interface HeaderProps {
   activeView: string;
+  onAddUnit?: () => void;
 }
 
-export default function Header({ activeView }: HeaderProps) {
+export default function Header({ activeView, onAddUnit }: HeaderProps) {
   // Dynamically configure search placeholder and user profile info to match the screenshots exactly
   const getHeaderConfig = () => {
     switch (activeView) {
@@ -14,6 +15,7 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: null,
           profileSubText: null,
           hasHamburger: true,
+          showStatus: false,
         };
       case "AdminPortal":
         return {
@@ -21,6 +23,7 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: "Admin Controller",
           profileSubText: "MANAGER PROFILE",
           hasHamburger: false,
+          showStatus: false,
         };
       case "FleetManagement":
         return {
@@ -28,6 +31,23 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: "FleetControl",
           profileSubText: null,
           hasHamburger: false,
+          showStatus: false,
+        };
+      case "FleetEmpty":
+        return {
+          placeholder: "Search fleet registry...",
+          profileText: null,
+          profileSubText: null,
+          hasHamburger: false,
+          showStatus: false,
+        };
+      case "FleetList":
+        return {
+          placeholder: "Search registry...",
+          profileText: null,
+          profileSubText: null,
+          hasHamburger: false,
+          showStatus: true,
         };
       case "ClientRegistry":
         return {
@@ -35,6 +55,7 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: null,
           profileSubText: null,
           hasHamburger: false,
+          showStatus: false,
         };
       case "RegisterClient":
         return {
@@ -42,6 +63,7 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: "Alex Management",
           profileSubText: "FLEET MANAGER",
           hasHamburger: false,
+          showStatus: false,
         };
       default:
         return {
@@ -49,6 +71,7 @@ export default function Header({ activeView }: HeaderProps) {
           profileText: "Alex Management",
           profileSubText: "FLEET MANAGER",
           hasHamburger: false,
+          showStatus: false,
         };
     }
   };
@@ -56,28 +79,48 @@ export default function Header({ activeView }: HeaderProps) {
   const config = getHeaderConfig();
 
   return (
-    <header className="h-16 border-b border-gray-200 bg-white flex items-center justify-between px-8 relative z-10">
+    <header className="h-16 border-b border-gray-200 bg-white flex items-center justify-between px-8 relative z-10 flex-shrink-0">
       {/* Left Search Bar & optional Hamburger */}
-      <div className="flex items-center gap-4 flex-1 max-w-xl">
-        {config.hasHamburger && (
-          <button className="text-gray-500 hover:text-gray-700 md:hidden block">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        )}
-        <div className="relative w-full">
-          <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </span>
-          <input
-            type="text"
-            placeholder={config.placeholder}
-            className="w-full bg-[#f1f5f9] text-gray-800 placeholder-gray-400 text-xs font-medium pl-10 pr-4 py-2.5 rounded-lg border border-transparent focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
-          />
+      <div className="flex items-center gap-6 flex-1">
+        <div className="flex items-center gap-4 flex-1 max-w-md">
+          {config.hasHamburger && (
+            <button className="text-gray-500 hover:text-gray-700 md:hidden block">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          )}
+          <div className="relative w-full">
+            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder={config.placeholder}
+              className="w-full bg-[#f1f5f9] text-gray-800 placeholder-gray-400 text-xs font-medium pl-10 pr-4 py-2 rounded-lg border border-transparent focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+            />
+          </div>
         </div>
+
+        {/* Database connection status & Add Unit button (Screenshot 5) */}
+        {config.showStatus && (
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase text-gray-400 tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Database Connected
+            </div>
+            {onAddUnit && (
+              <button
+                onClick={onAddUnit}
+                className="bg-[#0b1220] hover:bg-slate-800 active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer flex items-center gap-1"
+              >
+                <span>+</span> Add Unit to Fleet
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right User & Actions Bar */}
@@ -128,3 +171,4 @@ export default function Header({ activeView }: HeaderProps) {
     </header>
   );
 }
+

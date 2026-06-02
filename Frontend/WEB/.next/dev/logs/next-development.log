@@ -1,11 +1,18 @@
-{"timestamp":"00:00:22.764","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:22.764","source":"Server","level":"LOG","message":"  We detected TypeScript in your project and reconfigured your tsconfig.json file for you."}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":"  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n"}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":"  \t- include was updated to add '.next/dev/types/**/*.ts'"}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":"  The following mandatory changes were made to your tsconfig.json:\n"}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":"  \t- jsx was set to react-jsx (next.js uses the React automatic runtime)"}
-{"timestamp":"00:00:22.765","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:23.308","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:49.279","source":"Server","level":"LOG","message":"○ Compiling / ..."}
-{"timestamp":"00:02:12.391","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:00:01.488","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:07.893","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:14:05.300","source":"Server","level":"LOG","message":"✓ Compiled in 335ms"}
+{"timestamp":"00:16:19.421","source":"Server","level":"LOG","message":"✓ Compiled in 201ms"}
+{"timestamp":"00:16:52.333","source":"Server","level":"LOG","message":"✓ Compiled in 142ms"}
+{"timestamp":"00:17:22.905","source":"Server","level":"LOG","message":"✓ Compiled in 147ms"}
+{"timestamp":"00:17:57.612","source":"Server","level":"LOG","message":"✓ Compiled in 120ms"}
+{"timestamp":"00:18:59.340","source":"Server","level":"LOG","message":"✓ Compiled in 444ms"}
+{"timestamp":"00:19:54.248","source":"Server","level":"LOG","message":"✓ Compiled in 208ms"}
+{"timestamp":"00:19:54.853","source":"Browser","level":"ERROR","message":"./Frontend/WEB/components/Header.tsx:175:3\nExpression expected\n  173 | }\n  174 |\n> 175 |   );\n      |   ^\n  176 | }\n  177 |\n\nParsing ecmascript source code failed\n\nImport traces:\n  Client Component Browser:\n    ./Frontend/WEB/components/Header.tsx [Client Component Browser]\n    ./Frontend/WEB/app/page.tsx [Client Component Browser]\n    ./Frontend/WEB/app/page.tsx [Server Component]\n\n  Client Component SSR:\n    ./Frontend/WEB/components/Header.tsx [Client Component SSR]\n    ./Frontend/WEB/app/page.tsx [Client Component SSR]\n    ./Frontend/WEB/app/page.tsx [Server Component]"}
+{"timestamp":"00:22:15.309","source":"Server","level":"LOG","message":"✓ Compiled in 229ms"}
+{"timestamp":"00:29:25.264","source":"Server","level":"ERROR","message":"[browser] \"./Frontend/WEB/components/Header.tsx:175:3\\nExpression expected\\n  173 | }\\n  174 |\\n> 175 |   );\\n      |   ^\\n  176 | }\\n  177 |\\n\\nParsing ecmascript source code failed\\n\\nImport traces:\\n  Client Component Browser:\\n    ./Frontend/WEB/components/Header.tsx [Client Component Browser]\\n    ./Frontend/WEB/app/page.tsx [Client Component Browser]\\n    ./Frontend/WEB/app/page.tsx [Server Component]\\n\\n  Client Component SSR:\\n    ./Frontend/WEB/components/Header.tsx [Client Component SSR]\\n    ./Frontend/WEB/app/page.tsx [Client Component SSR]\\n    ./Frontend/WEB/app/page.tsx [Server Component]\" \"\""}
+{"timestamp":"00:29:25.267","source":"Browser","level":"ERROR","message":"./Frontend/WEB/components/Header.tsx:175:3\nExpression expected\n  173 | }\n  174 |\n> 175 |   );\n      |   ^\n  176 | }\n  177 |\n\nParsing ecmascript source code failed\n\nImport traces:\n  Client Component Browser:\n    ./Frontend/WEB/components/Header.tsx [Client Component Browser]\n    ./Frontend/WEB/app/page.tsx [Client Component Browser]\n    ./Frontend/WEB/app/page.tsx [Server Component]\n\n  Client Component SSR:\n    ./Frontend/WEB/components/Header.tsx [Client Component SSR]\n    ./Frontend/WEB/app/page.tsx [Client Component SSR]\n    ./Frontend/WEB/app/page.tsx [Server Component] \"\""}
+{"timestamp":"00:30:15.586","source":"Server","level":"LOG","message":"✓ Compiled in 286ms"}
+{"timestamp":"00:30:50.114","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:31:05.338","source":"Browser","level":"INFO","message":"%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"}
+{"timestamp":"00:31:45.427","source":"Server","level":"LOG","message":"✓ Compiled in 378ms"}
+{"timestamp":"00:33:13.623","source":"Server","level":"LOG","message":"✓ Compiled in 319ms"}

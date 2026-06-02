@@ -94,6 +94,30 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
             </div>
           </div>
         );
+      case "FleetEmpty":
+        return (
+          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-cyan-500 to-blue-550 flex items-center justify-center text-white font-semibold text-sm">
+              AR
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-white text-xs font-semibold truncate">Alex Rivers</span>
+              <span className="text-gray-400 text-[10px] truncate">Fleet Director</span>
+            </div>
+          </div>
+        );
+      case "FleetList":
+        return (
+          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-teal-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-sm">
+              SA
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-white text-xs font-semibold truncate">System Admin</span>
+              <span className="text-gray-400 text-[10px] truncate">Logistics Tier 1</span>
+            </div>
+          </div>
+        );
       case "ClientRegistry":
         return (
           <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
@@ -119,6 +143,18 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
               <span className="text-gray-400 text-[10px] truncate">v4.2.0-stable</span>
             </div>
           </div>
+        );
+      case "Settings":
+        return (
+          <button
+            onClick={() => onNavigate("Landing")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all group cursor-pointer"
+          >
+            <svg className="w-5 h-5 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Logout</span>
+          </button>
         );
       default:
         return (
@@ -155,13 +191,22 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
       {/* Main Nav Links */}
       <nav className="flex-1 px-4 space-y-1">
         {navItems.map((item) => {
-          // Normalize active states (RegisterClient is a sub-view of ClientRegistry)
+          // Normalize active states (RegisterClient is sub-view of ClientRegistry, FleetList & FleetEmpty & FleetManagement are sub-views of FleetManagement)
           const isActive =
-            activeView === item.id || (item.id === "ClientRegistry" && activeView === "RegisterClient");
+            activeView === item.id ||
+            (item.id === "ClientRegistry" && activeView === "RegisterClient") ||
+            (item.id === "FleetManagement" && (activeView === "FleetList" || activeView === "FleetEmpty" || activeView === "FleetManagement"));
           return (
             <button
               key={item.id}
-              onClick={() => onNavigate(item.id)}
+              onClick={() => {
+                if (item.id === "FleetManagement") {
+                  // Switch between list view by default
+                  onNavigate("FleetList");
+                } else {
+                  onNavigate(item.id);
+                }
+              }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${
                 isActive
                   ? "bg-[#1e293b]/50 text-white"
