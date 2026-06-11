@@ -13,6 +13,7 @@ import MobileSplashView from "../components/MobileSplashView";
 import MobileRegisterView from "../components/MobileRegisterView";
 import MobileLoginView from "../components/MobileLoginView";
 import MobileRegisterClientView from "../components/MobileRegisterClientView";
+import MobileSettingsView from "../components/MobileSettingsView";
 
 export default function MobileHome() {
   const [activeView, setActiveView] = useState<string>("Splash");
@@ -59,6 +60,8 @@ export default function MobileHome() {
         return <MobileRegisterClientView onRegisterSuccess={() => setActiveView("ClientRegistry")} />;
       case "AddVehicle":
         return <MobileAddVehicleView />;
+      case "Settings":
+        return <MobileSettingsView onLogout={() => setActiveView("Login")} />;
       default:
         return <MobileDashboardView />;
     }
