@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Paintbrush, Sun, Moon, ShieldCheck, LogOut, ChevronRight } from "lucide-react";
+import { Paintbrush, Sun, Moon, ShieldCheck, LogOut } from "lucide-react";
 
 interface MobileSettingsViewProps {
   onLogout: () => void;
@@ -18,7 +18,7 @@ export default function MobileSettingsView({ onLogout }: MobileSettingsViewProps
         <h2 className="text-lg font-black text-[#0f172a] tracking-tight">
           System Settings
         </h2>
-        <p className="text-[10px] font-bold text-[#64748b] leading-tight mt-1 max-w-[280px]">
+        <p className="text-xs font-bold text-[#475569] leading-tight mt-1 max-w-[280px]">
           Configure your personal preferences and enterprise account details.
         </p>
       </div>
@@ -93,7 +93,7 @@ export default function MobileSettingsView({ onLogout }: MobileSettingsViewProps
             <label className="uppercase tracking-wider">Full Name</label>
             <input
               type="text"
-              defaultValue="Alexander Vance"
+              placeholder="Alexander Vance"
               className="w-full px-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
             <span className="text-[8px] font-bold text-[#94a3b8] block -mt-0.5">
@@ -105,7 +105,7 @@ export default function MobileSettingsView({ onLogout }: MobileSettingsViewProps
             <label className="uppercase tracking-wider">Work Email</label>
             <input
               type="email"
-              defaultValue="a.vance@fleetflow.inc"
+              placeholder="a.vance@fleetflow.inc"
               className="w-full px-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
@@ -166,36 +166,6 @@ export default function MobileSettingsView({ onLogout }: MobileSettingsViewProps
         <span className="text-[8px] font-bold text-[#94a3b8] text-center block">
           You will be redirected to the secure login gateway.
         </span>
-      </div>
-
-      {/* CARD 4: NEED TECHNICAL HELP */}
-      <div className="bg-[#0b1220] rounded-xl p-4 text-white relative overflow-hidden flex flex-col justify-between h-32 shadow-md">
-        {/* Screen/grid visual background overlay */}
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500 via-transparent to-transparent" />
-        <div className="absolute right-0 bottom-0 top-0 w-1/2 opacity-30 flex items-center justify-center">
-          <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1">
-            <rect x="10" y="20" width="30" height="20" rx="2" />
-            <rect x="50" y="20" width="40" height="25" rx="2" />
-            <rect x="15" y="55" width="45" height="30" rx="2" />
-          </svg>
-        </div>
-
-        <div className="space-y-1">
-          <h4 className="text-xs font-black tracking-tight leading-tight">
-            Need technical help?
-          </h4>
-          <p className="text-[8.5px] font-bold text-slate-300 max-w-[200px] leading-tight">
-            Our fleet experts are available 24/7 for operational support.
-          </p>
-        </div>
-
-        <a
-          href="#"
-          className="text-white text-[8.5px] font-black tracking-wider uppercase flex items-center gap-1 hover:underline mt-2"
-        >
-          Contact Support
-          <ChevronRight className="w-3.5 h-3.5" />
-        </a>
       </div>
     </div>
   );

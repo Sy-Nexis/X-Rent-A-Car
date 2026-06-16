@@ -10,7 +10,7 @@ export default function MobileDashboardView() {
   return (
     <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-[#f8fafc] p-4 space-y-4 pb-20">
       {/* Active Vehicles Stat Card */}
-      <div className="bg-white rounded-xl p-4 border border-[#e2e8f0] shadow-sm relative overflow-hidden flex flex-col justify-between h-28">
+      <div className="bg-white rounded-xl p-4 pb-6 border border-[#e2e8f0] shadow-sm relative overflow-hidden flex flex-col justify-between h-50">
         <div className="flex justify-between items-start">
           <div className="w-8 h-8 rounded-lg bg-[#e8fbf4] flex items-center justify-center text-[#10b981]">
             <Truck className="w-5 h-5" />
@@ -65,7 +65,7 @@ export default function MobileDashboardView() {
       </div>
 
       {/* Active Alerts Card */}
-      <div className="bg-white rounded-xl p-4 border border-[#e2e8f0] shadow-sm flex flex-col justify-between h-28">
+      <div className="bg-white rounded-xl p-4 border border-[#e2e8f0] shadow-sm flex flex-col justify-between h-32">
         <div className="flex justify-between items-start">
           <div className="w-8 h-8 rounded-lg bg-[#fef2f2] flex items-center justify-center text-[#ef4444]">
             <AlertTriangle className="w-5 h-5" />
@@ -115,10 +115,10 @@ export default function MobileDashboardView() {
         </div>
 
         {/* Styled Grayscale map area */}
-        <div className="relative h-64 bg-[#e2e8f0] flex flex-col justify-between overflow-hidden">
+        <div className="relative h-96 bg-[#e2e8f0] flex flex-col justify-between overflow-hidden">
           {/* Stylized Grid SVG Overlay */}
           <div className="absolute inset-0 opacity-40 bg-[linear-gradient(rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-[size:20px_20px]" />
-          
+
           {/* Map decorative lines (simulating streets) */}
           <svg className="absolute inset-0 w-full h-full text-slate-400 stroke-current opacity-30" strokeWidth="2.5">
             <line x1="0" y1="50" x2="400" y2="120" />

@@ -38,7 +38,7 @@ export default function MobileRegisterView({
             <label className="uppercase tracking-wider">First Name</label>
             <input
               type="text"
-              defaultValue="John"
+              placeholder="John"
               className="w-full px-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
@@ -46,7 +46,7 @@ export default function MobileRegisterView({
             <label className="uppercase tracking-wider">Last Name</label>
             <input
               type="text"
-              defaultValue="Doe"
+              placeholder="Doe"
               className="w-full px-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
@@ -59,7 +59,7 @@ export default function MobileRegisterView({
             <Mail className="w-4 h-4 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="email"
-              defaultValue="j.doe@fleetflow.com"
+              placeholder="j.doe@fleetflow.com"
               className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
@@ -72,7 +72,6 @@ export default function MobileRegisterView({
             <Lock className="w-4 h-4 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type={showPassword ? "text" : "password"}
-              defaultValue="Password123"
               className="w-full pl-9 pr-10 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
             <button
@@ -107,11 +106,10 @@ export default function MobileRegisterView({
             <button
               onClick={() => setAuthTier("STAFF")}
               type="button"
-              className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${
-                authTier === "STAFF"
+              className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${authTier === "STAFF"
                   ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
                   : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
-              }`}
+                }`}
             >
               <User className="w-4 h-4" />
               <span className="text-[9px] font-black uppercase tracking-wider">Staff</span>
@@ -121,11 +119,10 @@ export default function MobileRegisterView({
             <button
               onClick={() => setAuthTier("ADMIN")}
               type="button"
-              className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${
-                authTier === "ADMIN"
+              className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${authTier === "ADMIN"
                   ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
                   : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
-              }`}
+                }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />

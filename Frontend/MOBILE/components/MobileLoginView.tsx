@@ -16,7 +16,7 @@ export default function MobileLoginView({
 
   return (
     <div className="flex-1 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-[#fafafa] p-5 pb-6">
-      
+
       {/* Centered Logo Label */}
       <div className="text-center mt-2">
         <span className="text-[11px] font-black tracking-[0.2em] text-[#0f172a] uppercase font-mono">
@@ -53,7 +53,7 @@ export default function MobileLoginView({
             <Mail className="w-4 h-4 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="email"
-              defaultValue="manager@fleetflow.com"
+              placeholder="manager@fleetflow.com"
               className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
@@ -71,7 +71,6 @@ export default function MobileLoginView({
             <Lock className="w-4 h-4 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type={showPassword ? "text" : "password"}
-              defaultValue="password"
               className="w-full pl-9 pr-10 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
             <button

@@ -34,7 +34,14 @@ export default function MobileBottomNav({
   const getIsActive = (tabId: string) => {
     if (tabId === "Dashboard" && activeTab === "Dashboard") return true;
     if (tabId === "AdminPortal" && activeTab === "AdminPortal") return true;
-    if (tabId === "FleetList" && (activeTab === "FleetList" || activeTab === "FleetManagement")) return true;
+    if (
+      tabId === "FleetList" &&
+      (activeTab === "FleetList" ||
+        activeTab === "FleetManagement" ||
+        activeTab === "FleetEmpty" ||
+        activeTab === "AddVehicle")
+    )
+      return true;
     if (tabId === "ClientRegistry" && (activeTab === "ClientRegistry" || activeTab === "RegisterClient")) return true;
     if (tabId === "Settings" && activeTab === "Settings") return true;
     return false;

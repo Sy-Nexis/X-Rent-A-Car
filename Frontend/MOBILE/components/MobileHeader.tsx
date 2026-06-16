@@ -14,9 +14,6 @@ export default function MobileHeader({ activeView, onNavigate }: MobileHeaderPro
     return (
       <header className="w-full bg-white border-b border-[#f1f5f9] h-14 flex items-center justify-between px-3 shrink-0 z-20">
         <div className="flex items-center gap-2">
-          <button className="text-[#64748b] p-1 rounded-md hover:bg-slate-100">
-            <Menu className="w-5 h-5" />
-          </button>
           <div className="flex flex-col">
             <span className="text-[12px] font-extrabold text-[#0f172a] tracking-tight leading-tight">
               Fleet Management
@@ -72,9 +69,6 @@ export default function MobileHeader({ activeView, onNavigate }: MobileHeaderPro
           <button className="text-[#64748b] p-1.5 rounded-md hover:bg-slate-100">
             <Search className="w-4 h-4" />
           </button>
-          <button className="text-[#64748b] p-1.5 rounded-md hover:bg-slate-100">
-            <Menu className="w-4 h-4" />
-          </button>
         </div>
       </header>
     );
@@ -84,9 +78,6 @@ export default function MobileHeader({ activeView, onNavigate }: MobileHeaderPro
   return (
     <header className="w-full bg-white border-b border-[#f1f5f9] h-14 flex items-center justify-between px-3 shrink-0 z-20">
       <div className="flex items-center gap-2">
-        <button className="text-[#64748b] p-1 rounded-md hover:bg-slate-100">
-          <Menu className="w-5 h-5" />
-        </button>
         <span className="text-sm font-extrabold text-[#0f172a] tracking-tight">
           FleetFlow
         </span>
