@@ -34,7 +34,7 @@ export default function LandingView({ onEnter }: LandingViewProps) {
         {/* Enter System Button */}
         <button
           onClick={onEnter}
-          className="flex items-center gap-2.5 bg-gradient-to-r from-cyan-450 to-cyan-400 hover:from-cyan-400 hover:to-cyan-350 active:scale-[0.98] text-[#0b1220] text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/10 transition-all cursor-pointer mb-8"
+          className="flex items-center gap-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-400 hover:to-cyan-350 active:scale-[0.98] text-[#0b1220] text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/10 transition-all cursor-pointer mb-8"
         >
           Enter System
           <svg className="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

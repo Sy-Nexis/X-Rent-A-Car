@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface HeaderProps {
   activeView: string;
@@ -6,6 +6,22 @@ interface HeaderProps {
 }
 
 export default function Header({ activeView, onAddUnit }: HeaderProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Dynamically configure search placeholder and user profile info to match the screenshots exactly
   const getHeaderConfig = () => {
     switch (activeView) {
@@ -143,29 +159,56 @@ export default function Header({ activeView, onAddUnit }: HeaderProps) {
           </button>
         </div>
 
-        {/* User Card */}
-        <div className="flex items-center gap-3">
+        {/* User Card & Dropdown */}
+        <div className="relative flex items-center gap-3" ref={dropdownRef}>
           {config.profileText && (
-            <div className="flex flex-col text-right">
+            <div className="flex flex-col text-right select-none">
               <span className="text-gray-800 text-xs font-bold">{config.profileText}</span>
               {config.profileSubText && (
                 <span className="text-gray-400 text-[9px] font-semibold tracking-wider">{config.profileSubText}</span>
               )}
             </div>
           )}
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-            {config.profileText ? (
-              <div className="w-full h-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
-                {config.profileText.charAt(0)}
+          
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-gray-200 flex items-center justify-center hover:border-gray-300 focus:outline-none transition-all cursor-pointer text-gray-500 hover:text-gray-600"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2.5 z-50 select-none">
+              {/* Account Quick Info */}
+              <div className="px-4 py-2 border-b border-gray-100">
+                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Logged in as</span>
+                <span className="text-xs font-extrabold text-slate-800 block mt-0.5">{config.profileText || "Alex Management"}</span>
+                <span className="text-[10px] text-gray-450 font-semibold block">{config.profileSubText || "FLEET MANAGER"}</span>
               </div>
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+
+              {/* Menu Actions */}
+              <div className="py-1">
+                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
+                  Account Settings
+                </button>
+                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
+                  Security Credentials
+                </button>
+                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-600 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer">
+                  System Preferences
+                </button>
               </div>
-            )}
-          </div>
+
+              {/* Logout */}
+              <div className="border-t border-gray-100 mt-1 pt-1">
+                <button className="w-full px-4 py-2 text-left text-xs font-bold text-red-500 hover:bg-red-50 transition-colors cursor-pointer">
+                  Log Out
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
