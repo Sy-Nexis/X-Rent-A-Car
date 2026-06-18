@@ -15,29 +15,25 @@ export default function MobileLoginView({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <div className="flex-1 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-[#fafafa] p-5 pb-6">
+    <div className="flex-1 flex flex-col justify-start gap-y-5 overflow-y-auto custom-scrollbar bg-[#fafafa] p-5 pb-6">
 
       {/* Centered Logo Label */}
-      <div className="text-center mt-2">
-        <span className="text-[11px] font-black tracking-[0.2em] text-[#0f172a] uppercase font-mono">
-          FleetFlow
+      <div className="flex flex-col items-center text-center mt-2 select-none">
+        <span className="font-serif text-[#0f172a] text-5xl tracking-wide flex items-center leading-none mb-1">
+          ne
+          <span className="font-serif text-[#0f172a] text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+          us
+        </span>
+        <span className="text-[9.5px] font-bold tracking-wider text-gray-450 uppercase">
+          Powered by X Rent A Car
         </span>
       </div>
 
-      {/* Decorative top warehouse image */}
-      <div className="w-full h-24 rounded-xl overflow-hidden mt-4 relative border border-[#e2e8f0]">
-        <img
-          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400&h=150"
-          alt="Warehouse operations background"
-          className="w-full h-full object-cover filter grayscale opacity-90 contrast-125"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#fafafa] opacity-50" />
-      </div>
 
       {/* Welcome headers */}
-      <div className="text-center mt-4">
+      <div className="text-center mt-2">
         <h2 className="text-base font-extrabold text-[#0f172a] tracking-tight">
-          Welcome back
+          Welcome
         </h2>
         <p className="text-[9.5px] font-bold text-[#64748b] mt-0.5">
           Access your fleet operations center
@@ -45,7 +41,7 @@ export default function MobileLoginView({
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl border border-[#e2e8f0] shadow-sm p-4 space-y-4 mt-4">
+      <div className="bg-white rounded-xl border border-[#e2e8f0] shadow-sm p-4 space-y-4">
         {/* Email Address */}
         <div className="space-y-1 text-[9px] font-bold text-[#475569]">
           <label className="uppercase tracking-wider font-extrabold">Email Address</label>
@@ -93,10 +89,10 @@ export default function MobileLoginView({
       </div>
 
       {/* Divider */}
-      <div className="relative flex py-5 items-center">
+      <div className="relative flex py-2 items-center">
         <div className="flex-grow border-t border-[#e2e8f0]"></div>
         <span className="flex-shrink mx-3 text-[8.5px] font-extrabold text-[#94a3b8] uppercase tracking-wider">
-          New to FleetFlow?
+          New to neXus?
         </span>
         <div className="flex-grow border-t border-[#e2e8f0]"></div>
       </div>
@@ -110,7 +106,7 @@ export default function MobileLoginView({
       </button>
 
       {/* Security note and Copyright Footer */}
-      <div className="text-center space-y-3 mt-6">
+      <div className="text-center space-y-3 mt-auto pt-6">
         <div className="flex justify-center items-center gap-1.5 text-[8.5px] font-extrabold text-[#10b981]">
           <svg
             className="w-3.5 h-3.5"

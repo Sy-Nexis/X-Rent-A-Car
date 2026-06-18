@@ -1,9 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Info, Gauge, DollarSign, FileCode, Upload, FileText, ChevronDown } from "lucide-react";
+import { Info, Gauge, DollarSign, FileCode, Upload, FileText, ChevronDown, Plus } from "lucide-react";
 
-export default function MobileAddVehicleView() {
+interface MobileAddVehicleViewProps {
+  onRegisterSuccess?: () => void;
+}
+
+export default function MobileAddVehicleView({ onRegisterSuccess }: MobileAddVehicleViewProps) {
   const [initialStatus, setInitialStatus] = useState<string>("Active");
 
   return (
@@ -313,6 +317,24 @@ export default function MobileAddVehicleView() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3 pt-2">
+        <button
+          type="button"
+          className="flex-1 bg-white border border-[#cbd5e1] text-[#475569] text-[9.5px] font-extrabold py-3.5 rounded-lg transition-all hover:bg-slate-50 uppercase tracking-wider text-center"
+        >
+          Clear Form
+        </button>
+        <button
+          onClick={onRegisterSuccess}
+          type="button"
+          className="flex-1 bg-[#2563eb] text-white text-[9.5px] font-extrabold py-3.5 rounded-lg flex items-center justify-center gap-1.5 shadow-md transition-all hover:bg-blue-700 active:scale-95 uppercase tracking-wider text-center"
+        >
+          <Plus className="w-4 h-4 stroke-[2.5px]" />
+          Register Vehicle
+        </button>
       </div>
     </div>
   );

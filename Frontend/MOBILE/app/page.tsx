@@ -59,7 +59,7 @@ export default function MobileHome() {
       case "RegisterClient":
         return <MobileRegisterClientView onRegisterSuccess={() => setActiveView("ClientRegistry")} />;
       case "AddVehicle":
-        return <MobileAddVehicleView />;
+        return <MobileAddVehicleView onRegisterSuccess={() => setActiveView("FleetEmpty")} />;
       case "Settings":
         return <MobileSettingsView onLogout={() => setActiveView("Login")} />;
       default:

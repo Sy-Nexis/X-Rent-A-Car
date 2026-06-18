@@ -16,17 +16,25 @@ export default function MobileRegisterView({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <div className="flex-1 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-[#fcf9f9] p-5 pb-8">
-      {/* Top Header */}
-      <div className="flex flex-col items-center text-center mt-3 mb-5">
-        <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-white mb-2 shadow-sm">
-          <Truck className="w-5 h-5" />
-        </div>
-        <h2 className="text-xl font-black text-[#0f172a] tracking-tight">
-          FleetFlow
+    <div className="flex-1 flex flex-col justify-start gap-y-5 overflow-y-auto custom-scrollbar bg-[#fcf9f9] p-5 pb-8">
+      <div className="flex flex-col items-center text-center mt-2 select-none">
+        <span className="font-serif text-[#0f172a] text-5xl tracking-wide flex items-center leading-none mb-1">
+          ne
+          <span className="font-serif text-[#0f172a] text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+          us
+        </span>
+        <span className="text-[8.5px] font-bold tracking-wider text-gray-400 uppercase">
+          Powered by X Rent A Car
+        </span>
+      </div>
+
+      {/* Welcome / Create Account headers */}
+      <div className="text-center mt-2">
+        <h2 className="text-base font-extrabold text-[#0f172a] tracking-tight">
+          Create Account
         </h2>
-        <p className="text-[10px] font-bold text-[#64748b] mt-0.5">
-          Initialize your operator credentials
+        <p className="text-[9.5px] font-bold text-[#64748b] mt-0.5">
+          Register for the Precision Logistics Gateway
         </p>
       </div>
 
@@ -60,7 +68,7 @@ export default function MobileRegisterView({
             <input
               type="email"
               placeholder="j.doe@fleetflow.com"
-              className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
+              className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f152a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
         </div>
@@ -107,8 +115,8 @@ export default function MobileRegisterView({
               onClick={() => setAuthTier("STAFF")}
               type="button"
               className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${authTier === "STAFF"
-                  ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
-                  : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
+                ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
+                : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
                 }`}
             >
               <User className="w-4 h-4" />
@@ -120,8 +128,8 @@ export default function MobileRegisterView({
               onClick={() => setAuthTier("ADMIN")}
               type="button"
               className={`py-3.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all ${authTier === "ADMIN"
-                  ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
-                  : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
+                ? "border-[#2563eb] bg-[#eff6ff] text-[#2563eb] ring-1 ring-[#2563eb]"
+                : "border-[#cbd5e1] bg-white text-[#64748b] hover:bg-slate-50"
                 }`}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -145,7 +153,7 @@ export default function MobileRegisterView({
       </div>
 
       {/* Already registered */}
-      <div className="text-center mt-5 space-y-2">
+      <div className="text-center mt-auto pt-6 space-y-2">
         <p className="text-[10px] font-bold text-[#64748b]">
           Already registered with the fleet?
         </p>
@@ -155,16 +163,6 @@ export default function MobileRegisterView({
         >
           Login
         </button>
-      </div>
-
-      {/* Decorative warehouse footer image */}
-      <div className="w-full h-20 rounded-xl overflow-hidden mt-4 relative border border-[#e2e8f0]">
-        <img
-          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400&h=150"
-          alt="Warehouse logistics background"
-          className="w-full h-full object-cover filter grayscale opacity-90 contrast-125"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#fcf9f9] to-transparent opacity-60" />
       </div>
     </div>
   );

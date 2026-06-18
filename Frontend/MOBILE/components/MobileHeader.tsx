@@ -60,8 +60,10 @@ export default function MobileHeader({ activeView, onNavigate }: MobileHeaderPro
               <circle cx="18.5" cy="18.5" r="2.5" />
             </svg>
           </div>
-          <span className="text-sm font-extrabold text-[#0f172a] tracking-tight">
-            FleetFlow
+          <span className="font-serif text-[#0f172a] text-lg tracking-wide flex items-center select-none">
+            ne
+            <span className="font-serif text-[#0f172a] text-2xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            us
           </span>
         </div>
 
@@ -78,8 +80,10 @@ export default function MobileHeader({ activeView, onNavigate }: MobileHeaderPro
   return (
     <header className="w-full bg-white border-b border-[#f1f5f9] h-14 flex items-center justify-between px-3 shrink-0 z-20">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-extrabold text-[#0f172a] tracking-tight">
-          FleetFlow
+        <span className="font-serif text-[#0f172a] text-lg tracking-wide flex items-center select-none">
+          ne
+          <span className="font-serif text-[#0f172a] text-2xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+          us
         </span>
       </div>
 

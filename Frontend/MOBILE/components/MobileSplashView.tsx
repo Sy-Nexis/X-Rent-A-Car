@@ -24,19 +24,16 @@ export default function MobileSplashView({ onComplete }: MobileSplashViewProps) 
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center text-center space-y-6">
-        {/* Car Logo */}
-        <div className="w-20 h-20 bg-[#1e293b] rounded-2xl flex items-center justify-center shadow-lg">
-          <Car className="w-10 h-10 text-[#2563eb] fill-[#2563eb]/20" />
-        </div>
-
-        {/* Text */}
-        <div>
-          <h1 className="text-3xl font-black text-[#0f172a] tracking-tight leading-none">
-            FleetFlow
-          </h1>
-          <p className="text-[10px] font-bold text-[#94a3b8] tracking-widest uppercase mt-1">
-            Precision Logistics
-          </p>
+        {/* Logo Section */}
+        <div className="flex flex-col items-center select-none">
+          <span className="font-serif text-[#0f172a] text-5xl tracking-wide flex items-center select-none leading-none mb-1">
+            ne
+            <span className="font-serif text-[#0f172a] text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            us
+          </span>
+          <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+            Powered by X Rent A Car
+          </span>
         </div>
 
         {/* Action / Status */}
