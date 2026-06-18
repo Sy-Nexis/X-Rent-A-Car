@@ -15,21 +15,17 @@ export default function LandingView({ onEnter }: LandingViewProps) {
 
       {/* Center Logo & Action */}
       <div className="flex flex-col items-center justify-center text-center relative z-10">
-        {/* Car Logo card */}
-        <div className="w-24 h-24 rounded-2xl bg-[#111c35] border border-white/10 flex items-center justify-center mb-8 shadow-xl shadow-cyan-900/10">
-          <svg className="w-12 h-12 text-[#06b6d4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17h10" />
-          </svg>
+        {/* Logo Section */}
+        <div className="flex flex-col items-center mb-10 select-none">
+          <span className="font-serif text-white text-7xl tracking-wide flex items-center select-none leading-none mb-1">
+            ne
+            <span className="font-serif text-white text-8xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            us
+          </span>
+          <span className="text-[11px] font-normal tracking-wider text-gray-400 uppercase">
+            Powered by X Rent A Car
+          </span>
         </div>
-
-        {/* Title */}
-        <h1 className="text-4xl font-black uppercase tracking-widest text-white mb-2 leading-none">
-          FleetControl
-        </h1>
-        <p className="text-xs font-bold uppercase tracking-widest text-cyan-400/90 mb-10">
-          Precision Logistics Ecosystem
-        </p>
 
         {/* Enter System Button */}
         <button

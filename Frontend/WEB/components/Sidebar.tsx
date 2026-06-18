@@ -175,18 +175,15 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
     <aside className="w-64 bg-[#0b1220] flex flex-col justify-between h-full flex-shrink-0 border-r border-white/5 relative z-20">
       {/* Brand Header */}
       <div className="p-6 pb-8">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/30">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-white font-bold text-sm tracking-wider uppercase">FleetControl</h1>
-            <p className="text-[10px] text-gray-400 font-medium">Precision Logistics</p>
-          </div>
+        <div className="flex items-center justify-center py-2">
+          <span className="font-serif text-white text-4xl tracking-wide flex items-center select-none">
+            ne
+            <span className="font-serif text-white text-5xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            us
+          </span>
         </div>
       </div>
+
 
       {/* Main Nav Links */}
       <nav className="flex-1 px-4 space-y-1">

@@ -20,19 +20,14 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
       {/* Container holding card & extra links */}
       <div className="w-full max-w-[420px] flex flex-col items-center">
         {/* Top Header Logo */}
-        <div className="flex flex-col items-center mb-6 text-center">
-          <div className="flex items-center gap-2 mb-1">
-            {/* Logo Icon */}
-            <div className="w-6 h-6 rounded bg-[#0b1220] flex items-center justify-center text-cyan-400">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17h10" />
-              </svg>
-            </div>
-            <span className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">FleetControl</span>
-          </div>
-          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">
-            Precision Logistics & Fleet Intelligence
+        <div className="flex flex-col items-center mb-8 text-center select-none">
+          <span className="font-serif text-black text-5xl tracking-wide flex items-center leading-none mb-1.5">
+            ne
+            <span className="font-serif text-black text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            us
+          </span>
+          <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+            Powered by X Rent A Car
           </span>
         </div>
 
