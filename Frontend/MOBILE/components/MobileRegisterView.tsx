@@ -16,8 +16,8 @@ export default function MobileRegisterView({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
-    <div className="flex-1 flex flex-col justify-start gap-y-5 overflow-y-auto custom-scrollbar bg-[#fcf9f9] p-5 pb-8">
-      <div className="flex flex-col items-center text-center mt-2 select-none">
+    <div className="flex-1 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-[#fcf9f9] p-5 pb-8">
+      <div className="flex flex-col items-center text-center mt-3 mb-5 select-none">
         <span className="font-serif text-[#0f172a] text-5xl tracking-wide flex items-center leading-none mb-1">
           ne
           <span className="font-serif text-[#0f172a] text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
@@ -26,16 +26,6 @@ export default function MobileRegisterView({
         <span className="text-[8.5px] font-bold tracking-wider text-gray-400 uppercase">
           Powered by X Rent A Car
         </span>
-      </div>
-
-      {/* Welcome / Create Account headers */}
-      <div className="text-center mt-2">
-        <h2 className="text-base font-extrabold text-[#0f172a] tracking-tight">
-          Create Account
-        </h2>
-        <p className="text-[9.5px] font-bold text-[#64748b] mt-0.5">
-          Register for the Precision Logistics Gateway
-        </p>
       </div>
 
       {/* Main Form Card */}
@@ -68,7 +58,7 @@ export default function MobileRegisterView({
             <input
               type="email"
               placeholder="j.doe@fleetflow.com"
-              className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f152a] outline-none focus:border-blue-500 font-bold bg-white"
+              className="w-full pl-9 pr-3 py-2 border border-[#cbd5e1] rounded-lg text-[#0f172a] outline-none focus:border-blue-500 font-bold bg-white"
             />
           </div>
         </div>
@@ -153,7 +143,7 @@ export default function MobileRegisterView({
       </div>
 
       {/* Already registered */}
-      <div className="text-center mt-auto pt-6 space-y-2">
+      <div className="text-center mt-5 space-y-2">
         <p className="text-[10px] font-bold text-[#64748b]">
           Already registered with the fleet?
         </p>
