@@ -33,6 +33,27 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Map status and branch values to avoid DB enum constraint violations
+        const rawStatus = String(status || 'Available').trim();
+        let dbStatus = 'Available';
+        let dbBranch = String(branch || 'Main');
+
+        if (rawStatus.toLowerCase() === 'in prep' || rawStatus.toLowerCase() === 'inprep') {
+            dbStatus = 'Maintenance';
+            dbBranch = `${dbBranch}|In Prep`;
+        } else if (rawStatus.toLowerCase() === 'retired') {
+            dbStatus = 'Maintenance';
+            dbBranch = `${dbBranch}|Retired`;
+        } else if (rawStatus.toLowerCase() === 'active' || rawStatus.toLowerCase() === 'available') {
+            dbStatus = 'Available';
+        } else if (rawStatus.toLowerCase() === 'maintenance') {
+            dbStatus = 'Maintenance';
+        } else if (rawStatus.toLowerCase() === 'rented') {
+            dbStatus = 'Rented';
+        } else {
+            dbStatus = 'Available';
+        }
+
         const vehicleData = {
             make: String(make || ''),
             model: String(model || ''),
@@ -45,8 +66,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             color: String(color || ''),
             mileage: numericMileage,
             daily_rate: numericDailyRate,
-            branch: String(branch || 'Main'),
-            status: String(status || 'Available').trim()
+            branch: dbBranch,
+            status: dbStatus
         };
 
         console.log("INSERTING_VEHICLE_DATA:", vehicleData);
@@ -84,10 +105,24 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Decode returned data so that frontend receives the expected status strings
+        const decodedData = data ? data.map(vehicle => {
+            let statusVal = vehicle.status;
+            let branchVal = vehicle.branch;
+            if (branchVal && branchVal.includes('|')) {
+                const parts = branchVal.split('|');
+                branchVal = parts[0];
+                statusVal = parts[1];
+            } else if (statusVal === 'Available') {
+                statusVal = 'Active';
+            }
+            return { ...vehicle, status: statusVal, branch: branchVal };
+        }) : [];
+
         res.status(201).json({
             success: true,
             message: 'Vehicle successfully registered to the fleet.',
-            data: data
+            data: decodedData
         });
 
     } catch (error: any) {
@@ -128,8 +163,69 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Map camelCase body payload to snake_case database columns.
-        // Supabase automatically ignores undefined values, acting like your old COALESCE logic!
+        // Fetch existing vehicle to merge fields cleanly and preserve branch/status encoding
+        const { data: existingVehicle, error: fetchError } = await supabase
+            .from('vehicles')
+            .select('*')
+            .eq('vin', String(vin))
+            .maybeSingle();
+
+        if (fetchError) {
+            console.error('Supabase fetch error during update:', fetchError);
+            res.status(500).json({
+                success: false,
+                message: 'Database Error while checking vehicle details.'
+            });
+            return;
+        }
+
+        if (!existingVehicle) {
+            res.status(404).json({
+                success: false,
+                message: 'No vehicle found matching that VIN.'
+            });
+            return;
+        }
+
+        const currentStatus = existingVehicle.status || 'Available';
+        const currentBranch = existingVehicle.branch || 'Main';
+
+        // Extract clean branch and current real status from existing record
+        let cleanBranch = currentBranch;
+        let realStatus = currentStatus;
+        if (currentBranch && currentBranch.includes('|')) {
+            const parts = currentBranch.split('|');
+            cleanBranch = parts[0];
+            realStatus = parts[1]; // e.g. 'In Prep' or 'Retired'
+        } else if (currentStatus === 'Available') {
+            realStatus = 'Active';
+        }
+
+        // Merge existing fields with update request values
+        const newStatus = status !== undefined ? String(status).trim() : realStatus;
+        const newBranch = branch !== undefined ? String(branch).trim() : cleanBranch;
+
+        // Map status/branch to DB representation
+        let dbStatus = 'Available';
+        let dbBranch = newBranch;
+
+        if (newStatus.toLowerCase() === 'in prep' || newStatus.toLowerCase() === 'inprep') {
+            dbStatus = 'Maintenance';
+            dbBranch = `${newBranch}|In Prep`;
+        } else if (newStatus.toLowerCase() === 'retired') {
+            dbStatus = 'Maintenance';
+            dbBranch = `${newBranch}|Retired`;
+        } else if (newStatus.toLowerCase() === 'active' || newStatus.toLowerCase() === 'available') {
+            dbStatus = 'Available';
+        } else if (newStatus.toLowerCase() === 'maintenance') {
+            dbStatus = 'Maintenance';
+        } else if (newStatus.toLowerCase() === 'rented') {
+            dbStatus = 'Rented';
+        } else {
+            dbStatus = 'Available';
+        }
+
+        // Map camelCase body payload to snake_case database columns
         const updateData = {
             make,
             model,
@@ -137,8 +233,8 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             transmission,
             color,
             mileage: mileage ? Number(mileage) : undefined,
-            branch,
-            status,
+            branch: dbBranch,
+            status: dbStatus,
             license_plate: licensePlate,
             fuel_type: fuelType,
             engine_capacity: engineCapacity,
@@ -160,7 +256,6 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-
         if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
@@ -169,10 +264,24 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Decode returned data so frontend receives clean status and branch
+        const decodedData = data.map(vehicle => {
+            let statusVal = vehicle.status;
+            let branchVal = vehicle.branch;
+            if (branchVal && branchVal.includes('|')) {
+                const parts = branchVal.split('|');
+                branchVal = parts[0];
+                statusVal = parts[1];
+            } else if (statusVal === 'Available') {
+                statusVal = 'Active';
+            }
+            return { ...vehicle, status: statusVal, branch: branchVal };
+        });
+
         res.status(200).json({
             success: true,
             message: `Vehicle with VIN ${vin} has been successfully updated.`,
-            data: data
+            data: decodedData
         });
 
     } catch (error: any) {

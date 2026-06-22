@@ -3,6 +3,21 @@ import { supabase } from '../db';
 
 const router = Router();
 
+// Helper to decode status and branch from DB encoding
+function decodeVehicle(vehicle: any) {
+    if (!vehicle) return vehicle;
+    let status = vehicle.status;
+    let branch = vehicle.branch;
+    if (branch && branch.includes('|')) {
+        const parts = branch.split('|');
+        branch = parts[0];
+        status = parts[1]; // e.g. 'In Prep' or 'Retired'
+    } else if (status === 'Available') {
+        status = 'Active';
+    }
+    return { ...vehicle, status, branch };
+}
+
 // /api/vehicles/view
 router.get('/', async (req: Request, res: Response): Promise<void> => {
     try {
@@ -20,10 +35,12 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        const decodedData = data ? data.map(decodeVehicle) : [];
+
         res.status(200).json({
             success: true,
-            count: data ? data.length : 0,
-            data: data || []
+            count: decodedData.length,
+            data: decodedData
         });
 
     } catch (error: any) {
@@ -45,8 +62,8 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
         const { data, error } = await supabase
             .from('vehicles')
             .select('*')
-            .eq('id', id) // Assuming 'id' is a string or number that matches your DB schema
-            .maybeSingle(); // Returns the object directly, or null if not found
+            .eq('id', id)
+            .maybeSingle();
 
         if (error) {
             console.error('Supabase SELECT single vehicle error:', error);
@@ -65,9 +82,11 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        const decodedVehicle = decodeVehicle(data);
+
         res.status(200).json({
             success: true,
-            data: data
+            data: decodedVehicle
         });
 
     } catch (error: any) {
