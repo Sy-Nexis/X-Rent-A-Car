@@ -55,7 +55,8 @@ export default function AdminNavbar() {
   };
 
   return (
-    <aside className="w-72 h-screen fixed top-0 left-0 bg-[#1c1c1e] border-r border-white/5 flex flex-col z-50">
+    <aside className="hidden lg:flex w-72 h-screen fixed top-0 left-0 bg-[#1c1c1e] border-r border-white/5 flex-col z-50">
+
       
       {/* 1. BRANDING AREA */}
       <div className="p-8 pb-12">

@@ -94,8 +94,10 @@ export default function ClientListActionable({ initialClients }: ClientListActio
       </div>
 
       {/* 2. CLIENT TABLE CONTAINER */}
-      <div className="relative bg-white/[0.02] border border-white/5 rounded-[40px] shadow-2xl shadow-black/40 overflow-hidden">
-        <div className="overflow-x-auto custom-scrollbar text-white">
+      <div className="relative bg-white/5 dark:bg-[#2c2c2e]/40 backdrop-blur-3xl border border-white/5 rounded-[40px] shadow-2xl overflow-visible">
+        
+        {/* DESKTOP TABLE VIEW */}
+        <div className="hidden md:block overflow-x-auto custom-scrollbar text-white">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.01]">
@@ -170,7 +172,7 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                           e.stopPropagation();
                           setActiveMenu(activeMenu === client.id ? null : client.id);
                         }}
-                        className={`p-3 rounded-xl transition-all ${
+                        className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all ${
                           activeMenu === client.id ? "bg-blue-600 text-white" : "text-[#6e6e73] hover:bg-white/5 hover:text-white"
                         }`}
                       >
@@ -208,9 +210,9 @@ export default function ClientListActionable({ initialClients }: ClientListActio
                                 label="Remove Record" 
                                 variant="danger" 
                                 onClick={() => {
-                                  setClientToDelete(client);
-                                  setIsDeleteModalOpen(true);
-                                  setActiveMenu(null);
+                                   setClientToDelete(client);
+                                   setIsDeleteModalOpen(true);
+                                   setActiveMenu(null);
                                 }}
                               />
                             </div>
@@ -223,20 +225,139 @@ export default function ClientListActionable({ initialClients }: ClientListActio
               </AnimatePresence>
             </tbody>
           </table>
-          
-          {filteredClients.length === 0 && (
-            <div className="py-32 flex flex-col items-center justify-center text-center">
-              <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center text-[#424245] mb-6">
-                <UserX size={48} />
-              </div>
-              <h3 className="text-xl font-black text-white tracking-tight">No Clients Found</h3>
-              <p className="text-[#6e6e73] text-sm mt-2 max-w-xs uppercase font-bold tracking-widest leading-relaxed">
-                We couldn't find any matches for "{searchTerm}".
-              </p>
-            </div>
-          )}
         </div>
+
+        {/* MOBILE CARD VIEW */}
+        <div className="block md:hidden p-4 space-y-4 text-white overflow-visible">
+          <AnimatePresence mode="popLayout">
+            {filteredClients.map((client) => (
+              <motion.div
+                key={client.id}
+                layout
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="bg-[#2c2c2e]/40 border border-white/5 rounded-3xl p-5 space-y-4 relative overflow-visible"
+              >
+                {/* Header Profile Identity */}
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-blue-600/20">
+                      {client.first_name[0]}{client.last_name[0]}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white">
+                        {client.first_name} {client.last_name}
+                      </h4>
+                      <p className="text-[9px] font-bold text-gray-500 truncate max-w-[150px] mt-0.5">
+                        {client.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenu(activeMenu === client.id ? null : client.id);
+                      }}
+                      className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all ${
+                        activeMenu === client.id ? "bg-blue-600 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+                      }`}
+                    >
+                      <MoreHorizontal size={18} />
+                    </button>
+
+                    {activeMenu === client.id && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setActiveMenu(null)} />
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                          className="absolute right-0 top-12 w-48 bg-[#2c2c2e] border border-white/10 rounded-2xl shadow-xl z-[100] overflow-hidden"
+                        >
+                          <div className="p-1.5 space-y-0.5">
+                            <button
+                              onClick={() => {
+                                setSelectedClient(client);
+                                setIsViewModalOpen(true);
+                                setActiveMenu(null);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[10px] font-black uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all min-h-[44px]"
+                            >
+                              <Eye size={14} />
+                              View Profile
+                            </button>
+                            <Link href={`/clients/edit/${client.government_id}`} className="block">
+                              <button className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[10px] font-black uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all min-h-[44px] text-left">
+                                <Edit3 size={14} />
+                                Edit Details
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setClientToDelete(client);
+                                setIsDeleteModalOpen(true);
+                                setActiveMenu(null);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[10px] font-black uppercase tracking-wider text-red-500 hover:bg-red-500/10 rounded-xl transition-all min-h-[44px]"
+                            >
+                              <Trash2 size={14} />
+                              Remove
+                            </button>
+                          </div>
+                        </motion.div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Status and plate */}
+                <div className="flex justify-between items-center py-1">
+                  <span className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg font-mono text-[9px] font-black text-blue-500 tracking-widest uppercase leading-none">
+                    {client.government_id}
+                  </span>
+
+                  <StatusPill status={client.status} />
+                </div>
+
+                {/* Client stats */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-[9px] text-gray-400">
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="text-[7.5px] font-black text-gray-500 uppercase tracking-widest">Phone Link</span>
+                    <span className="font-bold text-white uppercase flex items-center gap-1">
+                      <Phone size={10} className="text-blue-500" />
+                      {client.phone}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[7.5px] font-black text-gray-500 uppercase tracking-widest">Trips Registered</span>
+                    <span className="font-black text-white">
+                      {client.total_rentals || 0} Rentals
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {/* Empty Search State */}
+        {filteredClients.length === 0 && (
+          <div className="py-32 flex flex-col items-center justify-center text-center">
+            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center text-[#424245] mb-6">
+              <UserX size={48} />
+            </div>
+            <h3 className="text-xl font-black text-white tracking-tight">No Clients Found</h3>
+            <p className="text-[#6e6e73] text-sm mt-2 max-w-xs uppercase font-bold tracking-widest leading-relaxed">
+              We couldn't find any matches for "{searchTerm}".
+            </p>
+          </div>
+        )}
       </div>
+
 
       {/* VIEW MODAL INTEGRATION */}
       <ViewClientModal 

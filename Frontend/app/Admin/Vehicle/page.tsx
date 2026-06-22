@@ -3,6 +3,9 @@ import FleetManager from "@/components/Vehicles/FleetManager";
 import { VehicleErrorState, VehicleEmptyState } from "@/components/Vehicles/VehicleStatusStates";
 import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
+
 export const metadata = {
   title: 'Fleet Management | xrent CAR',
   description: 'Manage and monitor your entire vehicle fleet in real-time.',

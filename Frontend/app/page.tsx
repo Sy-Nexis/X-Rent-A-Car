@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import MainDashboardClient from "@/components/Dashboard/MainDashboardClient";
+import LandingView from "@/components/Landing/LandingView";
 
 // --- SERVER-SIDE DATA FETCHING ---
 
@@ -9,7 +9,7 @@ async function getFleetData() {
   const token = cookieStore.get("xrent_token")?.value;
 
   if (!token) {
-    redirect("/login");
+    return null;
   }
 
   try {
@@ -19,7 +19,7 @@ async function getFleetData() {
     });
 
     if (response.status === 401) {
-      redirect("/login");
+      return null;
     }
 
     const result = await response.json().catch(() => ({ data: [] }));
@@ -33,9 +33,14 @@ async function getFleetData() {
 export default async function RootPage() {
   const vehicles = await getFleetData();
 
+  if (vehicles === null) {
+    return <LandingView />;
+  }
+
   return (
     <main>
       <MainDashboardClient vehicles={vehicles} />
     </main>
   );
 }
+

@@ -1,7 +1,10 @@
 import React from "react";
 import ClientListActionable from "@/components/Clients/ClientListActionable";
 import { ErrorStateUI, EmptyRegistryUI } from "@/components/Clients/RegistryStatusStates";
-import { ShieldCheck, Users, Activity, UserPlus } from "lucide-react";
+import { ShieldCheck, Users, Activity } from "lucide-react";
+
+export const dynamic = "force-dynamic";
+
 
 // --- SERVER-SIDE DATA FETCHING ---
 async function getClients() {
