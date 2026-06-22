@@ -2,7 +2,7 @@ import { Request } from 'express';
 
 export interface UserPayload {
     id: number;
-    role: 'Admin' | 'Manager';
+    role: 'Staff' | 'Manager' | 'Admin' | string;
 }
 
 export interface AuthRequest extends Request {

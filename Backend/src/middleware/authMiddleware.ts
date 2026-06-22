@@ -1,10 +1,13 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../db';
+import { supabase } from '../config/supabase';
 import { AuthRequest, UserPayload } from '../types/auth';
 
+/**
+ * Protect route middleware: Extracts JWT and verifies against Supabase DB active status
+ */
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
-    let token;
+    let token: string | undefined;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
@@ -15,8 +18,16 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as UserPayload;
+        const jwtSecret = process.env.JWT_SECRET;
+        if (!jwtSecret) {
+            console.error("CRITICAL CONFIGURATION ERROR: JWT_SECRET is missing from environment variables");
+            return res.status(500).json({ message: 'Server configuration error' });
+        }
 
+        // Parse and verify the token signature
+        const decoded = jwt.verify(token, jwtSecret) as UserPayload;
+
+        // High-speed active check directly to Supabase to verify User ID exists and status remains Active
         const { data: staff, error } = await supabase
             .from('staff')
             .select('id, role, status')
@@ -29,11 +40,11 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
         }
 
         if (staff.status !== 'Active') {
-            console.log(`AUTH_REJECTED: User ID ${decoded.id} is suspended`);
-            return res.status(401).json({ message: 'Account is suspended' });
+            console.log(`AUTH_REJECTED: User ID ${decoded.id} is suspended/inactive`);
+            return res.status(401).json({ message: 'Account is suspended or inactive' });
         }
 
-        // 3. Attach the fresh data from Supabase to the request
+        // Append the user payload details into a typed custom Express object reference (req.user)
         req.user = { id: staff.id, role: staff.role };
         next();
 
@@ -42,6 +53,9 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     }
 };
 
+/**
+ * Restrict routes to specific roles
+ */
 export const restrictTo = (...roles: string[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {

@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-06-22T16:04:49.025Z",
+  "error": {
+    "code": "23505",
+    "details": "Key (license_plate)=(ABA-1265) already exists.",
+    "hint": null,
+    "message": "duplicate key value violates unique constraint \"vehicles_license_plate_key\""
+  },
+  "payload": {
+    "make": "Toyota",
+    "model": "aa",
+    "year": 2111,
+    "vin": "123123124124124124124124124aaa",
+    "license_plate": "ABA-1265",
+    "transmission": "Manual",
+    "fuel_type": "Electric",
+    "engine_capacity": "1000CC",
+    "color": "White",
+    "mileage": 109,
+    "daily_rate": 110000,
+    "branch": "Colombo HQ",
+    "status": "Available"
+  }
+}
