@@ -43,9 +43,18 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
                 Update your personal information and contact details.
               </p>
             </div>
-            <button className="bg-[#0b1220] hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer">
-              Save Changes
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={onLogout}
+                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer"
+              >
+                Log Out
+              </button>
+              <button className="bg-[#0b1220] hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer">
+                Save Changes
+              </button>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -125,16 +134,16 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
             </p>
 
             <div className="space-y-3">
-              {[
+              {([
                 { id: "Light", label: "Light Mode", icon: "☀️" },
                 { id: "Dark", label: "Dark Mode", icon: "🌙" },
                 { id: "System", label: "System Sync", icon: "📺" },
-              ].map((opt) => {
+              ] as const).map((opt) => {
                 const isActive = appearance === opt.id;
                 return (
                   <button
                     key={opt.id}
-                    onClick={() => setAppearance(opt.id as any)}
+                    onClick={() => setAppearance(opt.id)}
                     className={`w-full flex items-center justify-between p-3.5 rounded-lg border transition-all cursor-pointer ${
                       isActive
                         ? "bg-sky-50/50 border-sky-400 text-sky-850"
