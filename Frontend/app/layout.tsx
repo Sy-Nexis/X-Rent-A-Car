@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "xrent CAR | Fleet Operations Dashboard",
-  description: "Real-time fleet operations dashboard for xrent CAR",
+  title: "FleetControl | Precision Logistics Operations Hub",
+  description: "Real-time fleet operations, client registry, and logistics dashboard.",
 };
 
 export default function RootLayout({
@@ -18,11 +12,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} antialiased h-full`}
-    >
-      <body className="min-h-full flex flex-col font-sans bg-bg-base text-text-primary">
+    <html lang="en" className="h-full">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body className="min-h-full font-sans antialiased bg-[#f5f7fa] text-[#0f172a] h-full overflow-hidden select-none">
         {children}
       </body>
     </html>
