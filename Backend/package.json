@@ -4,7 +4,9 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts"
+    "start": "tsx src/index.ts",
+    "demo:create": "./node_modules/.bin/tsx scripts/demo-create.ts",
+    "demo:remove": "./node_modules/.bin/tsx scripts/demo-remove.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
