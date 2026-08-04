@@ -135,9 +135,35 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
 
             <div className="space-y-3">
               {([
-                { id: "Light", label: "Light Mode", icon: "☀️" },
-                { id: "Dark", label: "Dark Mode", icon: "🌙" },
-                { id: "System", label: "System Sync", icon: "📺" },
+                {
+                  id: "Light",
+                  label: "Light Mode",
+                  icon: (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="5" strokeWidth="2" />
+                      <path strokeLinecap="round" strokeWidth="2" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                    </svg>
+                  ),
+                },
+                {
+                  id: "Dark",
+                  label: "Dark Mode",
+                  icon: (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                  ),
+                },
+                {
+                  id: "System",
+                  label: "System Sync",
+                  icon: (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="2" y="3" width="20" height="14" rx="2" strokeWidth="2" />
+                      <path strokeLinecap="round" strokeWidth="2" d="M8 21h8M12 17v4" />
+                    </svg>
+                  ),
+                },
               ] as const).map((opt) => {
                 const isActive = appearance === opt.id;
                 return (
@@ -151,13 +177,17 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span>{opt.icon}</span>
+                      {opt.icon}
                       <span className="text-xs font-extrabold tracking-wide">{opt.label}</span>
                     </div>
-                    <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${
-                      isActive ? "border-brand-cyan bg-brand-cyan text-white text-[10px]" : "border-gray-500 bg-[#0e0e11]"
+                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      isActive ? "border-brand-cyan bg-brand-cyan" : "border-gray-600 bg-[#0e0e11]"
                     }`}>
-                      {isActive && "✓"}
+                      {isActive && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
                     </span>
                   </button>
                 );
@@ -168,8 +198,10 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           {/* Security Card */}
           <div className="bg-[#1e1e1e] text-white rounded-2xl border border-white/5 p-6 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[175px]">
             {/* Shield Icon Overlay on background */}
-            <div className="absolute right-2 bottom-2 text-white/5 text-8xl font-black pointer-events-none select-none">
-              🛡️
+            <div className="absolute right-2 bottom-2 text-white/5 pointer-events-none select-none">
+              <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6l-9-4z" />
+              </svg>
             </div>
             
             <div className="relative z-10">
@@ -211,26 +243,38 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
               desc: "Weekly summaries and critical maintenance reports.",
               val: emailAlerts,
               setVal: setEmailAlerts,
-              icon: "✉️",
+              icon: (
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              ),
             },
             {
               title: "Push Notifications",
               desc: "Real-time alerts for vehicle breakdowns or delays.",
               val: pushNotes,
               setVal: setPushNotes,
-              icon: "🔔",
+              icon: (
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+              ),
             },
             {
               title: "SMS Updates",
               desc: "Direct messages for emergency route changes.",
               val: smsUpdates,
               setVal: setSmsUpdates,
-              icon: "💬",
+              icon: (
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3-3-3z" />
+                </svg>
+              ),
             },
           ].map((item) => (
             <div key={item.title} className="bg-[#0e0e11]/70 border border-white/5 rounded-xl p-5 flex flex-col justify-between h-40">
               <div className="flex flex-col gap-2">
-                <span className="text-xl">{item.icon}</span>
+                {item.icon}
                 <span className="text-xs font-black text-white uppercase tracking-wide">
                   {item.title}
                 </span>
@@ -274,7 +318,10 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           </div>
 
           <button className="flex items-center gap-2 text-brand-red hover:opacity-85 text-[10px] font-black uppercase tracking-wider self-start cursor-pointer mt-6">
-            <span>⚠</span> Log out from all other devices
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+            Log out from all other devices
           </button>
         </div>
 
@@ -283,13 +330,18 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           {/* Session 1 */}
           <div className="flex items-center justify-between p-4 bg-[#0e0e11]/70 border border-white/5 rounded-xl">
             <div className="flex items-center gap-4">
-              <span className="text-xl">💻</span>
+              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 flex-shrink-0">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="20" height="14" rx="2" strokeWidth="2" />
+                  <path strokeLinecap="round" strokeWidth="2" d="M8 21h8M12 17v4" />
+                </svg>
+              </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-white">
-                  MacBook Pro 16&quot; • San Francisco, US
+                  MacBook Pro 16&quot; &bull; San Francisco, US
                 </span>
                 <span className="text-[10px] text-gray-500 font-bold">
-                  Current Session • Chrome 118.0
+                  Current Session &bull; Chrome 118.0
                 </span>
               </div>
             </div>
@@ -301,13 +353,18 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           {/* Session 2 */}
           <div className="flex items-center justify-between p-4 bg-[#0e0e11]/70 border border-white/5 rounded-xl">
             <div className="flex items-center gap-4">
-              <span className="text-xl">📱</span>
+              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 flex-shrink-0">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="5" y="2" width="14" height="20" rx="2" strokeWidth="2" />
+                  <circle cx="12" cy="17" r="1" fill="currentColor" />
+                </svg>
+              </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-white">
-                  iPhone 15 Pro • Austin, US
+                  iPhone 15 Pro &bull; Austin, US
                 </span>
                 <span className="text-[10px] text-gray-500 font-bold">
-                  3 days ago • FleetControl App
+                  3 days ago &bull; FleetControl App
                 </span>
               </div>
             </div>
