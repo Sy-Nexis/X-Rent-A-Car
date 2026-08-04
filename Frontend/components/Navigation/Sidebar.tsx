@@ -64,8 +64,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     switch (activeView) {
       case "Dashboard":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
               MT
             </div>
             <div className="flex flex-col min-w-0">
@@ -76,7 +76,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "AdminPortal":
         return (
-          <div className="flex flex-col gap-2 p-3 bg-[#111c35] border border-white/5 rounded-xl">
+          <div className="flex flex-col gap-2 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
             <span className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">System Status</span>
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -86,8 +86,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "FleetManagement":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
               SA
             </div>
             <div className="flex flex-col min-w-0">
@@ -98,8 +98,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "FleetEmpty":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-cyan-500 to-blue-550 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
               AR
             </div>
             <div className="flex flex-col min-w-0">
@@ -110,8 +110,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "FleetList":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-teal-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
               SA
             </div>
             <div className="flex flex-col min-w-0">
@@ -122,8 +122,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "ClientRegistry":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
+            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
               HQ
             </div>
             <div className="flex flex-col min-w-0">
@@ -134,9 +134,9 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       case "RegisterClient":
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
             <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-slate-800 flex items-center justify-center border border-white/10">
-              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-cyan-450" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
@@ -160,7 +160,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
         );
       default:
         return (
-          <div className="flex items-center gap-3 p-3 bg-[#111c35] border border-white/5 rounded-xl">
+          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
             <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-slate-700 flex items-center justify-center text-white font-bold">
               FC
             </div>
@@ -174,13 +174,13 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
   };
 
   const sidebarContent = (
-    <aside className="w-64 bg-[#0b1220] flex flex-col justify-between h-full flex-shrink-0 border-r border-white/5 relative z-20">
+    <aside className="w-64 bg-[#0e0e11] flex flex-col justify-between h-full flex-shrink-0 border-r border-white/5 relative z-20">
       {/* Brand Header */}
       <div className="p-6 pb-8 flex items-center justify-between">
         <div className="flex items-center py-2">
-          <span className="font-serif text-white text-4xl tracking-wide flex items-center select-none">
+          <span className="font-sans text-white text-4xl font-bold tracking-wide flex items-center select-none">
             ne
-            <span className="font-serif text-white text-5xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
+            <span className="text-brand-gradient text-4xl font-black mx-0.5">X</span>
             us
           </span>
         </div>
@@ -220,19 +220,16 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
               }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${
                 isActive
-                  ? "bg-[#1e293b]/50 text-white"
+                  ? "bg-brand-gradient text-white shadow-lg shadow-emerald-500/10"
                   : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`transition-colors ${isActive ? "text-blue-400" : "text-gray-400 group-hover:text-gray-200"}`}>
+                <span className={`transition-colors ${isActive ? "text-white" : "text-gray-400 group-hover:text-gray-200"}`}>
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
               </div>
-              {isActive && (
-                <span className="absolute right-0 top-1/4 bottom-1/4 w-1 rounded-l-full bg-blue-500" />
-              )}
             </button>
           );
         })}

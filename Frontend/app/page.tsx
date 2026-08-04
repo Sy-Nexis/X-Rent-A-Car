@@ -91,7 +91,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#f4f6fa] h-full">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0e0e11] h-full">
         {/* Top Header Bar */}
         <Header
           activeView={activeView}

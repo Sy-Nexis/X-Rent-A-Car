@@ -62,7 +62,7 @@ export default function MobileBottomNav({ activeView, onNavigate }: MobileBottom
     (id === "FleetList" && ["FleetList", "FleetEmpty", "FleetManagement"].includes(activeView));
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0b1220] border-t border-white/10 flex items-stretch h-16 safe-area-pb">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1e1e1e] border-t border-white/5 flex items-stretch h-16 safe-area-pb">
       {navItems.map((item) => {
         const active = isActive(item.id);
         return (
@@ -70,16 +70,16 @@ export default function MobileBottomNav({ activeView, onNavigate }: MobileBottom
             key={item.id}
             onClick={() => onNavigate(item.id)}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-all relative cursor-pointer ${
-              active ? "text-blue-400" : "text-gray-500 hover:text-gray-300"
+              active ? "text-brand-cyan" : "text-gray-500 hover:text-gray-300"
             }`}
           >
             {active && (
-              <span className="absolute top-0 left-1/4 right-1/4 h-0.5 rounded-b-full bg-blue-500" />
+              <span className="absolute top-0 left-1/4 right-1/4 h-0.5 rounded-b-full bg-brand-cyan" />
             )}
             <span className={`transition-transform ${active ? "scale-110" : "scale-100"}`}>
               {item.icon}
             </span>
-            <span className={`text-[9px] font-black uppercase tracking-wider ${active ? "text-blue-400" : "text-gray-500"}`}>
+            <span className={`text-[9px] font-black uppercase tracking-wider ${active ? "text-brand-cyan" : "text-gray-500"}`}>
               {item.label}
             </span>
           </button>

@@ -19,12 +19,12 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
   const [smsUpdates, setSmsUpdates] = useState(false);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar space-y-6">
+    <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar space-y-6 bg-[#0e0e11]">
       
       {/* Title */}
       <div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-1">Settings</h1>
-        <p className="text-sm text-gray-500 font-medium">
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-1">Settings</h1>
+        <p className="text-sm text-gray-400 font-medium">
           Manage your account preferences and application configuration.
         </p>
       </div>
@@ -33,10 +33,10 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         {/* Account Details Form (span 2) */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
+        <div className="lg:col-span-2 bg-[#1e1e1e] rounded-2xl border border-white/5 p-6 shadow-md">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-sm font-extrabold uppercase text-slate-800 tracking-wider">
+              <h2 className="text-sm font-extrabold uppercase text-white tracking-wider">
                 Account Details
               </h2>
               <p className="text-[11px] text-gray-400 font-medium">
@@ -47,11 +47,11 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
               <button
                 type="button"
                 onClick={onLogout}
-                className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer"
+                className="bg-brand-red hover:opacity-90 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-md transition-all cursor-pointer"
               >
                 Log Out
               </button>
-              <button className="bg-[#0b1220] hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm transition-all cursor-pointer">
+              <button className="bg-brand-gradient hover:opacity-90 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-md transition-all cursor-pointer">
                 Save Changes
               </button>
             </div>
@@ -60,63 +60,63 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                   Full Name
                 </label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-gray-250 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                   Email Address
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-gray-250 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                   Phone Number
                 </label>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-gray-250 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+                <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                   Department
                 </label>
                 <input
                   type="text"
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full bg-[#f8fafc] border border-gray-250 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
                 Bio / Notes
               </label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows={3}
-                className="w-full bg-[#f8fafc] border border-gray-250 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:outline-none transition-all resize-none"
+                className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all resize-none"
               />
             </div>
           </div>
@@ -125,8 +125,8 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
         {/* Right side options: Appearance & Security (span 1) */}
         <div className="space-y-6">
           {/* Appearance Card */}
-          <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
-            <h2 className="text-sm font-extrabold uppercase text-slate-800 tracking-wider mb-1">
+          <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 p-6 shadow-md">
+            <h2 className="text-sm font-extrabold uppercase text-white tracking-wider mb-1">
               Appearance
             </h2>
             <p className="text-[10px] text-gray-400 font-medium mb-4">
@@ -146,8 +146,8 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
                     onClick={() => setAppearance(opt.id)}
                     className={`w-full flex items-center justify-between p-3.5 rounded-lg border transition-all cursor-pointer ${
                       isActive
-                        ? "bg-sky-50/50 border-sky-400 text-sky-850"
-                        : "bg-white border-gray-200 text-slate-700 hover:border-gray-300"
+                        ? "bg-[#0e0e11] border-brand-cyan text-brand-cyan"
+                        : "bg-white/5 border-white/5 text-gray-400 hover:border-white/10"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
                       <span className="text-xs font-extrabold tracking-wide">{opt.label}</span>
                     </div>
                     <span className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${
-                      isActive ? "border-sky-500 bg-sky-500 text-white text-[10px]" : "border-gray-300 bg-white"
+                      isActive ? "border-brand-cyan bg-brand-cyan text-white text-[10px]" : "border-gray-500 bg-[#0e0e11]"
                     }`}>
                       {isActive && "✓"}
                     </span>
@@ -166,9 +166,9 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
           </div>
 
           {/* Security Card */}
-          <div className="bg-[#111827] text-white rounded-2xl border border-white/5 p-6 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[175px]">
+          <div className="bg-[#1e1e1e] text-white rounded-2xl border border-white/5 p-6 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[175px]">
             {/* Shield Icon Overlay on background */}
-            <div className="absolute right-2 bottom-2 text-white/5 text-8xl font-black pointer-events-none">
+            <div className="absolute right-2 bottom-2 text-white/5 text-8xl font-black pointer-events-none select-none">
               🛡️
             </div>
             
@@ -176,17 +176,17 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
               <h2 className="text-sm font-extrabold uppercase tracking-wider text-white mb-1">
                 Security
               </h2>
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-450 uppercase tracking-widest mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="flex items-center gap-1.5 text-[9px] font-black text-brand-green uppercase tracking-widest mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
                 Encryption Active
               </div>
             </div>
 
             <div className="relative z-10 flex flex-col gap-2.5">
-              <button className="w-full bg-white hover:bg-slate-50 text-slate-850 text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all shadow-sm">
+              <button className="w-full bg-brand-gradient hover:opacity-90 text-white text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all shadow-md cursor-pointer">
                 Change Password
               </button>
-              <button className="w-full bg-transparent hover:bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all">
+              <button className="w-full bg-transparent hover:bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-wider py-2.5 rounded-lg transition-all cursor-pointer">
                 2FA Settings
               </button>
             </div>
@@ -196,8 +196,8 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
       </div>
 
       {/* Row 2: Notifications */}
-      <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm">
-        <h2 className="text-sm font-extrabold uppercase text-slate-800 tracking-wider mb-1">
+      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 p-6 shadow-md">
+        <h2 className="text-sm font-extrabold uppercase text-white tracking-wider mb-1">
           Notifications
         </h2>
         <p className="text-[10px] text-gray-400 font-medium mb-5">
@@ -228,27 +228,27 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
               icon: "💬",
             },
           ].map((item) => (
-            <div key={item.title} className="bg-[#f0f4f9]/70 border border-gray-200/50 rounded-xl p-5 flex flex-col justify-between h-40">
+            <div key={item.title} className="bg-[#0e0e11]/70 border border-white/5 rounded-xl p-5 flex flex-col justify-between h-40">
               <div className="flex flex-col gap-2">
                 <span className="text-xl">{item.icon}</span>
-                <span className="text-xs font-black text-slate-850 uppercase tracking-wide">
+                <span className="text-xs font-black text-white uppercase tracking-wide">
                   {item.title}
                 </span>
-                <p className="text-[10px] text-gray-500 font-medium leading-relaxed">
+                <p className="text-[10px] text-gray-400 font-medium leading-relaxed">
                   {item.desc}
                 </p>
               </div>
 
               {/* Toggle switch */}
-              <div className="flex items-center justify-between border-t border-gray-200/30 pt-3 mt-2">
-                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+              <div className="flex items-center justify-between border-t border-white/5 pt-3 mt-2">
+                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
                   {item.val ? "Enabled" : "Disabled"}
                 </span>
                 <button
                   type="button"
                   onClick={() => item.setVal(!item.val)}
                   className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-all cursor-pointer ${
-                    item.val ? "bg-[#0b1220] justify-end" : "bg-gray-300 justify-start"
+                    item.val ? "bg-brand-gradient justify-end" : "bg-white/10 justify-start"
                   }`}
                 >
                   <span className="w-4 h-4 rounded-full bg-white shadow-sm" />
@@ -260,12 +260,12 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
       </div>
 
       {/* Row 3: Active Sessions */}
-      <div className="bg-white rounded-2xl border border-gray-150 p-6 shadow-sm flex flex-col lg:flex-row gap-6 justify-between items-stretch">
+      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 p-6 shadow-md flex flex-col lg:flex-row gap-6 justify-between items-stretch">
         
         {/* Left explanation */}
         <div className="lg:w-1/3 flex flex-col justify-between py-2">
           <div>
-            <h2 className="text-sm font-extrabold uppercase text-slate-800 tracking-wider mb-1">
+            <h2 className="text-sm font-extrabold uppercase text-white tracking-wider mb-1">
               Active Sessions
             </h2>
             <p className="text-[10px] text-gray-400 font-medium leading-relaxed">
@@ -273,7 +273,7 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
             </p>
           </div>
 
-          <button className="flex items-center gap-2 text-rose-600 hover:text-rose-750 text-[10px] font-black uppercase tracking-wider self-start cursor-pointer mt-6">
+          <button className="flex items-center gap-2 text-brand-red hover:opacity-85 text-[10px] font-black uppercase tracking-wider self-start cursor-pointer mt-6">
             <span>⚠</span> Log out from all other devices
           </button>
         </div>
@@ -281,37 +281,37 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
         {/* Right sessions list */}
         <div className="flex-1 space-y-3">
           {/* Session 1 */}
-          <div className="flex items-center justify-between p-4 bg-[#f0f4f9]/70 border border-gray-200/40 rounded-xl">
+          <div className="flex items-center justify-between p-4 bg-[#0e0e11]/70 border border-white/5 rounded-xl">
             <div className="flex items-center gap-4">
               <span className="text-xl">💻</span>
               <div className="flex flex-col">
-                <span className="text-xs font-black text-slate-850">
+                <span className="text-xs font-black text-white">
                   MacBook Pro 16&quot; • San Francisco, US
                 </span>
-                <span className="text-[10px] text-gray-405 font-bold">
+                <span className="text-[10px] text-gray-500 font-bold">
                   Current Session • Chrome 118.0
                 </span>
               </div>
             </div>
-            <span className="bg-[#e1fcf6] border border-cyan-200 text-[#0f766e] text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded">
+            <span className="bg-brand-green/10 border border-brand-green/20 text-brand-green text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded">
               Active
             </span>
           </div>
 
           {/* Session 2 */}
-          <div className="flex items-center justify-between p-4 bg-[#f0f4f9]/70 border border-gray-200/40 rounded-xl">
+          <div className="flex items-center justify-between p-4 bg-[#0e0e11]/70 border border-white/5 rounded-xl">
             <div className="flex items-center gap-4">
               <span className="text-xl">📱</span>
               <div className="flex flex-col">
-                <span className="text-xs font-black text-slate-850">
+                <span className="text-xs font-black text-white">
                   iPhone 15 Pro • Austin, US
                 </span>
-                <span className="text-[10px] text-gray-405 font-bold">
+                <span className="text-[10px] text-gray-500 font-bold">
                   3 days ago • FleetControl App
                 </span>
               </div>
             </div>
-            <button className="text-[9px] font-black text-slate-800 hover:text-rose-600 uppercase tracking-widest cursor-pointer">
+            <button className="text-[9px] font-black text-gray-450 hover:text-brand-red uppercase tracking-widest cursor-pointer">
               Terminate
             </button>
           </div>
@@ -320,17 +320,17 @@ export default function SettingsView({ onLogout }: SettingsViewProps) {
       </div>
 
       {/* Row 4: Delete Workspace */}
-      <div className="bg-[#fff5f5] rounded-2xl border border-[#fed7d7]/65 p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="bg-brand-red/10 rounded-2xl border border-brand-red/20 p-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h2 className="text-sm font-extrabold uppercase text-[#c53030] tracking-wider mb-1">
+          <h2 className="text-sm font-extrabold uppercase text-brand-red tracking-wider mb-1">
             Delete Workspace
           </h2>
-          <p className="text-[10px] text-[#e53e3e] font-semibold">
+          <p className="text-[10px] text-brand-red font-semibold">
             Permanently remove all fleet data, client registries, and history. This action cannot be undone.
           </p>
         </div>
         
-        <button className="bg-[#e53e3e] hover:bg-[#c53030] active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-5 py-3 rounded-lg shadow-sm transition-all cursor-pointer">
+        <button className="bg-brand-red hover:opacity-90 active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-5 py-3 rounded-lg shadow-sm transition-all cursor-pointer">
           Delete Account
         </button>
       </div>
