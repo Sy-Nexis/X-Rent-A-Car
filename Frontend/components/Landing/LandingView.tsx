@@ -27,13 +27,18 @@ export default function LandingView({ onEnter }: LandingViewProps) {
           </span>
         </div>
 
-        {/* Enter System Button — uses brand gradient */}
+        {/* Enter System Button — shimmer + arrow slide */}
         <button
           onClick={onEnter}
-          className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-brand-cyan/10 transition-all cursor-pointer mb-8"
+          className="group btn-shimmer flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl transition-all cursor-pointer mb-8"
         >
           Enter System
-          <svg className="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 stroke-[3] transition-transform duration-300 group-hover:translate-x-1.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </button>
