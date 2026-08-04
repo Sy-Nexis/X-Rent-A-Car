@@ -1,13 +1,12 @@
-import React from "react";
+"use client";
 
-interface MobileBottomNavProps {
-  activeView: string;
-  onNavigate: (view: string) => void;
-}
+import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   {
     id: "Dashboard",
+    path: "/dashboard",
     label: "Home",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,6 +16,7 @@ const navItems = [
   },
   {
     id: "AdminPortal",
+    path: "/Admin",
     label: "Admin",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,6 +26,7 @@ const navItems = [
   },
   {
     id: "FleetList",
+    path: "/vehicles",
     label: "Fleet",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,6 +37,7 @@ const navItems = [
   },
   {
     id: "ClientRegistry",
+    path: "/clients",
     label: "Clients",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,6 +47,7 @@ const navItems = [
   },
   {
     id: "Settings",
+    path: "/settings",
     label: "Settings",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,20 +58,26 @@ const navItems = [
   },
 ];
 
-export default function MobileBottomNav({ activeView, onNavigate }: MobileBottomNavProps) {
-  const isActive = (id: string) =>
-    activeView === id ||
-    (id === "ClientRegistry" && activeView === "RegisterClient") ||
-    (id === "FleetList" && ["FleetList", "FleetEmpty", "FleetManagement"].includes(activeView));
+export default function MobileBottomNav() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const isActive = (item: typeof navItems[0]) => {
+    if (item.id === "ClientRegistry") return pathname.startsWith("/clients");
+    if (item.id === "FleetList") return pathname.startsWith("/vehicles");
+    if (item.id === "AdminPortal") return pathname.startsWith("/Admin");
+    if (item.id === "Settings") return pathname.startsWith("/settings");
+    return pathname.startsWith("/dashboard");
+  };
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1e1e1e] border-t border-white/5 flex items-stretch h-16 safe-area-pb">
       {navItems.map((item) => {
-        const active = isActive(item.id);
+        const active = isActive(item);
         return (
           <button
             key={item.id}
-            onClick={() => onNavigate(item.id)}
+            onClick={() => router.push(item.path)}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-all relative cursor-pointer ${
               active ? "text-brand-cyan" : "text-gray-500 hover:text-gray-300"
             }`}

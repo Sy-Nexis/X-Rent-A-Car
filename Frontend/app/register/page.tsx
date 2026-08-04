@@ -1,15 +1,19 @@
-import React from "react";
-import RegisterForm from "@/components/Auth/RegisterForm";
+"use client";
 
-export const metadata = {
-  title: "Personnel Onboarding | xrent CAR",
-  description: "Secure registration terminal for new xrent administrative staff.",
-};
+import React from "react";
+import { useRouter } from "next/navigation";
+import RegisterView from "@/components/Auth/RegisterView";
+
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   return (
     <main>
-      <RegisterForm />
+      <RegisterView
+        onRegisterSuccess={() => router.push("/login")}
+        onGoToLogin={() => router.push("/login")}
+      />
     </main>
   );
 }

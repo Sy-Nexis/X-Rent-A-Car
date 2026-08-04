@@ -1,17 +1,33 @@
+"use client";
+
 import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 interface SidebarProps {
-  activeView: string;
-  onNavigate: (view: string) => void;
   isDrawerOpen?: boolean;
   onCloseDrawer?: () => void;
 }
 
-export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, onCloseDrawer }: SidebarProps) {
+// Maps URL pathname to a logical view name used by the footer/active-state logic
+function getViewFromPathname(pathname: string): string {
+  if (pathname.startsWith("/Admin")) return "AdminPortal";
+  if (pathname.startsWith("/vehicles")) return "FleetList";
+  if (pathname.startsWith("/clients/register")) return "RegisterClient";
+  if (pathname.startsWith("/clients")) return "ClientRegistry";
+  if (pathname.startsWith("/settings")) return "Settings";
+  return "Dashboard";
+}
+
+export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: SidebarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const activeView = getViewFromPathname(pathname);
+
   // Navigation items mapping
   const navItems = [
     {
       id: "Dashboard",
+      path: "/dashboard",
       label: "Dashboard",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,6 +37,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     },
     {
       id: "AdminPortal",
+      path: "/Admin",
       label: "Admin Portal",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,6 +47,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     },
     {
       id: "FleetManagement",
+      path: "/vehicles",
       label: "Fleet Management",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,6 +58,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     },
     {
       id: "ClientRegistry",
+      path: "/clients",
       label: "Client Registry",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,6 +68,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     },
     {
       id: "Settings",
+      path: "/settings",
       label: "Settings",
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +79,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
     },
   ];
 
-  // Dynamic footer profile depending on selected view to match the screenshots exactly!
+  // Dynamic footer profile depending on active view
   const renderFooterProfile = () => {
     switch (activeView) {
       case "Dashboard":
@@ -85,6 +105,8 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
           </div>
         );
       case "FleetManagement":
+      case "FleetList":
+      case "FleetEmpty":
         return (
           <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
             <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
@@ -93,30 +115,6 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
             <div className="flex flex-col min-w-0">
               <span className="text-white text-xs font-semibold truncate">System Admin</span>
               <span className="text-gray-400 text-[10px] truncate">Logistics Lead</span>
-            </div>
-          </div>
-        );
-      case "FleetEmpty":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
-              AR
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">Alex Rivers</span>
-              <span className="text-gray-400 text-[10px] truncate">Fleet Director</span>
-            </div>
-          </div>
-        );
-      case "FleetList":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
-              SA
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">System Admin</span>
-              <span className="text-gray-400 text-[10px] truncate">Logistics Tier 1</span>
             </div>
           </div>
         );
@@ -149,7 +147,7 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
       case "Settings":
         return (
           <button
-            onClick={() => onNavigate("Landing")}
+            onClick={() => router.push("/")}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all group cursor-pointer"
           >
             <svg className="w-5 h-5 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,22 +198,15 @@ export default function Sidebar({ activeView, onNavigate, isDrawerOpen = false, 
       {/* Main Nav Links */}
       <nav className="flex-1 px-4 space-y-1">
         {navItems.map((item) => {
-          // Normalize active states (RegisterClient is sub-view of ClientRegistry, FleetList & FleetEmpty & FleetManagement are sub-views of FleetManagement)
           const isActive =
             activeView === item.id ||
             (item.id === "ClientRegistry" && activeView === "RegisterClient") ||
-            (item.id === "FleetManagement" && (activeView === "FleetList" || activeView === "FleetEmpty" || activeView === "FleetManagement"));
+            (item.id === "FleetManagement" && ["FleetList", "FleetEmpty", "FleetManagement"].includes(activeView));
           return (
             <button
               key={item.id}
               onClick={() => {
-                if (item.id === "FleetManagement") {
-                  // Switch between list view by default
-                  onNavigate("FleetList");
-                } else {
-                  onNavigate(item.id);
-                }
-                // Close drawer on mobile after navigating
+                router.push(item.path);
                 if (onCloseDrawer) onCloseDrawer();
               }}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all group relative ${

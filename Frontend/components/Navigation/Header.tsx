@@ -1,12 +1,26 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 interface HeaderProps {
-  activeView: string;
   onAddUnit?: () => void;
   onOpenMenu?: () => void;
 }
 
-export default function Header({ activeView, onAddUnit, onOpenMenu }: HeaderProps) {
+function getViewFromPathname(pathname: string): string {
+  if (pathname.startsWith("/Admin")) return "AdminPortal";
+  if (pathname.startsWith("/vehicles/new")) return "FleetManagement";
+  if (pathname.startsWith("/vehicles")) return "FleetList";
+  if (pathname.startsWith("/clients/register")) return "RegisterClient";
+  if (pathname.startsWith("/clients")) return "ClientRegistry";
+  if (pathname.startsWith("/settings")) return "Settings";
+  return "Dashboard";
+}
+
+export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
+  const pathname = usePathname();
+  const activeView = getViewFromPathname(pathname);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +37,7 @@ export default function Header({ activeView, onAddUnit, onOpenMenu }: HeaderProp
     };
   }, []);
 
-  // Dynamically configure search placeholder and user profile info to match the screenshots exactly
+  // Dynamically configure search placeholder and user profile info
   const getHeaderConfig = () => {
     switch (activeView) {
       case "Dashboard":
@@ -124,7 +138,7 @@ export default function Header({ activeView, onAddUnit, onOpenMenu }: HeaderProp
           </div>
         </div>
 
-        {/* Database connection status & Add Unit button (Screenshot 5) */}
+        {/* Database connection status & Add Unit button */}
         {config.showStatus && (
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase text-gray-500 tracking-wider">
@@ -174,7 +188,7 @@ export default function Header({ activeView, onAddUnit, onOpenMenu }: HeaderProp
               )}
             </div>
           )}
-          
+
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-8 h-8 rounded-full overflow-hidden border border-white/5 bg-[#1e1e1e] flex items-center justify-center hover:border-white/10 focus:outline-none transition-all cursor-pointer text-gray-400 hover:text-white"
