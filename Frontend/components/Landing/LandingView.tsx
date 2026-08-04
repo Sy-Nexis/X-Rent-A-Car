@@ -6,9 +6,9 @@ interface LandingViewProps {
 
 export default function LandingView({ onEnter }: LandingViewProps) {
   return (
-    <div className="w-full h-screen bg-[#0b1220] flex flex-col justify-between p-12 text-white select-none relative overflow-hidden">
-      {/* Background soft circular gradient */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.06)_0%,transparent_70%)]" />
+    <div className="w-full h-screen bg-brand-dark flex flex-col justify-between p-12 text-white select-none relative overflow-hidden">
+      {/* Background soft circular gradient using brand-cyan */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.07)_0%,transparent_65%)]" />
 
       {/* Top spacing */}
       <div />
@@ -27,10 +27,10 @@ export default function LandingView({ onEnter }: LandingViewProps) {
           </span>
         </div>
 
-        {/* Enter System Button */}
+        {/* Enter System Button — uses brand gradient */}
         <button
           onClick={onEnter}
-          className="flex items-center gap-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-400 hover:to-cyan-350 active:scale-[0.98] text-[#0b1220] text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/10 transition-all cursor-pointer mb-8"
+          className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg shadow-brand-cyan/10 transition-all cursor-pointer mb-8"
         >
           Enter System
           <svg className="w-4 h-4 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,8 +39,8 @@ export default function LandingView({ onEnter }: LandingViewProps) {
         </button>
 
         {/* Network connected badge */}
-        <div className="flex items-center gap-2 bg-[#111c35] border border-white/5 px-4 py-2 rounded-full">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+        <div className="flex items-center gap-2 bg-brand-dark-card border border-white/5 px-4 py-2 rounded-full">
+          <span className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse" />
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
             Network Connected: Secure Node 04
           </span>
@@ -60,7 +60,7 @@ export default function LandingView({ onEnter }: LandingViewProps) {
           </div>
           <div className="flex flex-col text-right">
             <span className="text-[9px] font-black uppercase tracking-wider mb-1">Server Latency</span>
-            <span className="text-xs font-black text-cyan-400">14ms</span>
+            <span className="text-xs font-black text-brand-cyan">14ms</span>
           </div>
         </div>
       </div>
