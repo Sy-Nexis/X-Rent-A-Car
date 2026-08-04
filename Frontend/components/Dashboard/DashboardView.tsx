@@ -1,4 +1,115 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+function AnimatedNumber({ value, duration = 2000 }: { value: number; duration?: number }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const updateCount = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing function (easeOutQuad)
+      const easeOutQuad = (t: number) => t * (2 - t);
+      const currentCount = Math.floor(easeOutQuad(progress) * value);
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateCount);
+      } else {
+        setCount(value);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateCount);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [value, duration]);
+
+  return <>{count.toLocaleString()}</>;
+}
+
+function AnimatedBar({
+  targetPercent,
+  duration = 2000,
+}: {
+  targetPercent: number;
+  duration?: number;
+}) {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    setWidth(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const update = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOutQuad = (t: number) => t * (2 - t);
+      setWidth(easeOutQuad(progress) * targetPercent);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(update);
+      } else {
+        setWidth(targetPercent);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [targetPercent, duration]);
+
+  return (
+    <div
+      className="bg-brand-gradient h-full rounded-full"
+      style={{ width: `${width}%` }}
+    />
+  );
+}
+
+function AnimatedPercent({
+  value,
+  decimals = 0,
+  duration = 2000,
+}: {
+  value: number;
+  decimals?: number;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const update = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOutQuad = (t: number) => t * (2 - t);
+      setCount(easeOutQuad(progress) * value);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(update);
+      } else {
+        setCount(value);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [value, duration]);
+
+  return <>{decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}%</>;
+}
 
 export default function DashboardView() {
   const [viewType, setViewType] = useState<"map" | "list">("map");
@@ -21,7 +132,9 @@ export default function DashboardView() {
             <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">
               Active Vehicles
             </span>
-            <span className="text-3xl font-black text-white leading-none">1,284</span>
+            <span className="text-3xl font-black text-white leading-none">
+              <AnimatedNumber value={1284} />
+            </span>
             <div className="flex items-center gap-1 mt-1 text-[11px] font-bold text-brand-green">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -43,7 +156,9 @@ export default function DashboardView() {
             <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">
               Kms Driven Today
             </span>
-            <span className="text-3xl font-black text-white leading-none">42,890</span>
+            <span className="text-3xl font-black text-white leading-none">
+              <AnimatedNumber value={42890} />
+            </span>
             <div className="flex items-center gap-1 mt-1 text-[11px] font-bold text-gray-550 text-gray-500">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -64,7 +179,9 @@ export default function DashboardView() {
             <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider">
               Active Alerts
             </span>
-            <span className="text-3xl font-black text-brand-red leading-none">14</span>
+            <span className="text-3xl font-black text-brand-red leading-none">
+              <AnimatedNumber value={14} />
+            </span>
             <div className="flex items-center gap-1.5 mt-1 text-[11px] font-bold text-brand-red">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-red animate-pulse" />
               <span>3 Critical Priority</span>
@@ -265,17 +382,19 @@ export default function DashboardView() {
 
             <div className="space-y-5">
               {[
-                { label: "Vehicle Utilization", value: "94%" },
-                { label: "Fuel Efficiency", value: "78%" },
-                { label: "On-Time Deliveries", value: "99.2%" },
+                { label: "Vehicle Utilization", value: 94,   decimals: 0 },
+                { label: "Fuel Efficiency",      value: 78,   decimals: 0 },
+                { label: "On-Time Deliveries",   value: 99.2, decimals: 1 },
               ].map((bar) => (
                 <div key={bar.label}>
                   <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">
                     <span>{bar.label}</span>
-                    <span className="text-white font-black">{bar.value}</span>
+                    <span className="text-white font-black">
+                      <AnimatedPercent value={bar.value} decimals={bar.decimals} />
+                    </span>
                   </div>
                   <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                    <div className="bg-brand-gradient h-full rounded-full" style={{ width: bar.value }} />
+                    <AnimatedBar targetPercent={bar.value} />
                   </div>
                 </div>
               ))}

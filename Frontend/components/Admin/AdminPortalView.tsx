@@ -1,4 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+function AnimatedNumber({
+  value,
+  duration = 2000,
+  decimals = 0,
+  suffix = "",
+}: {
+  value: number;
+  duration?: number;
+  decimals?: number;
+  suffix?: string;
+}) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const updateCount = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const easeOutQuad = (t: number) => t * (2 - t);
+      const currentCount = easeOutQuad(progress) * value;
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateCount);
+      } else {
+        setCount(value);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateCount);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [value, duration]);
+
+  const formattedCount = decimals > 0 
+    ? count.toFixed(decimals) 
+    : Math.floor(count).toLocaleString();
+
+  return <>{formattedCount}{suffix}</>;
+}
 
 export default function AdminPortalView() {
   return (
@@ -42,7 +91,9 @@ export default function AdminPortalView() {
                 <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-1.5 block">
                   Total Units
                 </span>
-                <span className="text-3xl font-black text-white block leading-tight">1,482</span>
+                <span className="text-3xl font-black text-white block leading-tight">
+                  <AnimatedNumber value={1482} />
+                </span>
                 <div className="flex items-center gap-1 mt-1 text-xs font-bold text-brand-green">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -113,7 +164,9 @@ export default function AdminPortalView() {
                 <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-1.5 block">
                   Total Clients
                 </span>
-                <span className="text-3xl font-black text-white block leading-tight">342</span>
+                <span className="text-3xl font-black text-white block leading-tight">
+                  <AnimatedNumber value={342} />
+                </span>
                 <span className="text-[10px] text-gray-400 font-bold block mt-1">Enterprise Partners</span>
               </div>
 
@@ -124,14 +177,18 @@ export default function AdminPortalView() {
                   <span className="text-[8px] font-extrabold text-gray-500 uppercase tracking-wider block mb-0.5">
                     New Contracts
                   </span>
-                  <span className="text-lg font-black leading-none text-white">24</span>
+                  <span className="text-lg font-black leading-none text-white">
+                    <AnimatedNumber value={24} />
+                  </span>
                 </div>
                 {/* Box 2 */}
                 <div className="bg-[#0e0e11] text-brand-cyan rounded-xl p-3 border border-white/5 flex-1 flex flex-col justify-center">
                   <span className="text-[8px] font-extrabold text-brand-cyan uppercase tracking-wider block mb-0.5">
                     Retention Rate
                   </span>
-                  <span className="text-lg font-black leading-none text-brand-cyan">98.2%</span>
+                  <span className="text-lg font-black leading-none text-brand-cyan">
+                    <AnimatedNumber value={98.2} decimals={1} suffix="%" />
+                  </span>
                 </div>
               </div>
             </div>
@@ -154,7 +211,9 @@ export default function AdminPortalView() {
         {[
           {
             label: "Tasks Pending",
-            value: "12",
+            value: 12,
+            suffix: "",
+            decimals: 0,
             icon: (
               <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -163,7 +222,9 @@ export default function AdminPortalView() {
           },
           {
             label: "System Load",
-            value: "32%",
+            value: 32,
+            suffix: "%",
+            decimals: 0,
             icon: (
               <svg className="w-5 h-5 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14m-6 0a2 2 0 002 2h2a2 2 0 002-2" />
@@ -172,7 +233,9 @@ export default function AdminPortalView() {
           },
           {
             label: "Compliance",
-            value: "100%",
+            value: 100,
+            suffix: "%",
+            decimals: 0,
             icon: (
               <svg className="w-5 h-5 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -181,7 +244,9 @@ export default function AdminPortalView() {
           },
           {
             label: "Data Sync",
-            value: "2ms",
+            value: 2,
+            suffix: "ms",
+            decimals: 0,
             icon: (
               <svg className="w-5 h-5 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
@@ -197,7 +262,9 @@ export default function AdminPortalView() {
               <span className="text-[9px] uppercase font-extrabold text-gray-500 tracking-wider mb-1.5">
                 {card.label}
               </span>
-              <span className="text-xl font-black text-white leading-none">{card.value}</span>
+              <span className="text-xl font-black text-white leading-none">
+                <AnimatedNumber value={card.value} suffix={card.suffix} decimals={card.decimals} />
+              </span>
             </div>
             <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
               {card.icon}

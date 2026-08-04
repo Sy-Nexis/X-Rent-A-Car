@@ -1,4 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+function AnimatedNumber({
+  value,
+  duration = 2000,
+  decimals = 0,
+  suffix = "",
+}: {
+  value: number;
+  duration?: number;
+  decimals?: number;
+  suffix?: string;
+}) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const updateCount = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const easeOutQuad = (t: number) => t * (2 - t);
+      const currentCount = easeOutQuad(progress) * value;
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateCount);
+      } else {
+        setCount(value);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateCount);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [value, duration]);
+
+  const formattedCount = decimals > 0 
+    ? count.toFixed(decimals) 
+    : Math.floor(count).toLocaleString();
+
+  return <>{formattedCount}{suffix}</>;
+}
+
+function AnimatedBar({
+  targetPercent,
+  colorClass,
+  duration = 2000,
+}: {
+  targetPercent: number;
+  colorClass: string;
+  duration?: number;
+}) {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    setWidth(0);
+    let animationFrameId: number;
+    let startTime: number | null = null;
+
+    const update = (now: number) => {
+      if (startTime === null) startTime = now;
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const easeOutQuad = (t: number) => t * (2 - t);
+      setWidth(easeOutQuad(progress) * targetPercent);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(update);
+      } else {
+        setWidth(targetPercent);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [targetPercent, duration]);
+
+  return (
+    <div className={`h-full ${colorClass}`} style={{ width: `${width}%` }} />
+  );
+}
 
 interface FleetListViewProps {
   onAddVehicle: () => void;
@@ -70,17 +159,19 @@ export default function FleetListView({ onAddVehicle }: FleetListViewProps) {
       {/* Top 4 KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {[
-          { label: "Total Fleet", value: "1,284", sub: "+12%", line: "bg-brand-gradient w-full" },
-          { label: "Active Numbers", value: "1,102", sub: "86% UTILIZED", line: "bg-brand-cyan w-[86%]" },
-          { label: "Maintenances", value: "42", sub: "-3%", line: "bg-brand-red w-[12%]" },
-          { label: "In_Prep", value: "140", sub: "QUEUED", line: "bg-brand-cyan w-[24%]" },
+          { label: "Total Fleet",    value: 1284, sub: "+12%",        linePercent: 100, lineColor: "bg-brand-gradient" },
+          { label: "Active Numbers", value: 1102, sub: "86% UTILIZED", linePercent: 86,  lineColor: "bg-brand-cyan" },
+          { label: "Maintenances",   value: 42,   sub: "-3%",          linePercent: 12,  lineColor: "bg-brand-red" },
+          { label: "In_Prep",        value: 140,  sub: "QUEUED",       linePercent: 24,  lineColor: "bg-brand-cyan" },
         ].map((card) => (
           <div key={card.label} className="bg-[#1e1e1e] rounded-xl border border-white/5 p-4 flex flex-col justify-between shadow-md h-28 relative overflow-hidden">
             <div className="flex flex-col">
               <span className="text-[9px] uppercase font-black text-gray-500 tracking-wider mb-1">
                 {card.label}
               </span>
-              <span className="text-2xl font-black text-white leading-none">{card.value}</span>
+              <span className="text-2xl font-black text-white leading-none">
+                <AnimatedNumber value={card.value} />
+              </span>
             </div>
             <div className="flex justify-between items-baseline mt-2">
               <span className={`text-[10px] font-bold ${card.sub.startsWith("+") || card.sub.includes("UTILIZED") ? "text-brand-green" : card.sub.startsWith("-") ? "text-brand-red" : "text-gray-500"}`}>
@@ -88,7 +179,7 @@ export default function FleetListView({ onAddVehicle }: FleetListViewProps) {
               </span>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
-              <div className={`h-full ${card.line}`} />
+              <AnimatedBar targetPercent={card.linePercent} colorClass={card.lineColor} />
             </div>
           </div>
         ))}
