@@ -55,7 +55,7 @@ export default function AdminPortalView() {
               <div className="relative rounded-xl overflow-hidden h-36 border border-white/5 group bg-slate-850">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/fleet_port.png"
+                  src="/parked_trucks.png"
                   alt="Fleet Distribution View"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
