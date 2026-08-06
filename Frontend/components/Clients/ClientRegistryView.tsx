@@ -1,10 +1,14 @@
+"use client";
+
 import React from "react";
+import { useRouter } from "next/navigation";
 
 interface ClientRegistryViewProps {
-  onEnterClient: () => void;
+  totalCount?: number;
 }
 
-export default function ClientRegistryView({ onEnterClient }: ClientRegistryViewProps) {
+export default function ClientRegistryView({ totalCount }: ClientRegistryViewProps) {
+  const router = useRouter();
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative flex flex-col justify-between bg-[#0e0e11]">
       <div>
@@ -41,7 +45,7 @@ export default function ClientRegistryView({ onEnterClient }: ClientRegistryView
 
             {/* Enter Client button */}
             <button
-              onClick={onEnterClient}
+              onClick={() => router.push('/clients/new')}
               className="flex items-center gap-2 bg-brand-gradient hover:opacity-90 text-white text-xs font-extrabold uppercase tracking-wider px-6 py-3.5 rounded-lg shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +127,7 @@ export default function ClientRegistryView({ onEnterClient }: ClientRegistryView
 
       {/* Floating Action Button "+" in blue bottom-right */}
       <button
-        onClick={onEnterClient}
+        onClick={() => router.push('/clients/new')}
         className="absolute bottom-24 right-4 md:bottom-8 md:right-8 w-12 h-12 rounded-full bg-brand-gradient hover:opacity-90 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20 transition-all z-20 cursor-pointer"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
