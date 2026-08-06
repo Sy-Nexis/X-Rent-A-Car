@@ -8,9 +8,9 @@ async function getAdminHubData() {
   const cookieStore = await cookies();
   const token = cookieStore.get("xrent_token")?.value;
 
-  if (!token) {
-    redirect("/login");
-  }
+  // if (!token) {
+  //   redirect("/login");
+  // }
 
   try {
     const [vehiclesRes, clientsRes] = await Promise.all([
@@ -25,9 +25,9 @@ async function getAdminHubData() {
     ]);
 
     // Handle session expiration (401 Unauthorized)
-    if (vehiclesRes.status === 401 || clientsRes.status === 401) {
-      redirect("/login");
-    }
+    // if (vehiclesRes.status === 401 || clientsRes.status === 401) {
+    //   redirect("/login");
+    // }
 
     const vehiclesResult = await vehiclesRes.json().catch(() => ({ data: [] }));
     const clientsResult = await clientsRes.json().catch(() => ({ data: [] }));
