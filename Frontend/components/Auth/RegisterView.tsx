@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 interface RegisterViewProps {
   onRegisterSuccess: () => void;
   onGoToLogin: () => void;
 }
+
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8801/api";
 
 export default function RegisterView({ onRegisterSuccess, onGoToLogin }: RegisterViewProps) {
   const [firstName, setFirstName] = useState("");
@@ -26,72 +27,38 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
     setSuccessMessage(null);
 
     try {
-      // 1. Sign up directly in Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password: password,
-        options: {
-          data: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            role: authTier,
-          },
+      // Send registration request to Backend API -> Backend writes to Supabase database
+      const res = await fetch(`${BACKEND_API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          email: email.trim(),
+          password: password,
+          role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
+        }),
       });
 
-      if (error) {
-        // Also attempt registering in backend staff table as fallback
-        try {
-          const res = await fetch("http://localhost:8801/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              first_name: firstName,
-              last_name: lastName,
-              email: email.trim(),
-              password,
-              role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
-            }),
-          });
-          if (res.ok) {
-            setSuccessMessage("Account created successfully! Redirecting to login...");
-            setTimeout(() => {
-              onRegisterSuccess();
-            }, 1200);
-            return;
-          }
-        } catch {
-          // fallback failed
-        }
+      const data = await res.json();
 
-        setErrorMessage(error.message || "Registration failed. Please try again.");
+      if (!res.ok) {
+        setErrorMessage(data.message || "Registration failed. Please check your details.");
         setIsLoading(false);
         return;
       }
 
-      // Also create corresponding record in staff table if available
-      try {
-        await supabase.from("staff").insert([
-          {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            email: email.trim(),
-            password_hash: "SUPABASE_AUTH_MANAGED",
-            role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
-            status: "Active",
-          },
-        ]);
-      } catch {
-        // non-blocking
-      }
-
-      setSuccessMessage("Account created successfully! Redirecting to login...");
+      setSuccessMessage("Account created successfully in database! Redirecting to login...");
       setTimeout(() => {
         onRegisterSuccess();
-      }, 1000);
+      }, 1200);
     } catch (err: any) {
-      console.error("Registration unexpected error:", err);
-      setErrorMessage(err.message || "An error occurred during registration.");
+      console.error("Registration request error:", err);
+      setErrorMessage(
+        "Could not connect to Backend API server. Please ensure the backend is running on http://localhost:8801"
+      );
     } finally {
       setIsLoading(false);
     }

@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { setCookie } from "@/lib/cookies";
 
 interface LoginViewProps {
   onLoginSuccess: () => void;
   onGoToRegister: () => void;
 }
+
+const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8801/api";
 
 export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewProps) {
   const [email, setEmail] = useState("");
@@ -22,58 +23,43 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
     setErrorMessage(null);
 
     try {
-      // 1. Authenticate with Supabase Auth
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
+      // Send login request directly to Backend API -> Backend processes with Supabase DB
+      const res = await fetch(`${BACKEND_API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password,
+        }),
       });
 
-      if (error) {
-        // Fallback check against backend API if user was created via backend staff table
-        try {
-          const res = await fetch("http://localhost:8801/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email.trim(), password }),
-          });
-          const resData = await res.json();
-          if (res.ok && resData.token) {
-            setCookie("token", resData.token, 1);
-            if (typeof window !== "undefined") {
-              localStorage.setItem("user", JSON.stringify(resData.user));
-              localStorage.setItem("token", resData.token);
-            }
-            onLoginSuccess();
-            return;
-          }
-        } catch {
-          // Backend fallback failed, proceed with Supabase error
-        }
+      const data = await res.json();
 
-        setErrorMessage(error.message || "Invalid login credentials. Please try again.");
+      if (!res.ok) {
+        setErrorMessage(data.message || "Invalid email or password.");
         setIsLoading(false);
         return;
       }
 
-      if (data?.session) {
-        // Store access token in cookie and localStorage
-        setCookie("token", data.session.access_token, 1);
+      if (data.token) {
+        setCookie("token", data.token, 1);
         if (typeof window !== "undefined") {
-          localStorage.setItem("supabase_token", data.session.access_token);
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              id: data.user.id,
-              email: data.user.email,
-              role: data.user.user_metadata?.role || "Admin",
-            })
-          );
+          localStorage.setItem("token", data.token);
+          if (data.user) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+          }
         }
         onLoginSuccess();
+      } else {
+        setErrorMessage("Authentication failed. No token received.");
       }
     } catch (err: any) {
-      console.error("Login unexpected error:", err);
-      setErrorMessage(err.message || "An unexpected error occurred during login.");
+      console.error("Login request error:", err);
+      setErrorMessage(
+        "Could not connect to the Backend API server. Please ensure the backend is running on http://localhost:8801"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +94,7 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
 
           {/* Error Message Alert */}
           {errorMessage && (
-            <div className="mb-5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex items-start gap-2.5 animate-fadeIn">
+            <div className="mb-5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex items-start gap-2.5">
               <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -206,11 +192,11 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
             </button>
           </form>
 
-          {/* Connected badge */}
+          {/* Backend / Supabase status info */}
           <div className="flex items-center justify-center gap-2 mt-6 pt-5 border-t border-white/5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[10px] font-bold text-gray-400 tracking-wider">
-              Supabase Auth Connected
+              Connected via Backend & Supabase
             </span>
           </div>
         </div>
