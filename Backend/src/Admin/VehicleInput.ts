@@ -139,18 +139,21 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 // /api/vehicles/update
 router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { vin } = req.query;
+        const { vin, id, licensePlate, plate } = req.query;
+        const targetVin = vin || req.body.vin;
+        const targetId = id || req.body.id;
+        const targetPlate = licensePlate || plate || req.body.licensePlate || req.body.license_plate;
 
-        if (!vin) {
+        if (!targetVin && !targetId && !targetPlate) {
             res.status(400).json({
                 success: false,
-                message: 'Please provide the vehicle VIN in the query parameters.'
+                message: 'Please provide the vehicle VIN, ID, or License Plate in query parameters or request body.'
             });
             return;
         }
 
         const {
-            make, model, year, licensePlate, transmission, fuelType,
+            make, model, year, transmission, fuelType,
             engineCapacity, color, mileage, dailyRate, branch, status
         } = req.body;
 
@@ -164,11 +167,16 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         }
 
         // Fetch existing vehicle to merge fields cleanly and preserve branch/status encoding
-        const { data: existingVehicle, error: fetchError } = await supabase
-            .from('vehicles')
-            .select('*')
-            .eq('vin', String(vin))
-            .maybeSingle();
+        let findQuery = supabase.from('vehicles').select('*');
+        if (targetId) {
+            findQuery = findQuery.eq('id', targetId);
+        } else if (targetVin) {
+            findQuery = findQuery.eq('vin', String(targetVin));
+        } else if (targetPlate) {
+            findQuery = findQuery.eq('license_plate', String(targetPlate));
+        }
+
+        const { data: existingVehicle, error: fetchError } = await findQuery.maybeSingle();
 
         if (fetchError) {
             console.error('Supabase fetch error during update:', fetchError);
@@ -182,7 +190,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         if (!existingVehicle) {
             res.status(404).json({
                 success: false,
-                message: 'No vehicle found matching that VIN.'
+                message: 'No vehicle found matching that identifier.'
             });
             return;
         }
@@ -244,7 +252,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         const { data, error } = await supabase
             .from('vehicles')
             .update(updateData)
-            .eq('vin', String(vin))
+            .eq('id', existingVehicle.id)
             .select();
 
         if (error) {
@@ -259,7 +267,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
-                message: 'No vehicle found matching that VIN.'
+                message: 'No vehicle found matching that identifier.'
             });
             return;
         }
@@ -280,7 +288,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            message: `Vehicle with VIN ${vin} has been successfully updated.`,
+            message: `Vehicle ${existingVehicle.make} ${existingVehicle.model} (${existingVehicle.vin}) has been successfully updated.`,
             data: decodedData
         });
 
