@@ -15,7 +15,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [authTier, setAuthTier] = useState<"STAFF" | "ADMIN">("STAFF");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -38,7 +37,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
           last_name: lastName.trim(),
           email: email.trim(),
           password: password,
-          role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
+          role: "Staff",
         }),
       });
 
@@ -214,54 +213,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Authentication Tier */}
-            <div>
-              <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-2">
-                Authentication Tier
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                {/* STAFF */}
-                <button
-                  type="button"
-                  onClick={() => setAuthTier("STAFF")}
-                  className={`flex items-center justify-center gap-3 p-3.5 rounded-lg border transition-all cursor-pointer ${
-                    authTier === "STAFF"
-                      ? "bg-brand-cyan/10 border-brand-cyan text-brand-cyan"
-                      : "bg-white/[0.03] border-white/5 text-gray-400 hover:border-white/10"
-                  }`}
-                >
-                  <span className="text-xs font-extrabold uppercase tracking-wider">Staff</span>
-                  {authTier === "STAFF" && (
-                    <span className="w-4 h-4 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[9px] ml-auto">
-                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </span>
-                  )}
-                </button>
-
-                {/* ADMIN */}
-                <button
-                  type="button"
-                  onClick={() => setAuthTier("ADMIN")}
-                  className={`flex items-center justify-center gap-3 p-3.5 rounded-lg border transition-all cursor-pointer ${
-                    authTier === "ADMIN"
-                      ? "bg-brand-cyan/10 border-brand-cyan text-brand-cyan"
-                      : "bg-white/[0.03] border-white/5 text-gray-400 hover:border-white/10"
-                  }`}
-                >
-                  <span className="text-xs font-extrabold uppercase tracking-wider">Admin</span>
-                  {authTier === "ADMIN" && (
-                    <span className="w-4 h-4 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[9px] ml-auto">
-                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </span>
                   )}
                 </button>
               </div>
