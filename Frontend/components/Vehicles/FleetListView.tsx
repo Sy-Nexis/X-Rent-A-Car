@@ -176,10 +176,38 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const [activeTab, setActiveTab] = useState<"All" | "Active" | "Maintenance" | "InPrep">("All");
   const [showDropdownRow, setShowDropdownRow] = useState<number | null>(null);
 
+  const [liveVehicles, setLiveVehicles] = useState<Vehicle[]>(vehicles);
   const [deletingVehicle, setDeletingVehicle] = useState<Vehicle | null>(null);
   const [viewingVehicleId, setViewingVehicleId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchLiveVehicles = async () => {
+    try {
+      const res = await fetch("http://localhost:8801/api/vehicles/view", { cache: "no-store" });
+      const json = await res.json();
+      if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+        setLiveVehicles(json.data.map((v: any) => ({
+          id: v.id,
+          make: v.make,
+          model: v.model,
+          year: v.year,
+          licensePlate: v.license_plate || v.licensePlate,
+          vin: v.vin,
+          dailyRate: Number(v.daily_rate) || Number(v.dailyRate) || 0,
+          status: v.status || "ACTIVE",
+          fuelType: v.fuel_type || v.fuelType || "Diesel",
+          transmission: v.transmission || "Automatic",
+        })));
+      }
+    } catch (err) {
+      console.error("Failed to load live vehicles:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveVehicles();
+  }, []);
 
   const handleDelete = async () => {
     if (!deletingVehicle) return;
@@ -190,7 +218,8 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
     try {
       const queryParams = new URLSearchParams({
         vin: deletingVehicle.vin,
-        plate: deletingVehicle.licensePlate
+        plate: deletingVehicle.licensePlate,
+        id: String(deletingVehicle.id),
       }).toString();
 
       const url = `http://localhost:8801/api/vehicles/del?${queryParams}`;
@@ -199,6 +228,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
       if (!response.ok) throw new Error("Failed to delete vehicle");
 
       setDeletingVehicle(null);
+      await fetchLiveVehicles();
       router.refresh();
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
@@ -208,7 +238,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
     }
   };
 
-  const displayVehicles = vehicles.length > 0 ? vehicles : MOCK_VEHICLES;
+  const displayVehicles = liveVehicles.length > 0 ? liveVehicles : MOCK_VEHICLES;
 
   const filteredVehicles = displayVehicles.filter((v) => {
     if (activeTab === "All") return true;

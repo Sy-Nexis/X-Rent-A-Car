@@ -1,12 +1,17 @@
+"use client";
+
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function FleetManagementView() {
+  const router = useRouter();
+
   // Form fields
   const [brand, setBrand] = useState("Mercedes-Benz");
   const [model, setModel] = useState("Actros");
   const [year, setYear] = useState("2024");
-  const [vin, setVin] = useState("17-digit alphanumeric string");
-  const [plate, setPlate] = useState("ABC-1234");
+  const [vin, setVin] = useState("WDB9634031L894211");
+  const [plate, setPlate] = useState("TX-88-ACT");
 
   const [transmission, setTransmission] = useState("AUTO");
   const [fuelType, setFuelType] = useState("Diesel");
@@ -14,9 +19,13 @@ export default function FleetManagementView() {
   const [color, setColor] = useState("Fleet White");
   const [mileage, setMileage] = useState("0");
 
-  const [rate, setRate] = useState("0.00");
+  const [rate, setRate] = useState("450.00");
   const [branch, setBranch] = useState("Central Distribution Center");
   const [status, setStatus] = useState("Active");
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleClear = () => {
     setBrand("");
@@ -32,6 +41,59 @@ export default function FleetManagementView() {
     setRate("0.00");
     setBranch("Central Distribution Center");
     setStatus("Active");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
+  const handleSaveVehicle = async () => {
+    setIsSaving(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!brand.trim() || !model.trim() || !vin.trim() || !plate.trim()) {
+      setErrorMessage("Please fill in all core identification fields (Brand, Model, VIN, Plate).");
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const payload = {
+        make: brand.trim(),
+        model: model.trim(),
+        year: parseInt(year) || 2024,
+        vin: vin.trim(),
+        licensePlate: plate.trim(),
+        transmission: transmission === "AUTO" ? "Automatic" : "Manual",
+        fuelType: fuelType,
+        engineCapacity: engine,
+        color: color,
+        mileage: parseFloat(mileage) || 0,
+        dailyRate: parseFloat(rate) || 0,
+        branch: branch,
+        status: status === "InPrep" ? "In Prep" : status,
+      };
+
+      const res = await fetch("http://localhost:8801/api/vehicles/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.message || "Failed to register vehicle to database");
+      }
+
+      setSuccessMessage("Vehicle registered successfully in Supabase! Redirecting to fleet registry...");
+      setTimeout(() => {
+        router.push("/vehicles");
+      }, 1200);
+    } catch (err: any) {
+      console.error("Save vehicle error:", err);
+      setErrorMessage(err.message || "An error occurred while saving vehicle");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -52,6 +114,25 @@ export default function FleetManagementView() {
           Register a new asset into the Precision Logistics ecosystem.
         </p>
       </div>
+
+      {/* Alerts */}
+      {successMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-3">
+          <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{successMessage}</span>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold flex items-center gap-3">
+          <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Grid container */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mb-8">
@@ -105,6 +186,8 @@ export default function FleetManagementView() {
                     onChange={(e) => setYear(e.target.value)}
                     className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none appearance-none cursor-pointer transition-all"
                   >
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
                     <option value="2024">2024</option>
                     <option value="2023">2023</option>
                     <option value="2022">2022</option>
@@ -129,7 +212,7 @@ export default function FleetManagementView() {
                   value={vin}
                   onChange={(e) => setVin(e.target.value)}
                   placeholder="17-digit alphanumeric string"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>
               <div>
@@ -141,7 +224,7 @@ export default function FleetManagementView() {
                   value={plate}
                   onChange={(e) => setPlate(e.target.value)}
                   placeholder="ABC-1234"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>
             </div>
@@ -227,10 +310,13 @@ export default function FleetManagementView() {
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
                   Color
                 </label>
-                <div className="flex items-center gap-2 bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2">
-                  <span className="w-3.5 h-3.5 rounded-full border border-white/10 bg-white shadow-sm flex-shrink-0" />
-                  <span className="text-xs text-white font-semibold truncate">{color}</span>
-                </div>
+                <input
+                  type="text"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  placeholder="Fleet White"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                />
               </div>
 
               <div>
@@ -291,6 +377,7 @@ export default function FleetManagementView() {
                         <option value="North Terminal">North Terminal</option>
                         <option value="East Hub">East Hub</option>
                         <option value="Coastal Logistics Terminal">Coastal Logistics Terminal</option>
+                        <option value="Main">Main</option>
                       </select>
                       <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-500">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,90 +446,41 @@ export default function FleetManagementView() {
             </div>
           </div>
 
-          {/* DOCUMENTATIONS */}
-          <div className="bg-[#1e1e1e] rounded-xl border border-white/5 p-6 shadow-md">
-            <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-white/5 text-brand-cyan flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-              </div>
-              <h2 className="text-xs font-extrabold uppercase text-white tracking-wider">
-                Documentations
-              </h2>
-            </div>
-
-            {/* Photography Dropzones */}
-            <div className="mb-6">
-              <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-3">
-                Asset Photography (Front, Side, Back)
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {["FRONT VIEW", "SIDE VIEW", "BACK VIEW"].map((label) => (
-                  <div
-                    key={label}
-                    className="border border-dashed border-white/10 hover:border-brand-cyan rounded-lg p-5 flex flex-col items-center justify-center gap-2 bg-[#0e0e11] hover:bg-white/5 cursor-pointer transition-all group"
-                  >
-                    <svg className="w-6 h-6 text-gray-500 group-hover:text-brand-cyan transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-[9px] font-extrabold tracking-wider text-gray-500 group-hover:text-brand-cyan transition-colors">{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* PDF Upload Row Items */}
-            <div>
-              <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-3">
-                Compliance Documents (PDF Upload)
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { name: "Registration_Main.pdf", size: "Not uploaded yet" },
-                  { name: "Insurance_Policy.pdf", size: "Not uploaded yet" },
-                ].map((doc) => (
-                  <div
-                    key={doc.name}
-                    className="flex items-center justify-between p-4 border border-white/5 rounded-lg bg-[#0e0e11] hover:border-white/10 transition-all"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-brand-red/10 flex items-center justify-center text-brand-red">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-xs font-semibold text-white truncate">{doc.name}</span>
-                        <span className="text-[10px] text-gray-500 font-medium">{doc.size}</span>
-                      </div>
-                    </div>
-                    <button type="button" className="text-[10px] font-extrabold text-brand-cyan hover:opacity-85 uppercase tracking-wider cursor-pointer bg-transparent border-0">
-                      UPLOAD
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Form Actions */}
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={handleClear}
-              className="flex items-center gap-2 border border-white/5 bg-[#0e0e11] hover:bg-red-950/20 hover:text-brand-red hover:border-brand-red/20 text-gray-400 text-xs font-extrabold uppercase tracking-wider px-6 py-3 rounded-lg transition-all cursor-pointer"
+              type="button"
+              disabled={isSaving}
+              className="flex items-center gap-2 border border-white/5 bg-[#0e0e11] hover:bg-red-950/20 hover:text-brand-red hover:border-brand-red/20 text-gray-400 text-xs font-extrabold uppercase tracking-wider px-6 py-3 rounded-lg transition-all cursor-pointer disabled:opacity-50"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Clear Form
             </button>
-            <button className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] text-white text-xs font-extrabold uppercase tracking-wider px-7 py-3 rounded-lg shadow-md transition-all cursor-pointer">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              Save Vehicle Record
+            <button
+              onClick={handleSaveVehicle}
+              type="button"
+              disabled={isSaving}
+              className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] disabled:opacity-50 text-white text-xs font-extrabold uppercase tracking-wider px-7 py-3 rounded-lg shadow-md transition-all cursor-pointer"
+            >
+              {isSaving ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Saving Vehicle...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  Save Vehicle Record
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -452,59 +490,49 @@ export default function FleetManagementView() {
           <div className="bg-[#1e1e1e] rounded-xl border border-white/5 overflow-hidden shadow-md flex flex-col">
             {/* Blue Asset Badge */}
             <div className="bg-brand-gradient text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5">
-              Latest Fleet Asset
+              Live Asset Preview
             </div>
 
-            {/* Asset image container with details overlay */}
-            <div className="relative h-64 bg-slate-900 overflow-hidden group">
-              {/* Actros image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/actros_truck.png"
-                alt="Mercedes-Benz Actros 2024"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1e1e1e] via-black/30 to-transparent" />
-
-              {/* Text overlays on image */}
-              <div className="absolute bottom-5 left-5 z-10">
-                <span className="bg-brand-gradient text-white text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded mb-1.5 inline-block">
-                  Active Asset
-                </span>
-                <h4 className="text-white text-lg font-black tracking-tight leading-tight">
-                  TRK-2024-XP
-                </h4>
+            {/* Asset illustration preview container */}
+            <div className="relative h-56 bg-gradient-to-br from-slate-900 via-[#151518] to-slate-950 flex flex-col items-center justify-center p-6 border-b border-white/5 overflow-hidden group">
+              <div className="w-20 h-20 rounded-2xl bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center text-brand-cyan mb-2 shadow-inner">
+                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                </svg>
               </div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-cyan bg-brand-cyan/10 px-2.5 py-0.5 rounded-full border border-brand-cyan/20">
+                {plate || "NEW-UNIT"}
+              </span>
             </div>
 
             {/* Asset specifications & pricing details */}
             <div className="p-5 flex-1 flex flex-col justify-between gap-5">
               <div>
                 <h3 className="text-white text-base font-extrabold leading-tight mb-0.5">
-                  Mercedes-Benz Actros 2024
+                  {brand || "New"} {model || "Vehicle"} ({year || "2024"})
                 </h3>
                 <span className="text-gray-400 text-[10px] font-bold block mb-4">
-                  Heavy Duty Logistics Unit • Coastal Logistics Terminal
+                  {fuelType} • {branch}
                 </span>
 
                 <div className="grid grid-cols-2 gap-y-4 gap-x-2 border-t border-white/5 pt-4">
                   <div>
                     <span className="text-[9px] uppercase font-bold text-gray-500 block mb-0.5">Mileage</span>
-                    <span className="text-xs font-black text-white">1,240 km</span>
+                    <span className="text-xs font-black text-white">{mileage || "0"} km</span>
                   </div>
                   <div>
                     <span className="text-[9px] uppercase font-bold text-gray-500 block mb-0.5">Fuel</span>
-                    <span className="text-xs font-black text-white">Diesel (Euro 6)</span>
+                    <span className="text-xs font-black text-white">{fuelType}</span>
                   </div>
                   <div>
                     <span className="text-[9px] uppercase font-bold text-gray-500 block mb-0.5">Transmission</span>
-                    <span className="text-xs font-black text-white">Automatic</span>
+                    <span className="text-xs font-black text-white">{transmission}</span>
                   </div>
                   <div>
                     <span className="text-[9px] uppercase font-bold text-gray-500 block mb-0.5">VIN</span>
-                    <span className="text-xs font-black text-white truncate block max-w-[120px]">
-                      WDB9634031L...
+                    <span className="text-xs font-black text-white truncate block max-w-[120px] font-mono">
+                      {vin || "UNASSIGNED"}
                     </span>
                   </div>
                 </div>
@@ -513,7 +541,7 @@ export default function FleetManagementView() {
               <div className="border-t border-white/5 pt-4 flex justify-between items-end mt-2">
                 <div>
                   <span className="text-[9px] uppercase font-bold text-gray-500 block">Daily Rate</span>
-                  <span className="text-xl font-black text-brand-cyan tracking-tight">$450.00</span>
+                  <span className="text-xl font-black text-brand-cyan tracking-tight">${rate || "0.00"}</span>
                 </div>
               </div>
             </div>

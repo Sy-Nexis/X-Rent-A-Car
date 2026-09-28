@@ -1,16 +1,26 @@
+"use client";
+
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterClientView() {
-  const [firstName, setFirstName] = useState("Jonathan");
-  const [lastName, setLastName] = useState("Wick");
-  const [email, setEmail] = useState("jonathan.wick@continental.com");
-  const [phone, setPhone] = useState("+1 (555) 000-0000");
-  const [nic, setNic] = useState("00000-0000000-0");
+  const router = useRouter();
 
-  const [address, setAddress] = useState("123 Fleet Way, Industrial District");
-  const [city, setCity] = useState("Logistics Hub");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [nic, setNic] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [state, setState] = useState("California");
-  const [zipCode, setZipCode] = useState("90001");
+  const [zipCode, setZipCode] = useState("");
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleClear = () => {
     setFirstName("");
@@ -18,10 +28,63 @@ export default function RegisterClientView() {
     setEmail("");
     setPhone("");
     setNic("");
+    setLicenseNumber("");
     setAddress("");
     setCity("");
     setState("California");
     setZipCode("");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
+  const handleRegisterClient = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setIsSaving(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !nic.trim()) {
+      setErrorMessage("Please fill in all required fields (First Name, Last Name, Email, Government ID / NIC).");
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const payload = {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        government_id: nic.trim(),
+        license_number: licenseNumber.trim() || nic.trim(),
+        address: address.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        zip_code: zipCode.trim(),
+        status: "Active",
+      };
+
+      const res = await fetch("http://localhost:8801/api/clients/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.message || "Failed to register client to database");
+      }
+
+      setSuccessMessage("Client registered successfully in Supabase! Redirecting to client registry...");
+      setTimeout(() => {
+        router.push("/clients");
+      }, 1200);
+    } catch (err: any) {
+      console.error("Register client error:", err);
+      setErrorMessage(err.message || "An error occurred while saving client");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -36,15 +99,34 @@ export default function RegisterClientView() {
       </div>
 
       {/* Page Title */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-1">Register New Client</h1>
         <p className="text-sm text-gray-400 font-medium">
           Create a new client profile for precision tracking and fleet allocation.
         </p>
       </div>
 
+      {/* Alerts */}
+      {successMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-3">
+          <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{successMessage}</span>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold flex items-center gap-3">
+          <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
       {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
+      <form onSubmit={handleRegisterClient} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
         {/* Forms column */}
         <div className="lg:col-span-2 space-y-6">
           {/* STEP 01 - PERSONAL INFORMATION */}
@@ -68,10 +150,11 @@ export default function RegisterClientView() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  First Name
+                  First Name *
                 </label>
                 <input
                   type="text"
+                  required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="e.g. Jonathan"
@@ -80,10 +163,11 @@ export default function RegisterClientView() {
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  Last Name
+                  Last Name *
                 </label>
                 <input
                   type="text"
+                  required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder="e.g. Wick"
@@ -94,7 +178,7 @@ export default function RegisterClientView() {
 
             <div className="mb-5">
               <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                Email Address
+                Email Address *
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
@@ -104,6 +188,7 @@ export default function RegisterClientView() {
                 </span>
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="jonathan.wick@continental.com"
@@ -127,14 +212,15 @@ export default function RegisterClientView() {
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  NIC Number
+                  NIC / Government ID *
                 </label>
                 <input
                   type="text"
+                  required
                   value={nic}
                   onChange={(e) => setNic(e.target.value)}
-                  placeholder="00000-0000000-0"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                  placeholder="US-CORP-0000"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>
             </div>
@@ -151,7 +237,7 @@ export default function RegisterClientView() {
                   </svg>
                 </div>
                 <h2 className="text-sm font-extrabold uppercase text-white tracking-wider">
-                  Residential Information
+                  Location & Address
                 </h2>
               </div>
               <span className="text-[10px] font-extrabold px-2.5 py-1 rounded bg-white/5 text-gray-400 uppercase tracking-widest">
@@ -191,23 +277,13 @@ export default function RegisterClientView() {
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
                   State
                 </label>
-                <div className="relative">
-                  <select
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none appearance-none transition-all cursor-pointer"
-                  >
-                    <option value="California">California</option>
-                    <option value="Texas">Texas</option>
-                    <option value="Florida">Florida</option>
-                    <option value="New York">New York</option>
-                  </select>
-                  <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </div>
+                <input
+                  type="text"
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  placeholder="California"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
@@ -221,6 +297,18 @@ export default function RegisterClientView() {
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
+              <div>
+                <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
+                  Driver License No.
+                </label>
+                <input
+                  type="text"
+                  value={licenseNumber}
+                  onChange={(e) => setLicenseNumber(e.target.value)}
+                  placeholder="DL-0000000"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
+                />
+              </div>
             </div>
           </div>
 
@@ -228,18 +316,36 @@ export default function RegisterClientView() {
           <div className="flex justify-between items-center pt-2">
             <button
               onClick={handleClear}
-              className="flex items-center gap-2 border border-white/5 bg-[#0e0e11] hover:bg-red-950/20 hover:text-brand-red hover:border-brand-red/20 text-gray-400 text-xs font-extrabold uppercase tracking-wider px-6 py-3 rounded-lg transition-all cursor-pointer"
+              type="button"
+              disabled={isSaving}
+              className="flex items-center gap-2 border border-white/5 bg-[#0e0e11] hover:bg-red-950/20 hover:text-brand-red hover:border-brand-red/20 text-gray-400 text-xs font-extrabold uppercase tracking-wider px-6 py-3 rounded-lg transition-all cursor-pointer disabled:opacity-50"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
               </svg>
               Clear Form
             </button>
-            <button className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] text-white text-xs font-extrabold uppercase tracking-wider px-7 py-3 rounded-lg shadow-md transition-all cursor-pointer">
-              Register Client
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="flex items-center gap-2.5 bg-brand-gradient hover:opacity-90 active:scale-[0.98] disabled:opacity-50 text-white text-xs font-extrabold uppercase tracking-wider px-7 py-3 rounded-lg shadow-md transition-all cursor-pointer"
+            >
+              {isSaving ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Registering...
+                </>
+              ) : (
+                <>
+                  Register Client
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -248,7 +354,6 @@ export default function RegisterClientView() {
         <div className="space-y-6">
           {/* REGISTRY INTELLIGENCE CARD */}
           <div className="bg-[#1e1e1e] text-white rounded-2xl border border-white/5 p-6 shadow-md relative overflow-hidden">
-            {/* Subtle mesh background grid details */}
             <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]" />
             
             <div className="relative z-10">
@@ -256,17 +361,17 @@ export default function RegisterClientView() {
                 Registry Intelligence
               </span>
               <h3 className="text-sm font-semibold tracking-wide leading-relaxed mb-6">
-                Data integrity ensures seamless logistics execution.
+                Data integrity ensures seamless logistics execution and fleet security.
               </h3>
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-pulse shadow-md shadow-cyan-400/50" />
-                  <span className="text-xs font-bold text-gray-300">Identity Verification Required</span>
+                  <span className="text-xs font-bold text-gray-300">Supabase Connected</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full bg-gray-600" />
-                  <span className="text-xs font-bold text-gray-400">Address Validation Pending</span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <span className="text-xs font-bold text-gray-300">Automatic ID Verification</span>
                 </div>
               </div>
             </div>
@@ -284,39 +389,12 @@ export default function RegisterClientView() {
                 Data Privacy
               </h4>
               <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
-                All client data is encrypted and stored according to FleetControl&apos;s strict GDPR compliance protocols.
+                All client data is encrypted and stored according to strict security protocols.
               </p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Metrics Bar */}
-      <div className="border-t border-white/5 pt-6 mt-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex flex-col">
-            <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">
-              Total Active Clients
-            </span>
-            <span className="text-2xl font-black text-white">1,402</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">
-              Average Onboarding
-            </span>
-            <span className="text-2xl font-black text-white">4.2m</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-1">
-              System Health
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-black text-white">99.9%</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow shadow-emerald-450/50" />
-            </div>
-          </div>
-        </div>
-      </div>
+      </form>
     </div>
   );
 }
