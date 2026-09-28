@@ -12,7 +12,7 @@
  * ============================================================
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../src/db';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 
@@ -25,10 +25,6 @@ const DEMO_ROLE     = 'SuperAdmin'; // SuperAdmin | FleetManager | Staff
 // ────────────────────────────────────────────────────────────
 
 async function createDemoAccount() {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!
-  );
 
   console.log('\n🔧  Creating demo account...');
   console.log(`    Email : ${DEMO_EMAIL}`);
