@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 interface RegisterViewProps {
   onRegisterSuccess: () => void;
@@ -12,10 +15,86 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [authTier, setAuthTier] = useState<"STAFF" | "ADMIN">("STAFF");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onRegisterSuccess();
+    setIsLoading(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      // 1. Sign up directly in Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            role: authTier,
+          },
+        },
+      });
+
+      if (error) {
+        // Also attempt registering in backend staff table as fallback
+        try {
+          const res = await fetch("http://localhost:8801/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              first_name: firstName,
+              last_name: lastName,
+              email: email.trim(),
+              password,
+              role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
+            }),
+          });
+          if (res.ok) {
+            setSuccessMessage("Account created successfully! Redirecting to login...");
+            setTimeout(() => {
+              onRegisterSuccess();
+            }, 1200);
+            return;
+          }
+        } catch {
+          // fallback failed
+        }
+
+        setErrorMessage(error.message || "Registration failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Also create corresponding record in staff table if available
+      try {
+        await supabase.from("staff").insert([
+          {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            email: email.trim(),
+            password_hash: "SUPABASE_AUTH_MANAGED",
+            role: authTier === "ADMIN" ? "SuperAdmin" : "Staff",
+            status: "Active",
+          },
+        ]);
+      } catch {
+        // non-blocking
+      }
+
+      setSuccessMessage("Account created successfully! Redirecting to login...");
+      setTimeout(() => {
+        onRegisterSuccess();
+      }, 1000);
+    } catch (err: any) {
+      console.error("Registration unexpected error:", err);
+      setErrorMessage(err.message || "An error occurred during registration.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,11 +117,31 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
         </div>
 
         {/* Registration Card */}
-        <div className="w-full bg-brand-dark-card border border-white/5 rounded-2xl shadow-xl p-8 mb-6">
+        <div className="w-full bg-brand-dark-card border border-white/5 rounded-2xl shadow-2xl p-8 mb-6 backdrop-blur-md">
           <h2 className="text-lg font-black text-white tracking-tight mb-1">Create Account</h2>
           <p className="text-xs text-gray-400 font-medium mb-6">
-            Register for the Precision Logistics Gateway
+            Register for the Fleet Operations Portal
           </p>
+
+          {/* Success Alert */}
+          {successMessage && (
+            <div className="mb-5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium flex items-start gap-2.5">
+              <svg className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>{successMessage}</span>
+            </div>
+          )}
+
+          {/* Error Alert */}
+          {errorMessage && (
+            <div className="mb-5 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium flex items-start gap-2.5">
+              <svg className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{errorMessage}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* First & Last Name row */}
@@ -52,7 +151,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                   First Name
                 </label>
                 <div className="relative group">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-brand-cyan transition-colors">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-brand-cyan transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -61,9 +160,10 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Enter first name"
+                    placeholder="John"
                     className="w-full bg-white/[0.03] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-xs font-semibold text-white focus:border-brand-cyan/40 focus:outline-none transition-all placeholder:text-gray-600"
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -72,7 +172,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                   Last Name
                 </label>
                 <div className="relative group">
-                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-brand-cyan transition-colors">
+                  <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-brand-cyan transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
@@ -81,9 +181,10 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Enter last name"
+                    placeholder="Doe"
                     className="w-full bg-white/[0.03] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-xs font-semibold text-white focus:border-brand-cyan/40 focus:outline-none transition-all placeholder:text-gray-600"
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -95,7 +196,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                 Email Address
               </label>
               <div className="relative group">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-brand-cyan transition-colors">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-brand-cyan transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
@@ -104,9 +205,10 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="corporate@fleetcontrol.com"
+                  placeholder="admin@xrent.com"
                   className="w-full bg-white/[0.03] border border-white/5 rounded-lg pl-10 pr-4 py-2.5 text-xs font-semibold text-white focus:border-brand-cyan/40 focus:outline-none transition-all placeholder:text-gray-600"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -117,7 +219,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                 Password
               </label>
               <div className="relative group">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-brand-cyan transition-colors">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-brand-cyan transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
@@ -129,11 +231,12 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                   placeholder="••••••••••••"
                   className="w-full bg-white/[0.03] border border-white/5 rounded-lg pl-10 pr-10 py-2.5 text-xs font-semibold text-white focus:border-brand-cyan/40 focus:outline-none transition-all placeholder:text-gray-600"
                   required
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-600 hover:text-white cursor-pointer transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-500 hover:text-white cursor-pointer transition-colors"
                 >
                   {showPassword ? (
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,17 +249,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                     </svg>
                   )}
                 </button>
-              </div>
-
-              {/* Password Strength Indicator */}
-              <div className="mt-2">
-                <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mb-1">
-                  <div className="h-full w-[68%]" style={{ background: "linear-gradient(135deg,#10b981,#06b6d4)" }} />
-                </div>
-                <div className="flex justify-between items-center text-[9px] font-extrabold text-brand-cyan uppercase tracking-wider">
-                  <span>Strong Password</span>
-                  <span className="text-gray-500">68%</span>
-                </div>
               </div>
             </div>
 
@@ -178,8 +270,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                 >
                   <span className="text-xs font-extrabold uppercase tracking-wider">Staff</span>
                   {authTier === "STAFF" && (
-                    <span className="w-4 h-4 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[9px] ml-auto"
-                      style={{ background: "linear-gradient(135deg,#10b981,#06b6d4)" }}>
+                    <span className="w-4 h-4 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[9px] ml-auto">
                       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                       </svg>
@@ -199,8 +290,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                 >
                   <span className="text-xs font-extrabold uppercase tracking-wider">Admin</span>
                   {authTier === "ADMIN" && (
-                    <span className="w-4 h-4 rounded-full text-white flex items-center justify-center text-[9px] ml-auto"
-                      style={{ background: "linear-gradient(135deg,#10b981,#06b6d4)" }}>
+                    <span className="w-4 h-4 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[9px] ml-auto">
                       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                       </svg>
@@ -213,12 +303,25 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
             {/* Submit Button */}
             <button
               type="submit"
-              className="group btn-shimmer w-full flex items-center justify-center gap-2 bg-brand-gradient hover:opacity-90 active:scale-[0.99] text-white text-xs font-black uppercase tracking-wider py-3 rounded-lg shadow-sm transition-all cursor-pointer mt-6"
+              disabled={isLoading}
+              className="group btn-shimmer w-full flex items-center justify-center gap-2 bg-brand-gradient hover:opacity-90 active:scale-[0.99] disabled:opacity-50 text-white text-xs font-black uppercase tracking-wider py-3 rounded-lg shadow-sm transition-all cursor-pointer mt-6"
             >
-              Register
-              <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Registering...
+                </>
+              ) : (
+                <>
+                  Register
+                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </>
+              )}
             </button>
           </form>
         </div>

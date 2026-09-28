@@ -2,9 +2,17 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import LandingView from "@/components/Landing/LandingView";
+import LoginView from "@/components/Auth/LoginView";
 
 export default function Home() {
   const router = useRouter();
-  return <LandingView onEnter={() => router.push("/login")} />;
+
+  return (
+    <main>
+      <LoginView
+        onLoginSuccess={() => router.push("/dashboard")}
+        onGoToRegister={() => router.push("/register")}
+      />
+    </main>
+  );
 }
