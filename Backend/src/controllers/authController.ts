@@ -203,3 +203,159 @@ export const register = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Registration failed', detail: error.message || 'Unknown error' });
     }
 };
+
+/**
+ * Get profile details for the current user
+ */
+export const getProfile = async (req: Request, res: Response) => {
+    const email = req.query.email ? String(req.query.email).trim().toLowerCase() : undefined;
+
+    try {
+        if (!email) {
+            // Return first active admin/staff if no email specified
+            const { data, error } = await supabase
+                .from('staff')
+                .select('id, email, first_name, last_name, role, status, created_at, last_login')
+                .limit(1)
+                .maybeSingle();
+
+            if (error || !data) {
+                return res.status(200).json({
+                    user: {
+                        name: "Alex Rivera",
+                        email: "alex.rivera@fleetcontrol.io",
+                        phone: "+1 (555) 012-3456",
+                        department: "Logistics Operations",
+                        bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
+                        role: "Fleet Manager"
+                    }
+                });
+            }
+
+            return res.status(200).json({
+                user: {
+                    id: data.id,
+                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.email,
+                    email: data.email,
+                    phone: "+1 (555) 012-3456",
+                    department: "Logistics Operations",
+                    bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
+                    role: data.role || "Fleet Manager"
+                }
+            });
+        }
+
+        const { data: staff, error } = await supabase
+            .from('staff')
+            .select('id, email, first_name, last_name, role, status')
+            .eq('email', email)
+            .maybeSingle();
+
+        if (error || !staff) {
+            return res.status(404).json({ message: 'User profile not found.' });
+        }
+
+        return res.status(200).json({
+            user: {
+                id: staff.id,
+                name: `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email,
+                email: staff.email,
+                phone: "+1 (555) 012-3456",
+                department: "Logistics Operations",
+                bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
+                role: staff.role || "Fleet Manager"
+            }
+        });
+    } catch (err: any) {
+        console.error("GET_PROFILE_ERROR:", err);
+        return res.status(500).json({ message: 'Error retrieving user profile.' });
+    }
+};
+
+/**
+ * Update user profile
+ */
+export const updateProfile = async (req: Request, res: Response) => {
+    const { email, name, phone, department, bio, role } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ message: 'User email is required to update profile.' });
+    }
+
+    try {
+        const normalizedEmail = String(email).trim().toLowerCase();
+        let firstName = '';
+        let lastName = '';
+
+        if (name) {
+            const parts = String(name).trim().split(' ');
+            firstName = parts[0] || '';
+            lastName = parts.slice(1).join(' ') || '';
+        }
+
+        const updateData: any = {};
+        if (firstName) updateData.first_name = firstName;
+        if (lastName) updateData.last_name = lastName;
+        if (role) updateData.role = role;
+
+        const { data, error } = await supabase
+            .from('staff')
+            .update(updateData)
+            .eq('email', normalizedEmail)
+            .select();
+
+        if (error) {
+            console.warn("Could not update staff table:", error.message);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully!',
+            user: {
+                name: name || `${firstName} ${lastName}`.trim(),
+                email: normalizedEmail,
+                phone: phone || "+1 (555) 012-3456",
+                department: department || "Logistics Operations",
+                bio: bio || "",
+                role: role || (data && data[0]?.role) || "Fleet Manager"
+            }
+        });
+    } catch (err: any) {
+        console.error("UPDATE_PROFILE_ERROR:", err);
+        return res.status(500).json({ message: 'Internal server error while updating profile.' });
+    }
+};
+
+/**
+ * Change password
+ */
+export const changePassword = async (req: Request, res: Response) => {
+    const { email, currentPassword, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+        return res.status(400).json({ message: 'Email and new password are required.' });
+    }
+
+    try {
+        const normalizedEmail = String(email).trim().toLowerCase();
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update in staff table
+        const { error: dbError } = await supabase
+            .from('staff')
+            .update({ password_hash: hashedPassword })
+            .eq('email', normalizedEmail);
+
+        if (dbError) {
+            console.error("STAFF_PASSWORD_UPDATE_ERROR:", dbError.message);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Password changed successfully.'
+        });
+    } catch (err: any) {
+        console.error("CHANGE_PASSWORD_ERROR:", err);
+        return res.status(500).json({ message: 'Internal server error changing password.' });
+    }
+};

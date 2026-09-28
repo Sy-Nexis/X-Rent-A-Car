@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface SidebarProps {
@@ -79,96 +79,78 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
     },
   ];
 
-  // Dynamic footer profile depending on active view
-  const renderFooterProfile = () => {
-    switch (activeView) {
-      case "Dashboard":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
-              MT
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">Marcus Thorne</span>
-              <span className="text-gray-400 text-[10px] truncate">Operations Director</span>
-            </div>
-          </div>
-        );
-      case "AdminPortal":
-        return (
-          <div className="flex flex-col gap-2 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <span className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">System Status</span>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-emerald-400 text-xs font-medium">All Systems Online</span>
-            </div>
-          </div>
-        );
-      case "FleetManagement":
-      case "FleetList":
-      case "FleetEmpty":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
-              SA
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">System Admin</span>
-              <span className="text-gray-400 text-[10px] truncate">Logistics Lead</span>
-            </div>
-          </div>
-        );
-      case "ClientRegistry":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
-              HQ
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">Logistics HQ</span>
-              <span className="text-gray-400 text-[10px] truncate">Admin Account</span>
-            </div>
-          </div>
-        );
-      case "RegisterClient":
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-slate-800 flex items-center justify-center border border-white/10">
-              <svg className="w-5 h-5 text-cyan-450" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">FleetControl</span>
-              <span className="text-gray-400 text-[10px] truncate">v4.2.0-stable</span>
-            </div>
-          </div>
-        );
-      case "Settings":
-        return (
-          <button
-            onClick={() => router.push("/")}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all group cursor-pointer"
-          >
-            <svg className="w-5 h-5 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Logout</span>
-          </button>
-        );
-      default:
-        return (
-          <div className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl">
-            <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-slate-700 flex items-center justify-center text-white font-bold">
-              FC
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-white text-xs font-semibold truncate">FleetControl</span>
-              <span className="text-gray-400 text-[10px] truncate font-medium">Precision Operations</span>
-            </div>
-          </div>
-        );
+  const [userName, setUserName] = useState("Alex Rivera");
+  const [userRole, setUserRole] = useState("Fleet Manager");
+
+  const syncUser = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.name) setUserName(parsed.name);
+          if (parsed.role) setUserRole(parsed.role);
+        } catch {
+          // ignore
+        }
+      }
     }
+  };
+
+  useEffect(() => {
+    syncUser();
+    window.addEventListener("user-updated", syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener("user-updated", syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
+
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase() || "AR";
+  };
+
+  // Dynamic footer profile
+  const renderFooterProfile = () => {
+    if (activeView === "Settings") {
+      return (
+        <button
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              localStorage.removeItem("xrent_user");
+            }
+            router.push("/");
+          }}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all group cursor-pointer"
+        >
+          <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-300">
+            {getInitials(userName)[0]}
+          </div>
+          <span className="font-semibold">Logout</span>
+        </button>
+      );
+    }
+
+    return (
+      <div 
+        onClick={() => router.push("/settings")}
+        className="flex items-center gap-3 p-3 bg-[#1e1e1e] border border-white/5 rounded-xl cursor-pointer hover:border-white/10 transition-all"
+        title="View Settings"
+      >
+        <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-brand-gradient flex items-center justify-center text-white font-semibold text-sm">
+          {getInitials(userName)}
+        </div>
+        <div className="flex flex-col min-w-0">
+          <span className="text-white text-xs font-semibold truncate">{userName}</span>
+          <span className="text-gray-400 text-[10px] truncate capitalize">{userRole}</span>
+        </div>
+      </div>
+    );
   };
 
   const sidebarContent = (

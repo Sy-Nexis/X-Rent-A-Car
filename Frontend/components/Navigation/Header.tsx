@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { deleteCookie } from "@/lib/cookies";
 
 interface HeaderProps {
   onAddUnit?: () => void;
@@ -20,9 +21,41 @@ function getViewFromPathname(pathname: string): string {
 
 export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const activeView = getViewFromPathname(pathname);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // User state
+  const [userName, setUserName] = useState("Alex Management");
+  const [userRole, setUserRole] = useState("FLEET MANAGER");
+
+  const syncUserData = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.name) setUserName(parsed.name);
+          if (parsed.role) setUserRole(parsed.role.toUpperCase());
+        } catch {
+          // keep defaults
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    syncUserData();
+
+    // Listen to user update events across app
+    window.addEventListener("user-updated", syncUserData);
+    window.addEventListener("storage", syncUserData);
+    return () => {
+      window.removeEventListener("user-updated", syncUserData);
+      window.removeEventListener("storage", syncUserData);
+    };
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -37,77 +70,37 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
     };
   }, []);
 
-  // Dynamically configure search placeholder and user profile info
-  const getHeaderConfig = () => {
-    switch (activeView) {
-      case "Dashboard":
-        return {
-          placeholder: "Search fleet or driver...",
-          profileText: null,
-          profileSubText: null,
-          hasHamburger: true,
-          showStatus: false,
-        };
-      case "AdminPortal":
-        return {
-          placeholder: "Search operational data...",
-          profileText: "Admin Controller",
-          profileSubText: "MANAGER PROFILE",
-          hasHamburger: false,
-          showStatus: false,
-        };
-      case "FleetManagement":
-        return {
-          placeholder: "Search fleet assets...",
-          profileText: "FleetControl",
-          profileSubText: null,
-          hasHamburger: false,
-          showStatus: false,
-        };
-      case "FleetEmpty":
-        return {
-          placeholder: "Search fleet registry...",
-          profileText: null,
-          profileSubText: null,
-          hasHamburger: false,
-          showStatus: false,
-        };
-      case "FleetList":
-        return {
-          placeholder: "Search registry...",
-          profileText: null,
-          profileSubText: null,
-          hasHamburger: false,
-          showStatus: true,
-        };
-      case "ClientRegistry":
-        return {
-          placeholder: "Search registry...",
-          profileText: null,
-          profileSubText: null,
-          hasHamburger: false,
-          showStatus: false,
-        };
-      case "RegisterClient":
-        return {
-          placeholder: "Search registry...",
-          profileText: "Alex Management",
-          profileSubText: "FLEET MANAGER",
-          hasHamburger: false,
-          showStatus: false,
-        };
-      default:
-        return {
-          placeholder: "Search...",
-          profileText: "Alex Management",
-          profileSubText: "FLEET MANAGER",
-          hasHamburger: false,
-          showStatus: false,
-        };
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("xrent_user");
     }
+    deleteCookie("token");
+    deleteCookie("xrent_token");
+    setIsDropdownOpen(false);
+    router.push("/");
   };
 
-  const config = getHeaderConfig();
+  // Search placeholder based on active view
+  const getSearchPlaceholder = () => {
+    switch (activeView) {
+      case "Dashboard":
+        return "Search fleet or driver...";
+      case "AdminPortal":
+        return "Search operational data...";
+      case "FleetManagement":
+        return "Search fleet assets...";
+      case "FleetList":
+        return "Search registry...";
+      case "ClientRegistry":
+        return "Search clients...";
+      case "Settings":
+        return "Search preferences...";
+      default:
+        return "Search...";
+    }
+  };
 
   return (
     <header className="h-16 border-b border-white/5 bg-[#0e0e11] flex items-center justify-between px-4 md:px-8 relative z-10 flex-shrink-0">
@@ -116,6 +109,7 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
         {/* Mobile hamburger — always shown on mobile */}
         <button
           onClick={onOpenMenu}
+          aria-label="Open mobile menu"
           className="md:hidden flex-shrink-0 text-gray-400 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,17 +126,17 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
             </span>
             <input
               type="text"
-              placeholder={config.placeholder}
+              placeholder={getSearchPlaceholder()}
               className="w-full bg-[#1e1e1e] text-white placeholder-gray-500 text-xs font-medium pl-10 pr-4 py-2 rounded-lg border border-white/5 focus:border-brand-cyan/50 focus:outline-none transition-all"
             />
           </div>
         </div>
 
         {/* Database connection status & Add Unit button */}
-        {config.showStatus && (
-          <div className="flex items-center gap-5">
+        {activeView === "FleetList" && (
+          <div className="hidden sm:flex items-center gap-5">
             <div className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase text-gray-500 tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-emerald-555 bg-brand-gradient animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
               Database Connected
             </div>
             {onAddUnit && (
@@ -159,10 +153,14 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
 
       {/* Right User & Actions Bar */}
       <div className="flex items-center gap-3 md:gap-6">
-        {/* Quick Action Icons — hidden on mobile to save space */}
+        {/* Quick Action Icons */}
         <div className="hidden sm:flex items-center gap-3 border-r border-white/5 pr-5">
           {/* Notifications */}
-          <button className="text-gray-400 hover:text-white relative p-1.5 hover:bg-white/5 rounded-lg transition-colors">
+          <button 
+            onClick={() => router.push("/settings")}
+            title="Notifications"
+            className="text-gray-400 hover:text-white relative p-1.5 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -170,7 +168,11 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
           </button>
 
           {/* History */}
-          <button className="text-gray-400 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors">
+          <button 
+            onClick={() => router.push("/fleet")}
+            title="Fleet History"
+            className="text-gray-400 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -179,19 +181,16 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
 
         {/* User Card & Dropdown */}
         <div className="relative flex items-center gap-3" ref={dropdownRef}>
-          {/* Profile text hidden on small screens */}
-          {config.profileText && (
-            <div className="hidden sm:flex flex-col text-right select-none">
-              <span className="text-white text-xs font-bold">{config.profileText}</span>
-              {config.profileSubText && (
-                <span className="text-gray-405 text-gray-500 text-[9px] font-semibold tracking-wider">{config.profileSubText}</span>
-              )}
-            </div>
-          )}
+          {/* Profile text */}
+          <div className="hidden sm:flex flex-col text-right select-none">
+            <span className="text-white text-xs font-bold">{userName}</span>
+            <span className="text-gray-400 text-[9px] font-semibold tracking-wider uppercase">{userRole}</span>
+          </div>
 
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-8 h-8 rounded-full overflow-hidden border border-white/5 bg-[#1e1e1e] flex items-center justify-center hover:border-white/10 focus:outline-none transition-all cursor-pointer text-gray-400 hover:text-white"
+            title="User Profile Menu"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -199,30 +198,51 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-[#1e1e1e] border border-white/5 rounded-xl shadow-xl py-2.5 z-50 select-none">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-[#1e1e1e] border border-white/5 rounded-xl shadow-2xl py-2.5 z-50 select-none animate-in fade-in zoom-in-95 duration-100">
               {/* Account Quick Info */}
               <div className="px-4 py-2 border-b border-white/5">
                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest block">Logged in as</span>
-                <span className="text-xs font-extrabold text-white block mt-0.5">{config.profileText || "Alex Management"}</span>
-                <span className="text-[10px] text-gray-400 font-semibold block">{config.profileSubText || "FLEET MANAGER"}</span>
+                <span className="text-xs font-extrabold text-white block mt-0.5">{userName}</span>
+                <span className="text-[10px] text-brand-cyan font-semibold block uppercase">{userRole}</span>
               </div>
 
               {/* Menu Actions */}
               <div className="py-1">
-                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    router.push("/settings");
+                  }}
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                >
                   Account Settings
                 </button>
-                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    router.push("/settings");
+                  }}
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                >
                   Security Credentials
                 </button>
-                <button className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    router.push("/settings");
+                  }}
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                >
                   System Preferences
                 </button>
               </div>
 
               {/* Logout */}
               <div className="border-t border-white/5 mt-1 pt-1">
-                <button className="w-full px-4 py-2 text-left text-xs font-bold text-red-400 hover:bg-red-950/20 transition-colors cursor-pointer">
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-red-400 hover:bg-red-950/20 transition-colors cursor-pointer"
+                >
                   Log Out
                 </button>
               </div>
