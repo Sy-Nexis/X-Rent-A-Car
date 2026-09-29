@@ -12,6 +12,7 @@ interface HeaderProps {
 function getViewFromPathname(pathname: string): string {
   if (pathname.startsWith("/Admin")) return "AdminPortal";
   if (pathname.startsWith("/assignments")) return "AssignVehicles";
+  if (pathname.startsWith("/logs")) return "ActivityLogs";
   if (pathname.startsWith("/vehicles/new")) return "FleetManagement";
   if (pathname.startsWith("/vehicles")) return "FleetList";
   if (pathname.startsWith("/clients/register")) return "RegisterClient";
@@ -201,11 +202,20 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    router.push("/clients");
+                    router.push("/assignments");
                   }}
                   className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                 >
-                  Client Registry
+                  Assign Vehicles
+                </button>
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    router.push("/logs");
+                  }}
+                  className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                >
+                  Activity Logs
                 </button>
               </div>
 

@@ -28,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 import assignmentRouter from './Admin/AssignmentRoutes';
+import logRouter from './Admin/LogRoutes';
 
 // Mounting Routing Layers
 app.use('/api/auth', authRoutes);
@@ -46,6 +47,10 @@ app.use('/api/clients/del', clientDeleteRouter);
 // Vehicle to Client Assignments
 app.use('/api/assignments', assignmentRouter);
 app.use('/api/assignments/view', assignmentRouter);
+
+// Activity Logs
+app.use('/api/logs', logRouter);
+app.use('/api/logs/view', logRouter);
 
 // Health system monitoring endpoint
 app.get('/api/health', (req: Request, res: Response) => {

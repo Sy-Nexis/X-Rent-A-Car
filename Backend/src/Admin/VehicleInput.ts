@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -108,6 +109,16 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         // Invalidate vehicle cache immediately
         cache.invalidate('vehicle');
+
+        // Record audit log
+        recordAuditLog({
+            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Registered Vehicle',
+            entityType: 'Vehicle',
+            entityId: data && data[0] ? data[0].id : undefined,
+            details: `Added new vehicle ${vehicleData.year} ${vehicleData.make} ${vehicleData.model} (${vehicleData.license_plate}) to fleet.`
+        }).catch(() => {});
 
         res.status(201).json({
             success: true,

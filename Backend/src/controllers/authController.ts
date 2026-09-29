@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { supabase } from '../config/supabase';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { recordAuditLog } from '../Admin/LogRoutes';
 
 /**
  * Handle user login
@@ -61,11 +62,21 @@ export const login = async (req: Request, res: Response) => {
                     .eq('id', staff.id)
                     .then();
 
+                const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
+                recordAuditLog({
+                    userName: userName,
+                    userRole: staff.role || 'Staff',
+                    userEmail: staff.email,
+                    action: 'Login',
+                    entityType: 'Auth',
+                    details: `${userName} (${staff.role || 'Staff'}) signed into neXus Fleet Control.`
+                }).catch(() => {});
+
                 return res.status(200).json({
                     token,
                     user: {
                         id: staff.id,
-                        name: `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email,
+                        name: userName,
                         email: staff.email,
                         role: staff.role || 'Staff'
                     }

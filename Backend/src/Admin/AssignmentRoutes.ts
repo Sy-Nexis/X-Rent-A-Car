@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -192,6 +193,15 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
             createdItems = (data || []).map(formatAssignment);
         }
 
+        // Record audit log
+        recordAuditLog({
+            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Assigned Vehicles',
+            entityType: 'Assignment',
+            details: `Dispatched ${assignmentRecords.length} contract(s) across ${targetClientIds.length} client(s) and ${targetVehicleIds.length} vehicle(s).`
+        }).catch(() => {});
+
         // Invalidate caches
         cache.invalidate('assignment');
         cache.invalidate('vehicle');
@@ -257,6 +267,16 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
                 .eq('id', targetVehicleId);
         }
 
+        // Record audit log
+        recordAuditLog({
+            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: status === 'Completed' || status === 'Returned' ? 'Returned Vehicle' : 'Updated Assignment',
+            entityType: 'Assignment',
+            entityId: targetId,
+            details: `Assignment #${targetId} status changed to '${status || 'Updated'}'. Vehicle returned to fleet.`
+        }).catch(() => {});
+
         cache.invalidate('assignment');
         cache.invalidate('vehicle');
 
@@ -310,6 +330,16 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
         }
 
         inMemoryAssignments = inMemoryAssignments.filter(a => String(a.id) !== String(id));
+
+        // Record audit log
+        recordAuditLog({
+            userName: 'Alex Rivera',
+            userRole: 'Fleet Manager',
+            action: 'Terminated Assignment',
+            entityType: 'Assignment',
+            entityId: id as string,
+            details: `Terminated and deleted assignment contract #${id}.`
+        }).catch(() => {});
 
         cache.invalidate('assignment');
         cache.invalidate('vehicle');

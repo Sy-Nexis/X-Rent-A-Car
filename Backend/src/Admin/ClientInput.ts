@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -41,6 +42,16 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
         }
 
         cache.invalidate('client');
+
+        const clientFullName = `${first_name || ''} ${last_name || ''}`.trim() || 'New Client';
+        recordAuditLog({
+            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Registered Client',
+            entityType: 'Client',
+            entityId: data && data[0] ? data[0].id : undefined,
+            details: `Registered client ${clientFullName} (${government_id || email || 'No ID'}).`
+        }).catch(() => {});
 
         res.status(201).json({
             success: true,
