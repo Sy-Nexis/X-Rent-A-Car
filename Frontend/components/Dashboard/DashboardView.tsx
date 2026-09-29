@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { fetchVehicles } from "@/lib/api";
+
 interface Vehicle {
   id: number;
   make: string;
@@ -66,23 +68,20 @@ export default function DashboardView() {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadFleetData() {
+    async function loadVehicleData() {
       try {
-        const res = await fetch("http://localhost:8801/api/vehicles/view", { cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && Array.isArray(json.data) && isMounted) {
-            setVehicles(json.data);
-          }
+        const data = await fetchVehicles();
+        if (isMounted && Array.isArray(data)) {
+          setVehicles(data);
         }
       } catch (err) {
-        console.error("Failed to load live fleet data for dashboard:", err);
+        console.error("Failed to load vehicle data for dashboard:", err);
       } finally {
         if (isMounted) setIsLoading(false);
       }
     }
 
-    loadFleetData();
+    loadVehicleData();
 
     return () => {
       isMounted = false;

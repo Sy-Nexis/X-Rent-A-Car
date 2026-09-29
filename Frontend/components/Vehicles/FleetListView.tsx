@@ -125,6 +125,8 @@ const statusStyles: Record<string, { badge: string; dot: string }> = {
   retired: { badge: "bg-gray-500/10 text-gray-400 border-gray-500/20", dot: "bg-gray-500" },
 };
 
+import { fetchVehicles, invalidateClientDataCache } from "@/lib/api";
+
 export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"All" | "Active" | "Maintenance" | "InPrep">("All");
@@ -136,12 +138,11 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLiveVehicles = async () => {
+  const fetchLiveVehicles = async (force = false) => {
     try {
-      const res = await fetch("http://localhost:8801/api/vehicles/view", { cache: "no-store" });
-      const json = await res.json();
-      if (json.data && Array.isArray(json.data)) {
-        setLiveVehicles(json.data.map((v: any) => ({
+      const data = await fetchVehicles(force);
+      if (Array.isArray(data)) {
+        setLiveVehicles(data.map((v: any) => ({
           id: v.id,
           make: v.make,
           model: v.model,
@@ -188,8 +189,9 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
         throw new Error(data.message || "Failed to delete vehicle");
       }
 
+      invalidateClientDataCache("vehicles");
       setDeletingVehicle(null);
-      await fetchLiveVehicles();
+      await fetchLiveVehicles(true);
       router.refresh();
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");

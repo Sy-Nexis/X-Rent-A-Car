@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
+import { cache } from '../utils/cache';
 
 const router = Router();
 
@@ -39,6 +40,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        cache.invalidate('client');
+
         res.status(201).json({
             success: true,
             message: 'Client successfully registered to the DB.',
@@ -73,8 +76,6 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             city, state, zip_code, license_number, status
         } = req.body;
 
-        // Supabase automatically ignores 'undefined' values in the update object,
-        // so it natively acts like your old COALESCE statement!
         const { data, error } = await supabase
             .from('clients')
             .update({
@@ -93,7 +94,6 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // If no data is returned, the government_id didn't match any records
         if (!data || data.length === 0) {
             res.status(404).json({
                 success: false,
@@ -101,6 +101,8 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
+
+        cache.invalidate('client');
 
         res.status(200).json({
             success: true,

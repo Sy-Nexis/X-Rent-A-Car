@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
+import { cache } from '../utils/cache';
 
 const router = Router();
 
@@ -118,6 +119,9 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             }
             return { ...vehicle, status: statusVal, branch: branchVal };
         }) : [];
+
+        // Invalidate vehicle cache immediately
+        cache.invalidate('vehicle');
 
         res.status(201).json({
             success: true,
@@ -285,6 +289,9 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             }
             return { ...vehicle, status: statusVal, branch: branchVal };
         });
+
+        // Invalidate vehicle cache immediately
+        cache.invalidate('vehicle');
 
         res.status(200).json({
             success: true,

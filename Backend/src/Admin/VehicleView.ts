@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
+import { cache } from '../utils/cache';
 
 const router = Router();
 
@@ -36,6 +37,18 @@ function decodeVehicle(vehicle: any) {
 
 const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
     try {
+        const cacheKey = 'vehicles:all';
+        const cached = cache.get<any[]>(cacheKey);
+        if (cached) {
+            res.setHeader('X-Cache', 'HIT');
+            res.status(200).json({
+                success: true,
+                count: cached.length,
+                data: cached
+            });
+            return;
+        }
+
         const { data, error } = await supabase
             .from('vehicles')
             .select('*')
@@ -51,7 +64,9 @@ const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
         }
 
         const decodedData = data ? data.map(decodeVehicle) : [];
+        cache.set(cacheKey, decodedData, 30000); // 30s TTL
 
+        res.setHeader('X-Cache', 'MISS');
         res.status(200).json({
             success: true,
             count: decodedData.length,
@@ -80,6 +95,17 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return getAllVehicles(req, res);
         }
 
+        const cacheKey = `vehicle:${id}`;
+        const cached = cache.get<any>(cacheKey);
+        if (cached) {
+            res.setHeader('X-Cache', 'HIT');
+            res.status(200).json({
+                success: true,
+                data: cached
+            });
+            return;
+        }
+
         let query = supabase.from('vehicles').select('*');
         if (!isNaN(Number(id))) {
             query = query.or(`id.eq.${id},vin.eq.${id}`);
@@ -106,9 +132,13 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        const decoded = decodeVehicle(data);
+        cache.set(cacheKey, decoded, 30000);
+
+        res.setHeader('X-Cache', 'MISS');
         res.status(200).json({
             success: true,
-            data: decodeVehicle(data)
+            data: decoded
         });
 
     } catch (error: any) {

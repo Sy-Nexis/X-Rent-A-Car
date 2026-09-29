@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
+import { cache } from '../utils/cache';
 
 const router = Router();
 
@@ -47,6 +48,8 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
+
+        cache.invalidate('vehicle');
 
         res.status(200).json({
             success: true,

@@ -11,6 +11,7 @@ import {
    CarFront,
 } from "lucide-react";
 import Link from "next/link";
+import { fetchVehicles, fetchClients } from "@/lib/api";
 
 interface AdminHubProps {
    vehicles: any[];
@@ -24,18 +25,12 @@ export default function AdminHubClient({ vehicles: initialVehicles = [], clients
    React.useEffect(() => {
       async function loadLiveAdminData() {
          try {
-            const [vRes, cRes] = await Promise.all([
-               fetch("http://localhost:8801/api/vehicles/view", { cache: "no-store" }),
-               fetch("http://localhost:8801/api/clients/view", { cache: "no-store" }),
+            const [vData, cData] = await Promise.all([
+               fetchVehicles(),
+               fetchClients(),
             ]);
-            if (vRes.ok) {
-               const vJson = await vRes.json();
-               if (vJson.data) setVehicles(vJson.data);
-            }
-            if (cRes.ok) {
-               const cJson = await cRes.json();
-               if (cJson.data) setClients(cJson.data);
-            }
+            if (Array.isArray(vData)) setVehicles(vData);
+            if (Array.isArray(cData)) setClients(cData);
          } catch (err) {
             console.error("Failed to load live admin data:", err);
          }

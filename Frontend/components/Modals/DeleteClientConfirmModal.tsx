@@ -10,6 +10,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -33,9 +34,9 @@ export default function DeleteClientConfirmModal({
   client,
   onConfirm
 }: DeleteClientConfirmModalProps) {
+  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleDelete = async () => {
     if (!client) return;
@@ -44,7 +45,7 @@ export default function DeleteClientConfirmModal({
     setError(null);
 
     try {
-      // Endpoint mapping: DELETE http://localhost:8801/api/clients/del/del?nic={id}
+      // Endpoint mapping: DELETE http://localhost:8801/api/clients/del?nic={id}
       const response = await fetch(`http://localhost:8801/api/clients/del?nic=${client.government_id}`, {
         method: "DELETE",
       });
@@ -54,7 +55,7 @@ export default function DeleteClientConfirmModal({
         throw new Error(result.message || "Failed to terminate client record");
       }
 
-      // Success logic
+      invalidateClientDataCache("clients");
       onConfirm();
       onClose();
       router.refresh();

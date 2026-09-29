@@ -129,6 +129,8 @@ const statusStyles: Record<string, { badge: string; dot: string }> = {
   inactive: { badge: "bg-red-500/10 text-red-400 border-red-500/20", dot: "bg-brand-red" },
 };
 
+import { fetchClients as fetchClientsApi, invalidateClientDataCache } from "@/lib/api";
+
 export default function ClientRegistryView({ initialClients = [] }: ClientRegistryViewProps) {
   const router = useRouter();
   
@@ -141,13 +143,12 @@ export default function ClientRegistryView({ initialClients = [] }: ClientRegist
   const [viewingClientId, setViewingClientId] = useState<number | null>(null);
   const [deletingClient, setDeletingClient] = useState<any | null>(null);
 
-  const fetchClients = async () => {
+  const fetchClients = async (force = false) => {
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:8801/api/clients/view", { cache: "no-store" });
-      const json = await res.json();
-      if (json.data && Array.isArray(json.data)) {
-        setClients(json.data);
+      const data = await fetchClientsApi(force);
+      if (Array.isArray(data)) {
+        setClients(data);
       }
     } catch (err) {
       console.error("Failed to load clients:", err);
