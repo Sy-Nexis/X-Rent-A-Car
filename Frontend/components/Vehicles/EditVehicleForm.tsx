@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { Loader2, AlertCircle, Save, X, Info, ShieldCheck, Zap, Fuel, Gauge, MapPin, Palette, Car } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { invalidateClientDataCache } from "@/lib/api";
 
 interface Vehicle {
   id: number;
@@ -90,6 +91,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
       }
 
       // 3. SUCCESS WORKFLOW
+      invalidateClientDataCache("vehicles");
       router.refresh();
       onClose();
     } catch (err: any) {

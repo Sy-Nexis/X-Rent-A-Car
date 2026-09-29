@@ -23,6 +23,7 @@ import {
   Database,
   Info
 } from "lucide-react";
+import { invalidateClientDataCache } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 // --- TYPES ---
@@ -118,7 +119,6 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
       const response = await fetch(`http://localhost:8801/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -127,6 +127,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         throw new Error(result.message || "Registry Sync Failed");
       }
 
+      invalidateClientDataCache("vehicles");
       setShowSuccess(true);
       router.refresh();
 

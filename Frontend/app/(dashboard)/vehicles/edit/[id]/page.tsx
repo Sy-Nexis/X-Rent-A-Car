@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { invalidateClientDataCache } from "@/lib/api";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -189,6 +190,7 @@ export default function EditVehiclePage() {
         throw new Error(result.message || "Update failed. Please check registry connectivity.");
       }
 
+      invalidateClientDataCache("vehicles");
       setSuccess(true);
       router.refresh();
 

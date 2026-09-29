@@ -1,47 +1,75 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Search, Filter, AlertCircle, RefreshCw } from "lucide-react";
+import React, { useState, useMemo, useEffect } from "react";
+import { Search, Filter, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import VehicleListActionable from "./VehicleListActionable";
+import { fetchVehicles } from "@/lib/api";
 
 interface Vehicle {
   id: number;
   make: string;
   model: string;
   year: number;
-  license_plate: string;
+  license_plate?: string;
+  licensePlate?: string;
   vin: string;
-  daily_rate: string | number;
+  daily_rate?: string | number;
+  dailyRate?: string | number;
   status: string;
-  fuel_type: string;
-  transmission: string;
+  fuel_type?: string;
+  fuelType?: string;
+  transmission?: string;
 }
 
 interface FleetManagerProps {
   initialData: Vehicle[];
 }
 
-export default function FleetManager({ initialData }: FleetManagerProps) {
+export default function FleetManager({ initialData = [] }: FleetManagerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [liveVehicles, setLiveVehicles] = useState<Vehicle[]>(initialData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadVehicles = async (force = false) => {
+    try {
+      const data = await fetchVehicles(force);
+      if (Array.isArray(data) && data.length > 0) {
+        setLiveVehicles(data);
+      }
+    } catch (err) {
+      console.error("Failed to load live vehicles:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setLiveVehicles(initialData);
+    }
+  }, [initialData]);
 
   // Format data for the table and handle calculations
   const vehicles = useMemo(() => {
-    return initialData.map(v => ({
+    return liveVehicles.map(v => ({
       ...v,
-      dailyRate: v.daily_rate ? (typeof v.daily_rate === 'string' ? parseFloat(v.daily_rate) : v.daily_rate) : 0,
-      licensePlate: v.license_plate || 'No Plate',
-      fuelType: v.fuel_type || 'Unknown',
+      dailyRate: v.daily_rate ? (typeof v.daily_rate === 'string' ? parseFloat(v.daily_rate) : Number(v.daily_rate)) : (Number(v.dailyRate) || 0),
+      licensePlate: v.license_plate || v.licensePlate || 'No Plate',
+      fuelType: v.fuel_type || v.fuelType || 'Unknown',
+      transmission: v.transmission || 'Automatic',
     }));
-  }, [initialData]);
+  }, [liveVehicles]);
 
   // Statistics
   const stats = useMemo(() => {
     const total = vehicles.length;
-    const active = vehicles.filter(v => v.status.toLowerCase() === 'active').length;
-    const maintenance = vehicles.filter(v => v.status.toLowerCase() === 'maintenance').length;
-    const inPrep = vehicles.filter(v => v.status.toLowerCase() === 'in prep' || v.status.toLowerCase() === 'inprep').length;
+    const active = vehicles.filter(v => (v.status || '').toLowerCase() === 'active' || (v.status || '').toLowerCase() === 'available').length;
+    const maintenance = vehicles.filter(v => (v.status || '').toLowerCase() === 'maintenance').length;
+    const inPrep = vehicles.filter(v => (v.status || '').toLowerCase() === 'in prep' || (v.status || '').toLowerCase() === 'inprep').length;
 
     return { total, active, maintenance, inPrep };
   }, [vehicles]);
@@ -54,24 +82,29 @@ export default function FleetManager({ initialData }: FleetManagerProps) {
         v.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.licensePlate.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === "All" || v.status.toLowerCase() === statusFilter.toLowerCase();
+      const statusVal = (v.status || '').toLowerCase();
+      const filterVal = statusFilter.toLowerCase();
+      const matchesStatus =
+        statusFilter === "All" ||
+        (filterVal === "active" && (statusVal === "active" || statusVal === "available")) ||
+        statusVal === filterVal;
 
       return matchesSearch && matchesStatus;
     });
   }, [vehicles, searchTerm, statusFilter]);
 
-  if (initialData.length === 0) {
+  if (vehicles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#2c2c2e] rounded-3xl border border-gray-200/50 dark:border-white/5 shadow-sm">
         <AlertCircle size={48} className="text-[#6e6e73] mb-4" />
         <h3 className="text-xl font-bold">No Vehicles Found</h3>
         <p className="text-[#6e6e73] mt-2">The fleet registry is currently empty or the backend is offline.</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => loadVehicles(true)}
           className="mt-6 px-6 py-3 bg-[#0071e3] text-white rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-[#0077ed] transition-colors"
         >
           <RefreshCw size={18} />
-          Retry Connection
+          Refresh Registry
         </button>
       </div>
     );

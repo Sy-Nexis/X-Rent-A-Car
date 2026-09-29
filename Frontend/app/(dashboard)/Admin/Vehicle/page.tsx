@@ -1,6 +1,5 @@
 import Link from "next/link";
 import FleetManager from "@/components/Vehicles/FleetManager";
-import { VehicleErrorState, VehicleEmptyState } from "@/components/Vehicles/VehicleStatusStates";
 import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -14,39 +13,28 @@ export const metadata = {
 async function getVehicles() {
   try {
     const response = await fetch('http://localhost:8801/api/vehicles/view', {
-      cache: 'no-store', // Always fetch fresh data
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      console.error(`API Error: ${response.status} ${response.statusText}`);
-      return null; // Triggers VehicleErrorState
+      console.warn(`API Warning: ${response.status} ${response.statusText}`);
+      return [];
     }
 
     const result = await response.json();
-    return result.success ? result.data : [];
+    return result.success && Array.isArray(result.data) ? result.data : [];
   } catch (error) {
-    console.error("Error fetching vehicles:", error);
-    return null; // Triggers VehicleErrorState
+    console.warn("Error fetching vehicles server-side:", error);
+    return [];
   }
 }
 
 export default async function VehiclesPage() {
   const vehicleData = await getVehicles();
 
-  // 1. ERROR STATE (Offline or API Failure)
-  if (vehicleData === null) {
-    return <VehicleErrorState />;
-  }
-
-  // 2. EMPTY STATE (No units in database)
-  if (vehicleData.length === 0) {
-    return <VehicleEmptyState />;
-  }
-
-  // 3. SUCCESS STATE
   return (
     <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#1c1c1e] py-12 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-[1400px] mx-auto">

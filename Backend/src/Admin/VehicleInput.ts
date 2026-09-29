@@ -237,21 +237,31 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             dbStatus = 'Available';
         }
 
-        // Map camelCase body payload to snake_case database columns
-        const updateData = {
-            make,
-            model,
-            year: year ? Number(year) : undefined,
-            transmission,
-            color,
-            mileage: mileage ? Number(mileage) : undefined,
-            branch: dbBranch,
-            status: dbStatus,
-            license_plate: licensePlate,
-            fuel_type: fuelType,
-            engine_capacity: engineCapacity,
-            daily_rate: dailyRate ? Number(dailyRate) : undefined
-        };
+        // Normalize incoming fields
+        const yearVal = year !== undefined ? Number(year) : (req.body.year !== undefined ? Number(req.body.year) : undefined);
+        const mileageVal = mileage !== undefined ? Number(mileage) : (req.body.mileage !== undefined ? Number(req.body.mileage) : undefined);
+        const dailyRateRaw = dailyRate !== undefined ? dailyRate : req.body.daily_rate;
+        const numericDailyRate = dailyRateRaw !== undefined ? Number(dailyRateRaw) : undefined;
+        const licensePlateVal = licensePlate || req.body.license_plate || undefined;
+        const fuelTypeVal = fuelType || req.body.fuel_type || undefined;
+        const engineCapacityVal = engineCapacity || req.body.engine_capacity || undefined;
+
+        // Build clean update object without undefined overwrites
+        const updateData: any = {};
+        if (make !== undefined) updateData.make = String(make);
+        if (model !== undefined) updateData.model = String(model);
+        if (yearVal !== undefined && !isNaN(yearVal)) updateData.year = yearVal;
+        if (transmission !== undefined) updateData.transmission = String(transmission);
+        if (color !== undefined) updateData.color = String(color);
+        if (mileageVal !== undefined && !isNaN(mileageVal)) updateData.mileage = mileageVal;
+        if (dbBranch !== undefined) updateData.branch = dbBranch;
+        if (dbStatus !== undefined) updateData.status = dbStatus;
+        if (licensePlateVal !== undefined) updateData.license_plate = String(licensePlateVal);
+        if (fuelTypeVal !== undefined) updateData.fuel_type = String(fuelTypeVal);
+        if (engineCapacityVal !== undefined) updateData.engine_capacity = String(engineCapacityVal);
+        if (numericDailyRate !== undefined && !isNaN(numericDailyRate)) updateData.daily_rate = numericDailyRate;
+
+        console.log("EXECUTING_VEHICLE_UPDATE:", { id: existingVehicle.id, updateData });
 
         const { data, error } = await supabase
             .from('vehicles')
