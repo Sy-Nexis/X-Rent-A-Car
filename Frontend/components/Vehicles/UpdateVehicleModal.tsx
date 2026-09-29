@@ -242,7 +242,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
                       <InputCard label="Engine Capacity" icon={<Zap size={18} />} {...register("engineCapacity")} />
                       <InputCard label="Exterior Palette" icon={<Palette size={18} />} {...register("color")} />
                       <InputCard label="Operational Mileage" icon={<Activity size={18} />} {...register("mileage")} type="number" />
-                      <InputCard label="Daily Rental Rate (LKR)" icon={<DollarSign size={18} />} {...register("dailyRate")} type="number" step="0.01" />
+                      <InputCard label="Daily Rental Rate (LKR)" icon={<span className="text-blue-500 font-bold text-xs">LKR</span>} {...register("dailyRate")} type="number" step="0.01" />
                     </div>
 
                     <div className="pt-10 border-t border-white/5">

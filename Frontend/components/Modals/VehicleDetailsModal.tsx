@@ -215,7 +215,7 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
                   <DetailCard icon={<Palette size={18} />} label="Color" value={vehicle.color || 'N/A'} />
                   <DetailCard icon={<Activity size={18} />} label="Mileage" value={`${vehicle.mileage?.toLocaleString() || 0} km`} />
                   <DetailCard icon={<MapPin size={18} />} label="Branch" value={vehicle.branch || 'Main'} />
-                  <DetailCard icon={<DollarSign size={18} />} label="Daily Rate" value={`LKR ${Number(vehicle.daily_rate).toLocaleString()}`} highlight />
+                  <DetailCard icon={<span className="text-brand-cyan font-bold text-xs">LKR</span>} label="Daily Rate" value={`LKR ${Number(vehicle.daily_rate).toLocaleString()}`} highlight />
 
                   <div className="col-span-full mt-4 p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                     <p className="text-[10px] font-bold text-brand-cyan uppercase tracking-widest mb-1">VIN Number</p>
