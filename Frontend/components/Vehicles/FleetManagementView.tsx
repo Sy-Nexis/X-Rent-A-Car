@@ -2,24 +2,25 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { invalidateClientDataCache } from "@/lib/api";
 
 export default function FleetManagementView() {
   const router = useRouter();
 
-  // Form fields
-  const [brand, setBrand] = useState("Mercedes-Benz");
-  const [model, setModel] = useState("Actros");
+  // Form fields with clean empty defaults
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
   const [year, setYear] = useState("2024");
-  const [vin, setVin] = useState("WDB9634031L894211");
-  const [plate, setPlate] = useState("TX-88-ACT");
+  const [vin, setVin] = useState("");
+  const [plate, setPlate] = useState("");
 
   const [transmission, setTransmission] = useState("AUTO");
   const [fuelType, setFuelType] = useState("Diesel");
-  const [engine, setEngine] = useState("450");
-  const [color, setColor] = useState("Fleet White");
-  const [mileage, setMileage] = useState("0");
+  const [engine, setEngine] = useState("");
+  const [color, setColor] = useState("");
+  const [mileage, setMileage] = useState("");
 
-  const [rate, setRate] = useState("450.00");
+  const [rate, setRate] = useState("");
   const [branch, setBranch] = useState("Central Distribution Center");
   const [status, setStatus] = useState("Active");
 
@@ -36,9 +37,9 @@ export default function FleetManagementView() {
     setTransmission("AUTO");
     setFuelType("Diesel");
     setEngine("");
-    setColor("Fleet White");
-    setMileage("0");
-    setRate("0.00");
+    setColor("");
+    setMileage("");
+    setRate("");
     setBranch("Central Distribution Center");
     setStatus("Active");
     setErrorMessage(null);
@@ -57,6 +58,9 @@ export default function FleetManagementView() {
     }
 
     try {
+      const parsedMileage = Number(mileage) || 0;
+      const parsedRate = Number(rate) || 0;
+
       const payload = {
         make: brand.trim(),
         model: model.trim(),
@@ -65,10 +69,11 @@ export default function FleetManagementView() {
         licensePlate: plate.trim(),
         transmission: transmission === "AUTO" ? "Automatic" : "Manual",
         fuelType: fuelType,
-        engineCapacity: engine,
-        color: color,
-        mileage: parseFloat(mileage) || 0,
-        dailyRate: parseFloat(rate) || 0,
+        engineCapacity: engine.trim(),
+        color: color.trim(),
+        mileage: parsedMileage,
+        dailyRate: parsedRate,
+        daily_rate: parsedRate,
         branch: branch,
         status: status === "InPrep" ? "In Prep" : status,
       };
@@ -84,6 +89,7 @@ export default function FleetManagementView() {
         throw new Error(result.message || "Failed to register vehicle to database");
       }
 
+      invalidateClientDataCache("vehicles");
       setSuccessMessage("Vehicle registered successfully in Supabase! Redirecting to fleet registry...");
       setTimeout(() => {
         router.push("/vehicles");
@@ -541,7 +547,7 @@ export default function FleetManagementView() {
               <div className="border-t border-white/5 pt-4 flex justify-between items-end mt-2">
                 <div>
                   <span className="text-[9px] uppercase font-bold text-gray-500 block">Daily Rate</span>
-                  <span className="text-xl font-black text-brand-cyan tracking-tight">${rate || "0.00"}</span>
+                  <span className="text-xl font-black text-brand-cyan tracking-tight">LKR {Number(rate || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>

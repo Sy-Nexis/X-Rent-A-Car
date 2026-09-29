@@ -14,25 +14,11 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
         } = req.body;
 
         // Map incoming fields with extreme robustness
-        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
-        const numericDailyRate = Number(dailyRate) || Number(daily_rate) || 0;
-        if (numericDailyRate >= 100000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
-            });
-            return;
-        }
+        const rawDailyRate = Number(dailyRate) || Number(daily_rate) || 0;
+        const numericDailyRate = isNaN(rawDailyRate) ? 0 : Math.min(Math.max(rawDailyRate, 0), 99999999.99);
 
-        // 2. MILEAGE GUARD: Prevent potential overflow
-        const numericMileage = Number(mileage) || 0;
-        if (numericMileage >= 1000000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Mileage is too high.'
-            });
-            return;
-        }
+        const rawMileage = Number(mileage) || 0;
+        const numericMileage = isNaN(rawMileage) ? 0 : Math.min(Math.max(Math.floor(rawMileage), 0), 2147483647);
 
         // Map status and branch values to avoid DB enum constraint violations
         const rawStatus = String(status || 'Available').trim();

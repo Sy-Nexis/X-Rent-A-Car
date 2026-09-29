@@ -13,6 +13,7 @@ import {
   Trash2,
   AlertCircle
 } from "lucide-react";
+import { invalidateClientDataCache } from "@/lib/api";
 
 type VehicleFormData = {
   make: string;
@@ -79,6 +80,7 @@ export default function VehicleDataEntry() {
         throw new Error(result.message + (result.detail ? ` (${result.detail})` : "") || "Failed to register vehicle");
       }
 
+      invalidateClientDataCache("vehicles");
       console.log("VEHICLE_REGISTERED_SUCCESSFULLY:", result);
       setShowSuccess(true);
       reset();
