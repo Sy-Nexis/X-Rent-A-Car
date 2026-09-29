@@ -12,6 +12,7 @@ interface SidebarProps {
 // Maps URL pathname to a logical view name used by the footer/active-state logic
 function getViewFromPathname(pathname: string): string {
   if (pathname.startsWith("/Admin")) return "AdminPortal";
+  if (pathname.startsWith("/assignments")) return "AssignVehicles";
   if (pathname.startsWith("/vehicles")) return "FleetList";
   if (pathname.startsWith("/clients/register")) return "RegisterClient";
   if (pathname.startsWith("/clients")) return "ClientRegistry";
@@ -23,7 +24,7 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
   const router = useRouter();
   const activeView = getViewFromPathname(pathname);
 
-  // Navigation items mapping (Settings removed)
+  // Navigation items mapping
   const navItems = [
     {
       id: "Dashboard",
@@ -63,6 +64,16 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 014 0" />
+        </svg>
+      ),
+    },
+    {
+      id: "AssignVehicles",
+      path: "/assignments",
+      label: "Assign Vehicles",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
         </svg>
       ),
     },

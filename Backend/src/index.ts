@@ -27,6 +27,8 @@ app.use((req, res, next) => {
     next();
 });
 
+import assignmentRouter from './Admin/AssignmentRoutes';
+
 // Mounting Routing Layers
 app.use('/api/auth', authRoutes);
 
@@ -40,6 +42,10 @@ app.use('/api/clients', clientViwRouter);
 app.use('/api/clients', clientInputRouter);
 app.use('/api/clients/view', clientViwRouter);
 app.use('/api/clients/del', clientDeleteRouter);
+
+// Vehicle to Client Assignments
+app.use('/api/assignments', assignmentRouter);
+app.use('/api/assignments/view', assignmentRouter);
 
 // Health system monitoring endpoint
 app.get('/api/health', (req: Request, res: Response) => {

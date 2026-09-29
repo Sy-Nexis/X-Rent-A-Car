@@ -11,6 +11,7 @@ interface HeaderProps {
 
 function getViewFromPathname(pathname: string): string {
   if (pathname.startsWith("/Admin")) return "AdminPortal";
+  if (pathname.startsWith("/assignments")) return "AssignVehicles";
   if (pathname.startsWith("/vehicles/new")) return "FleetManagement";
   if (pathname.startsWith("/vehicles")) return "FleetList";
   if (pathname.startsWith("/clients/register")) return "RegisterClient";
