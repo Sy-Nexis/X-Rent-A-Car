@@ -15,7 +15,6 @@ function getViewFromPathname(pathname: string): string {
   if (pathname.startsWith("/vehicles")) return "FleetList";
   if (pathname.startsWith("/clients/register")) return "RegisterClient";
   if (pathname.startsWith("/clients")) return "ClientRegistry";
-  if (pathname.startsWith("/settings")) return "Settings";
   return "Dashboard";
 }
 
@@ -95,8 +94,6 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
         return "Search registry...";
       case "ClientRegistry":
         return "Search clients...";
-      case "Settings":
-        return "Search preferences...";
       default:
         return "Search...";
     }
@@ -155,10 +152,10 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
       <div className="flex items-center gap-3 md:gap-6">
         {/* Quick Action Icons */}
         <div className="hidden sm:flex items-center gap-3 border-r border-white/5 pr-5">
-          {/* Notifications */}
+          {/* Fleet Status */}
           <button 
-            onClick={() => router.push("/settings")}
-            title="Notifications"
+            onClick={() => router.push("/vehicles")}
+            title="Fleet Operations"
             className="text-gray-400 hover:text-white relative p-1.5 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,10 +164,10 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-cyan border border-[#0e0e11]" />
           </button>
 
-          {/* History */}
+          {/* History / Fleet */}
           <button 
-            onClick={() => router.push("/fleet")}
-            title="Fleet History"
+            onClick={() => router.push("/vehicles")}
+            title="Fleet Registry"
             className="text-gray-400 hover:text-white p-1.5 hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,29 +208,29 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    router.push("/settings");
+                    router.push("/dashboard");
                   }}
                   className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                 >
-                  Account Settings
+                  Dashboard Overview
                 </button>
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    router.push("/settings");
+                    router.push("/vehicles");
                   }}
                   className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                 >
-                  Security Credentials
+                  Fleet Management
                 </button>
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    router.push("/settings");
+                    router.push("/clients");
                   }}
                   className="w-full px-4 py-2 text-left text-xs font-bold text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
                 >
-                  System Preferences
+                  Client Registry
                 </button>
               </div>
 
