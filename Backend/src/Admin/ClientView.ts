@@ -3,8 +3,7 @@ import { supabase } from '../db';
 
 const router = Router();
 
-// /api/clients/view
-router.get('/', async (req: Request, res: Response): Promise<void> => {
+const getAllClients = async (req: Request, res: Response): Promise<void> => {
     try {
         const { data, error } = await supabase
             .from('clients')
@@ -34,18 +33,28 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             message: 'Internal Server Error while fetching client data.'
         });
     }
-});
+};
 
-// /api/clients/view/:id
+// GET all clients
+router.get('/', getAllClients);
+router.get('/view', getAllClients);
+
+// /api/clients/view/:id or /api/clients/:id
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
+        if (!id || id === 'view') {
+            return getAllClients(req, res);
+        }
 
-        const { data, error } = await supabase
-            .from('clients')
-            .select('*')
-            .eq('government_id', String(id))
-            .maybeSingle(); // Returns the object directly, or null if not found
+        let query = supabase.from('clients').select('*');
+        if (!isNaN(Number(id))) {
+            query = query.or(`id.eq.${id},government_id.eq.${id}`);
+        } else {
+            query = query.eq('government_id', String(id));
+        }
+
+        const { data, error } = await query.maybeSingle();
 
         if (error) {
             console.error('Supabase SELECT single client error:', error);
@@ -56,7 +65,6 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // If data is null, the client doesn't exist
         if (!data) {
             res.status(404).json({
                 success: false,
@@ -72,9 +80,10 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 
     } catch (error: any) {
         console.error('Unexpected error fetching client details:', error);
+
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error'
+            message: 'Internal Server Error while fetching client details.'
         });
     }
 });

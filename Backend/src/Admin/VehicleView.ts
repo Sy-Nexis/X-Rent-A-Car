@@ -18,8 +18,7 @@ function decodeVehicle(vehicle: any) {
     return { ...vehicle, status, branch };
 }
 
-// /api/vehicles/view
-router.get('/', async (req: Request, res: Response): Promise<void> => {
+const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
     try {
         const { data, error } = await supabase
             .from('vehicles')
@@ -51,19 +50,28 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             message: 'Internal Server Error while fetching vehicle data.'
         });
     }
-});
+};
 
-// /api/vehicles/view/:id
-// Get a single vehicle by ID
+// GET all vehicles
+router.get('/', getAllVehicles);
+router.get('/view', getAllVehicles);
+
+// /api/vehicles/view/:id or /api/vehicles/:id
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
+        if (!id || id === 'view') {
+            return getAllVehicles(req, res);
+        }
 
-        const { data, error } = await supabase
-            .from('vehicles')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
+        let query = supabase.from('vehicles').select('*');
+        if (!isNaN(Number(id))) {
+            query = query.or(`id.eq.${id},vin.eq.${id}`);
+        } else {
+            query = query.eq('vin', String(id));
+        }
+
+        const { data, error } = await query.maybeSingle();
 
         if (error) {
             console.error('Supabase SELECT single vehicle error:', error);
@@ -82,18 +90,17 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const decodedVehicle = decodeVehicle(data);
-
         res.status(200).json({
             success: true,
-            data: decodedVehicle
+            data: decodeVehicle(data)
         });
 
     } catch (error: any) {
         console.error('Unexpected error fetching vehicle details:', error);
+
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error'
+            message: 'Internal Server Error while fetching vehicle details.'
         });
     }
 });

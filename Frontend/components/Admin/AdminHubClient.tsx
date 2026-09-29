@@ -17,7 +17,32 @@ interface AdminHubProps {
    clients: any[];
 }
 
-export default function AdminHubClient({ vehicles, clients }: AdminHubProps) {
+export default function AdminHubClient({ vehicles: initialVehicles = [], clients: initialClients = [] }: AdminHubProps) {
+   const [vehicles, setVehicles] = React.useState<any[]>(initialVehicles);
+   const [clients, setClients] = React.useState<any[]>(initialClients);
+
+   React.useEffect(() => {
+      async function loadLiveAdminData() {
+         try {
+            const [vRes, cRes] = await Promise.all([
+               fetch("http://localhost:8801/api/vehicles/view", { cache: "no-store" }),
+               fetch("http://localhost:8801/api/clients/view", { cache: "no-store" }),
+            ]);
+            if (vRes.ok) {
+               const vJson = await vRes.json();
+               if (vJson.data) setVehicles(vJson.data);
+            }
+            if (cRes.ok) {
+               const cJson = await cRes.json();
+               if (cJson.data) setClients(cJson.data);
+            }
+         } catch (err) {
+            console.error("Failed to load live admin data:", err);
+         }
+      }
+
+      loadLiveAdminData();
+   }, []);
    const containerVariants = {
       hidden: { opacity: 0 },
       visible: {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { deleteCookie } from "@/lib/cookies";
 
 interface SidebarProps {
   isDrawerOpen?: boolean;
@@ -124,6 +125,8 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
               localStorage.removeItem("user");
               localStorage.removeItem("xrent_user");
             }
+            deleteCookie("token");
+            deleteCookie("xrent_token");
             router.push("/");
           }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all group cursor-pointer"

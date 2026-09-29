@@ -1,40 +1,33 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import AdminHubClient from "@/components/Admin/AdminHubClient";
-
-// --- SERVER-SIDE DATA FETCHING ---
 
 async function getAdminHubData() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("xrent_token")?.value;
+  const token = cookieStore.get("token")?.value || cookieStore.get("xrent_token")?.value;
 
-  // if (!token) {
-  //   redirect("/login");
-  // }
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   try {
     const [vehiclesRes, clientsRes] = await Promise.all([
       fetch("http://localhost:8801/api/vehicles/view", {
         cache: "no-store",
-        headers: { "Authorization": `Bearer ${token}` }
+        headers,
       }),
       fetch("http://localhost:8801/api/clients/view", {
         cache: "no-store",
-        headers: { "Authorization": `Bearer ${token}` }
-      })
+        headers,
+      }),
     ]);
-
-    // Handle session expiration (401 Unauthorized)
-    // if (vehiclesRes.status === 401 || clientsRes.status === 401) {
-    //   redirect("/login");
-    // }
 
     const vehiclesResult = await vehiclesRes.json().catch(() => ({ data: [] }));
     const clientsResult = await clientsRes.json().catch(() => ({ data: [] }));
 
     return {
       vehicles: vehiclesResult.data || [],
-      clients: clientsResult.data || []
+      clients: clientsResult.data || [],
     };
   } catch (error) {
     console.error("Admin Hub Fetch Error:", error);

@@ -431,7 +431,7 @@ export default function EditVehiclePage() {
                     </div>
                   </FormGroup>
 
-                  <FormGroup label="Daily Rate (Rs.)" icon={<div className="text-brand-cyan font-black text-xs">Rs</div>} className="md:col-span-2 bg-brand-cyan/[0.04] border-brand-cyan/10 shadow-inner">
+                  <FormGroup label="Daily Rate (LKR)" icon={<div className="text-brand-cyan font-black text-xs">LKR</div>} className="md:col-span-2 bg-brand-cyan/[0.04] border-brand-cyan/10 shadow-inner">
                     <input type="number" step="0.01" {...register("dailyRate", { required: true })} className="w-full bg-transparent border-none outline-none p-0 mt-2 placeholder-gray-600 tracking-tight appearance-none text-3xl font-black text-brand-cyan" />
                   </FormGroup>
                 </div>

@@ -353,7 +353,7 @@ export default function FleetManagementView() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                   <div>
                     <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                      Daily Rental Rate ($)
+                      Daily Rental Rate (LKR)
                     </label>
                     <input
                       type="text"

@@ -204,7 +204,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                      </td>
                      <td className="px-8 py-6">
                        <div className="text-sm font-black text-white">
-                         Rs. {vehicle.dailyRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                         LKR {vehicle.dailyRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                          <span className="text-[10px] text-[#6e6e73] font-medium ml-1">/ day</span>
                        </div>
                      </td>
@@ -391,7 +391,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
                   <div className="flex flex-col items-end gap-1">
                     <span className="text-[7.5px] font-black text-gray-500 uppercase tracking-widest">Daily Cost</span>
                     <span className="font-black text-white">
-                      Rs. {vehicle.dailyRate.toLocaleString()}
+                      LKR {vehicle.dailyRate.toLocaleString()}
                     </span>
                   </div>
                 </div>

@@ -265,9 +265,9 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
           <SectionTitle icon={<Save size={16} />} title="Financial Control" />
 
           <div className="space-y-2 md:col-span-2">
-            <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Daily Rental Rate (Rs.)</label>
+            <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Daily Rental Rate (LKR)</label>
             <div className="relative">
-              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-sm font-black text-[#6e6e73]">Rs.</div>
+              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-sm font-black text-[#6e6e73]">LKR</div>
               <input
                 type="number"
                 step="0.01"
