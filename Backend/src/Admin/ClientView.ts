@@ -3,6 +3,23 @@ import { supabase } from '../db';
 
 const router = Router();
 
+// Helper to normalize client fields
+function decodeClient(client: any) {
+    if (!client) return client;
+    const fullName = `${client.first_name || ''} ${client.last_name || ''}`.trim() || client.name || 'Corporate Client';
+    return {
+        ...client,
+        name: fullName,
+        contact: fullName,
+        governmentId: client.government_id,
+        government_id: client.government_id,
+        licenseNumber: client.license_number,
+        license_number: client.license_number,
+        zipCode: client.zip_code,
+        zip_code: client.zip_code,
+    };
+}
+
 const getAllClients = async (req: Request, res: Response): Promise<void> => {
     try {
         const { data, error } = await supabase
@@ -19,10 +36,12 @@ const getAllClients = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        const decodedData = data ? data.map(decodeClient) : [];
+
         res.status(200).json({
             success: true,
-            count: data ? data.length : 0,
-            data: data || []
+            count: decodedData.length,
+            data: decodedData
         });
 
     } catch (error: any) {
@@ -75,7 +94,7 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
 
         res.status(200).json({
             success: true,
-            data: data
+            data: decodeClient(data)
         });
 
     } catch (error: any) {

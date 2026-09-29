@@ -3,7 +3,7 @@ import { supabase } from '../db';
 
 const router = Router();
 
-// Helper to decode status and branch from DB encoding
+// Helper to decode status and normalize fields from Supabase DB
 function decodeVehicle(vehicle: any) {
     if (!vehicle) return vehicle;
     let status = vehicle.status;
@@ -15,7 +15,23 @@ function decodeVehicle(vehicle: any) {
     } else if (status === 'Available') {
         status = 'Active';
     }
-    return { ...vehicle, status, branch };
+
+    const dailyRateNum = Number(vehicle.daily_rate) || 0;
+    const licensePlateStr = vehicle.license_plate || '';
+
+    return {
+        ...vehicle,
+        status,
+        branch,
+        licensePlate: licensePlateStr,
+        license_plate: licensePlateStr,
+        dailyRate: dailyRateNum,
+        daily_rate: dailyRateNum,
+        fuelType: vehicle.fuel_type || 'Diesel',
+        fuel_type: vehicle.fuel_type || 'Diesel',
+        engineCapacity: vehicle.engine_capacity || '',
+        engine_capacity: vehicle.engine_capacity || '',
+    };
 }
 
 const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
