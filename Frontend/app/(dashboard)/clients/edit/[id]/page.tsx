@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -115,7 +116,8 @@ export default function EditClientPage() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:8801/api/clients/update?government=${id}`, {
+      const govId = client.government_id || id;
+      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${client.id || id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -125,12 +127,13 @@ export default function EditClientPage() {
         throw new Error("Failed to update client profile in registry");
       }
 
+      invalidateClientDataCache("clients");
       setIsSuccess(true);
 
       setTimeout(() => {
         setIsSuccess(false);
         router.refresh();
-      }, 3000);
+      }, 2000);
 
     } catch (err: any) {
       setError(err.message);

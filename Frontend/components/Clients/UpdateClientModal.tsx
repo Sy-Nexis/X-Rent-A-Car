@@ -22,6 +22,7 @@ import {
   Hash
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -98,8 +99,9 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
     setError(null);
 
     try {
-      // Endpoint mapping: http://localhost:8801/api/clients/update?government={id}
-      const response = await fetch(`http://localhost:8801/api/clients/update?government=${client.government_id}`, {
+      const govId = client.government_id || (client as any).governmentId;
+      const clientId = client.id;
+      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${clientId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -109,6 +111,7 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
         throw new Error("Failed to update client profile");
       }
 
+      invalidateClientDataCache("clients");
       setIsSuccess(true);
 
       // Delay to show success state before closing
@@ -120,7 +123,7 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
     } catch (error: any) {
       console.error("Update Error:", error);
-      setError(error.message); // Assuming there's an error state
+      setError(error.message);
       setIsUpdating(false);
     }
   };
