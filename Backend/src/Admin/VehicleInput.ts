@@ -300,6 +300,17 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         // Invalidate vehicle cache immediately
         cache.invalidate('vehicle');
 
+        const updatedVeh = decodedData[0] || existingVehicle;
+        const changedFields = Object.keys(updateData).join(', ');
+        recordAuditLog({
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Updated Vehicle',
+            entityType: 'Vehicle',
+            entityId: existingVehicle.id,
+            details: `Updated vehicle ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin || existingVehicle.id}). Modified fields: [${changedFields || 'details'}].`
+        }).catch(() => {});
+
         res.status(200).json({
             success: true,
             message: `Vehicle ${existingVehicle.make} ${existingVehicle.model} (${existingVehicle.vin}) has been successfully updated.`,

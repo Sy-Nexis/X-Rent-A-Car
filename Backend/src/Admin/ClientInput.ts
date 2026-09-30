@@ -182,6 +182,18 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         // Invalidate client cache immediately
         cache.invalidate('client');
 
+        const updatedClient = (data && data[0]) || existingClient;
+        const clientFullName = `${updatedClient.first_name || ''} ${updatedClient.last_name || ''}`.trim() || 'Client';
+        const changedFields = Object.keys(updateData).join(', ');
+        recordAuditLog({
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Updated Client',
+            entityType: 'Client',
+            entityId: existingClient.id,
+            details: `Updated details for client ${clientFullName} (ID: ${existingClient.government_id || existingClient.id}). Modified fields: [${changedFields || 'contact/status'}].`
+        }).catch(() => {});
+
         res.status(200).json({
             success: true,
             message: `Client ${existingClient.first_name} ${existingClient.last_name} has been successfully updated.`,

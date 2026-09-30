@@ -193,13 +193,16 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
             createdItems = (data || []).map(formatAssignment);
         }
 
-        // Record audit log
+        // Record detailed audit log with specific client & vehicle names
+        const clientNames = Array.from(new Set(createdItems.map(i => i.client?.name).filter(Boolean))).join(', ');
+        const vehicleNames = Array.from(new Set(createdItems.map(i => `${i.vehicle?.make} ${i.vehicle?.model} (${i.vehicle?.licensePlate || 'N/A'})`).filter(Boolean))).join(', ');
+
         recordAuditLog({
-            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
-            action: 'Assigned Vehicles',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: 'Assigned Vehicles to Clients',
             entityType: 'Assignment',
-            details: `Dispatched ${assignmentRecords.length} contract(s) across ${targetClientIds.length} client(s) and ${targetVehicleIds.length} vehicle(s).`
+            details: `Assigned ${targetVehicleIds.length} vehicle(s) [${vehicleNames || targetVehicleIds.join(', ')}] to ${targetClientIds.length} client(s) [${clientNames || targetClientIds.join(', ')}]. Daily Rate: LKR ${Number(daily_rate || 0).toLocaleString()}.`
         }).catch(() => {});
 
         // Invalidate caches

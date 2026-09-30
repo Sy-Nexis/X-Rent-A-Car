@@ -82,6 +82,25 @@ export async function fetchAssignments(forceRefresh = false): Promise<any[]> {
   }
 }
 
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (typeof window !== "undefined") {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        if (u.name) headers["x-user-name"] = u.name;
+        if (u.role) headers["x-user-role"] = u.role;
+      } catch {}
+    }
+    const token = localStorage.getItem("token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 export async function assignVehiclesToClients(payload: {
   client_ids: number[];
   vehicle_ids: number[];
@@ -91,9 +110,10 @@ export async function assignVehiclesToClients(payload: {
   notes?: string;
   status?: string;
 }): Promise<any> {
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/assignments/assign`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
@@ -111,9 +131,10 @@ export async function updateAssignment(payload: {
   daily_rate?: number;
   notes?: string;
 }): Promise<any> {
+  const headers = getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/assignments/update`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
@@ -125,8 +146,11 @@ export async function updateAssignment(payload: {
 }
 
 export async function deleteAssignment(id: number): Promise<any> {
+  const headers = getAuthHeaders();
+  delete headers["Content-Type"];
   const res = await fetch(`${API_BASE}/api/assignments/del?id=${id}`, {
     method: "DELETE",
+    headers,
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -48,6 +49,20 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
+
+        const deletedVeh = data[0];
+        const vehName = deletedVeh
+            ? `${deletedVeh.year || ''} ${deletedVeh.make || ''} ${deletedVeh.model || ''} (${deletedVeh.license_plate || deletedVeh.vin || id})`.trim()
+            : `Vehicle #${id || vin || plate}`;
+
+        recordAuditLog({
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
+            action: 'Deleted Vehicle',
+            entityType: 'Vehicle',
+            entityId: id ? String(id) : (deletedVeh?.id ? String(deletedVeh.id) : undefined),
+            details: `Deleted vehicle ${vehName} from fleet database.`
+        }).catch(() => {});
 
         cache.invalidate('vehicle');
 

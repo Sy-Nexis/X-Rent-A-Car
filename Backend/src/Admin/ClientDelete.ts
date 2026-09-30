@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -48,6 +49,20 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
+
+        const deletedClient = data[0];
+        const clientName = deletedClient
+            ? `${deletedClient.first_name || ''} ${deletedClient.last_name || ''}`.trim() || deletedClient.email || deletedClient.government_id
+            : `Client #${id || government_id || nic}`;
+
+        recordAuditLog({
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
+            action: 'Deleted Client',
+            entityType: 'Client',
+            entityId: id ? String(id) : (deletedClient?.id ? String(deletedClient.id) : undefined),
+            details: `Deleted client record for ${clientName} (${deletedClient?.government_id || deletedClient?.email || 'No ID'}).`
+        }).catch(() => {});
 
         cache.invalidate('client');
 
