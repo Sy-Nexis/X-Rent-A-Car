@@ -184,14 +184,41 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         const updatedClient = (data && data[0]) || existingClient;
         const clientFullName = `${updatedClient.first_name || ''} ${updatedClient.last_name || ''}`.trim() || 'Client';
-        const changedFields = Object.keys(updateData).join(', ');
+
+        // Compute exact fields that ACTUALLY changed
+        const changedDiffs: string[] = [];
+
+        function checkFieldDiff(label: string, oldVal: any, newVal: any) {
+            if (newVal === undefined) return;
+            const strOld = (oldVal === null || oldVal === undefined) ? '' : String(oldVal).trim();
+            const strNew = (newVal === null || newVal === undefined) ? '' : String(newVal).trim();
+            if (strOld.toLowerCase() !== strNew.toLowerCase()) {
+                changedDiffs.push(`${label}: "${strOld || 'None'}" → "${strNew || 'None'}"`);
+            }
+        }
+
+        checkFieldDiff('First Name', existingClient.first_name, updateData.first_name);
+        checkFieldDiff('Last Name', existingClient.last_name, updateData.last_name);
+        checkFieldDiff('Email', existingClient.email, updateData.email);
+        checkFieldDiff('Phone', existingClient.phone, updateData.phone);
+        checkFieldDiff('Address', existingClient.address, updateData.address);
+        checkFieldDiff('City', existingClient.city, updateData.city);
+        checkFieldDiff('State', existingClient.state, updateData.state);
+        checkFieldDiff('ZIP', existingClient.zip_code, updateData.zip_code);
+        checkFieldDiff('License', existingClient.license_number, updateData.license_number);
+        checkFieldDiff('Status', existingClient.status, updateData.status);
+
+        const changeDescription = changedDiffs.length > 0
+            ? `Updated client ${clientFullName} (ID: ${existingClient.government_id || existingClient.id}). Changed: ${changedDiffs.join(', ')}.`
+            : `Saved profile for ${clientFullName} with no field modifications.`;
+
         recordAuditLog({
             userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
             userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
             action: 'Updated Client',
             entityType: 'Client',
             entityId: existingClient.id,
-            details: `Updated details for client ${clientFullName} (ID: ${existingClient.government_id || existingClient.id}). Modified fields: [${changedFields || 'contact/status'}].`
+            details: changeDescription
         }).catch(() => {});
 
         res.status(200).json({

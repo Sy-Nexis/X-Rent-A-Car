@@ -77,10 +77,25 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
       };
 
       // 2. API CALL
+      let userName = "Alex Rivera";
+      let userRole = "Fleet Manager";
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed.name) userName = parsed.name;
+            if (parsed.role) userRole = parsed.role;
+          } catch {}
+        }
+      }
+
       const response = await fetch(`http://localhost:8801/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "x-user-name": userName,
+          "x-user-role": userRole,
         },
         body: JSON.stringify(payload),
       });

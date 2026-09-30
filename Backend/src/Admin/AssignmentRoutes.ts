@@ -248,10 +248,14 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         if (daily_rate !== undefined) updateData.daily_rate = Number(daily_rate) || 0;
         if (notes !== undefined) updateData.notes = notes;
 
-        // Fetch existing assignment to know vehicle ID
+        // Fetch existing assignment to know vehicle ID and details
         const { data: existing } = await supabase
             .from('vehicle_assignments')
-            .select('id, vehicle_id')
+            .select(`
+                id, vehicle_id, client_id, status, daily_rate, notes,
+                clients ( id, first_name, last_name ),
+                vehicles ( id, make, model, license_plate )
+            `)
             .eq('id', targetId)
             .maybeSingle();
 
@@ -270,14 +274,35 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
                 .eq('id', targetVehicleId);
         }
 
+        const clientName = (existing?.clients as any)?.first_name
+            ? `${(existing?.clients as any).first_name} ${(existing?.clients as any).last_name || ''}`.trim()
+            : `Client #${existing?.client_id || 'N/A'}`;
+        const vehName = (existing?.vehicles as any)?.make
+            ? `${(existing?.vehicles as any).make} ${(existing?.vehicles as any).model || ''} (${(existing?.vehicles as any).license_plate || 'No Plate'})`
+            : `Vehicle #${existing?.vehicle_id || 'N/A'}`;
+
+        const isReturn = status === 'Completed' || status === 'Returned';
+        let detailMsg = '';
+        if (isReturn) {
+            detailMsg = `Returned vehicle ${vehName} from client ${clientName}. Contract #${targetId} marked as ${status}. Vehicle status reset to Available.`;
+        } else {
+            const assignDiffs: string[] = [];
+            if (status !== undefined && status !== existing?.status) assignDiffs.push(`Status: ${existing?.status || 'Active'} → ${status}`);
+            if (daily_rate !== undefined && Number(daily_rate) !== Number(existing?.daily_rate)) assignDiffs.push(`Rate: LKR ${Number(existing?.daily_rate || 0).toLocaleString()} → LKR ${Number(daily_rate).toLocaleString()}`);
+            if (notes !== undefined && notes !== existing?.notes) assignDiffs.push(`Notes: "${notes}"`);
+            detailMsg = assignDiffs.length > 0
+                ? `Updated contract #${targetId} (${clientName} & ${vehName}). Changes: ${assignDiffs.join(', ')}.`
+                : `Saved contract #${targetId} settings.`;
+        }
+
         // Record audit log
         recordAuditLog({
-            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
-            action: status === 'Completed' || status === 'Returned' ? 'Returned Vehicle' : 'Updated Assignment',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            action: isReturn ? 'Returned Vehicle' : 'Updated Assignment',
             entityType: 'Assignment',
             entityId: targetId,
-            details: `Assignment #${targetId} status changed to '${status || 'Updated'}'. Vehicle returned to fleet.`
+            details: detailMsg
         }).catch(() => {});
 
         cache.invalidate('assignment');

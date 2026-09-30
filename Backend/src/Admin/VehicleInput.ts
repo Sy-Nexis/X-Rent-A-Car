@@ -301,14 +301,55 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         cache.invalidate('vehicle');
 
         const updatedVeh = decodedData[0] || existingVehicle;
-        const changedFields = Object.keys(updateData).join(', ');
+
+        // Compute exact fields that ACTUALLY changed
+        const changedDiffs: string[] = [];
+
+        function checkFieldDiff(label: string, oldVal: any, newVal: any, formatFn?: (v: any) => string) {
+            if (newVal === undefined) return;
+            const strOld = (oldVal === null || oldVal === undefined) ? '' : String(oldVal).trim();
+            const strNew = (newVal === null || newVal === undefined) ? '' : String(newVal).trim();
+
+            if (!isNaN(Number(strOld)) && !isNaN(Number(strNew)) && strOld !== '' && strNew !== '') {
+                if (Number(strOld) !== Number(strNew)) {
+                    const fOld = formatFn ? formatFn(oldVal) : strOld;
+                    const fNew = formatFn ? formatFn(newVal) : strNew;
+                    changedDiffs.push(`${label}: ${fOld} → ${fNew}`);
+                }
+                return;
+            }
+
+            if (strOld.toLowerCase() !== strNew.toLowerCase()) {
+                const fOld = formatFn ? formatFn(oldVal) : (strOld || 'None');
+                const fNew = formatFn ? formatFn(newVal) : (strNew || 'None');
+                changedDiffs.push(`${label}: ${fOld} → ${fNew}`);
+            }
+        }
+
+        checkFieldDiff('Make', existingVehicle.make, updateData.make);
+        checkFieldDiff('Model', existingVehicle.model, updateData.model);
+        checkFieldDiff('Year', existingVehicle.year, updateData.year);
+        checkFieldDiff('Transmission', existingVehicle.transmission, updateData.transmission);
+        checkFieldDiff('Color', existingVehicle.color, updateData.color);
+        checkFieldDiff('Mileage', existingVehicle.mileage, updateData.mileage, (v) => `${Number(v).toLocaleString()} km`);
+        checkFieldDiff('Daily Rate', existingVehicle.daily_rate, updateData.daily_rate, (v) => `LKR ${Number(v).toLocaleString()}`);
+        checkFieldDiff('Plate', existingVehicle.license_plate, updateData.license_plate);
+        checkFieldDiff('Fuel', existingVehicle.fuel_type, updateData.fuel_type);
+        checkFieldDiff('Engine', existingVehicle.engine_capacity, updateData.engine_capacity);
+        checkFieldDiff('Status', realStatus, newStatus);
+        checkFieldDiff('Branch', cleanBranch, newBranch);
+
+        const changeDescription = changedDiffs.length > 0
+            ? `Updated vehicle ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin || existingVehicle.id}). Changed: ${changedDiffs.join(', ')}.`
+            : `Saved vehicle details for ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin}) with no field changes.`;
+
         recordAuditLog({
             userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
             userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
             action: 'Updated Vehicle',
             entityType: 'Vehicle',
             entityId: existingVehicle.id,
-            details: `Updated vehicle ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin || existingVehicle.id}). Modified fields: [${changedFields || 'details'}].`
+            details: changeDescription
         }).catch(() => {});
 
         res.status(200).json({

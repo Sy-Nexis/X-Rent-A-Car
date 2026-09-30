@@ -100,10 +100,26 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
     try {
       const govId = client.government_id || (client as any).governmentId;
-      const clientId = client.id;
-      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${clientId}`, {
+      let userName = "Alex Rivera";
+      let userRole = "Fleet Manager";
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed.name) userName = parsed.name;
+            if (parsed.role) userRole = parsed.role;
+          } catch {}
+        }
+      }
+
+      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${client.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-name": userName,
+          "x-user-role": userRole,
+        },
         body: JSON.stringify(data),
       });
 
