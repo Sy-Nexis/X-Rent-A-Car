@@ -9,6 +9,8 @@
     "demo:remove": "./node_modules/.bin/tsx scripts/demo-remove.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1145.0",
+    "@aws-sdk/lib-dynamodb": "^3.1145.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
     "bcryptjs": "^3.0.3",
