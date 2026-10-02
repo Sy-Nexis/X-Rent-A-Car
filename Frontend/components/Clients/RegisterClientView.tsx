@@ -16,7 +16,7 @@ export default function RegisterClientView() {
 
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("California");
+  const [state, setState] = useState("Western Province");
   const [zipCode, setZipCode] = useState("");
 
   const [isSaving, setIsSaving] = useState(false);
@@ -32,7 +32,7 @@ export default function RegisterClientView() {
     setLicenseNumber("");
     setAddress("");
     setCity("");
-    setState("California");
+    setState("Western Province");
     setZipCode("");
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -45,7 +45,7 @@ export default function RegisterClientView() {
     setSuccessMessage(null);
 
     if (!firstName.trim() || !lastName.trim() || !email.trim() || !nic.trim()) {
-      setErrorMessage("Please fill in all required fields (First Name, Last Name, Email, Government ID / NIC).");
+      setErrorMessage("Please fill in all required fields (First Name, Last Name, Email, NIC / Government ID).");
       setIsSaving(false);
       return;
     }
@@ -160,7 +160,7 @@ export default function RegisterClientView() {
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="e.g. Jonathan"
+                  placeholder="e.g. Kasun"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -173,7 +173,7 @@ export default function RegisterClientView() {
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="e.g. Wick"
+                  placeholder="e.g. Perera"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -194,7 +194,7 @@ export default function RegisterClientView() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jonathan.wick@continental.com"
+                  placeholder="e.g. kasun.perera@gmail.com"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg pl-10 pr-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -209,20 +209,20 @@ export default function RegisterClientView() {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 (555) 000-0000"
+                  placeholder="+94 77 123 4567"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  NIC / Government ID *
+                  NIC / National Identity Card *
                 </label>
                 <input
                   type="text"
                   required
                   value={nic}
                   onChange={(e) => setNic(e.target.value)}
-                  placeholder="US-CORP-0000"
+                  placeholder="e.g. 199512345678 or 951234567V"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>
@@ -257,7 +257,7 @@ export default function RegisterClientView() {
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="123 Fleet Way, Industrial District"
+                  placeholder="e.g. 123 Galle Road, Kollupitiya"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -269,7 +269,7 @@ export default function RegisterClientView() {
                   type="text"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Logistics Hub"
+                  placeholder="e.g. Colombo"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -278,37 +278,37 @@ export default function RegisterClientView() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  State
+                  Province / District
                 </label>
                 <input
                   type="text"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
-                  placeholder="California"
+                  placeholder="e.g. Western Province"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  Zip/Postal Code
+                  Postal Code
                 </label>
                 <input
                   type="text"
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  placeholder="90001"
+                  placeholder="e.g. 00300"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  Driver License No.
+                  Driving License No.
                 </label>
                 <input
                   type="text"
                   value={licenseNumber}
                   onChange={(e) => setLicenseNumber(e.target.value)}
-                  placeholder="DL-0000000"
+                  placeholder="e.g. B1234567"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-3 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>

@@ -130,19 +130,19 @@ export default function AddClientForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <InputGroup label="First Name" icon={<User size={14} />} error={errors.first_name}>
-                <input {...register("first_name", { required: "First name is required" })} className="input-field" placeholder="John" />
+                <input {...register("first_name", { required: "First name is required" })} className="input-field" placeholder="Kasun" />
               </InputGroup>
 
               <InputGroup label="Last Name" icon={<User size={14} />} error={errors.last_name}>
-                <input {...register("last_name", { required: "Last name is required" })} className="input-field" placeholder="Doe" />
+                <input {...register("last_name", { required: "Last name is required" })} className="input-field" placeholder="Perera" />
               </InputGroup>
 
               <InputGroup label="Email Address" icon={<Mail size={14} />} error={errors.email}>
-                <input {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })} className="input-field" placeholder="john.doe@example.com" />
+                <input {...register("email", { required: "Email is required", pattern: { value: /^\S+@\S+$/i, message: "Invalid email" } })} className="input-field" placeholder="kasun.perera@gmail.com" />
               </InputGroup>
 
               <InputGroup label="Phone Number" icon={<Phone size={14} />} error={errors.phone}>
-                <input {...register("phone", { required: "Phone number is required" })} className="input-field" placeholder="+94 77 XXX XXXX" />
+                <input {...register("phone", { required: "Phone number is required" })} className="input-field" placeholder="+94 77 123 4567" />
               </InputGroup>
             </div>
           </section>
@@ -156,19 +156,19 @@ export default function AddClientForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <InputGroup label="Street Address" icon={<MapPin size={14} />} className="md:col-span-2">
-                <input {...register("address")} className="input-field" placeholder="123 Luxury Lane" />
+                <input {...register("address")} className="input-field" placeholder="123 Galle Road, Kollupitiya" />
               </InputGroup>
 
               <InputGroup label="City" icon={<Navigation size={14} />}>
                 <input {...register("city")} className="input-field" placeholder="Colombo" />
               </InputGroup>
 
-              <InputGroup label="State / Province" icon={<Globe size={14} />}>
-                <input {...register("state")} className="input-field" placeholder="Western" />
+              <InputGroup label="Province / District" icon={<Globe size={14} />}>
+                <input {...register("state")} className="input-field" placeholder="Western Province" />
               </InputGroup>
 
-              <InputGroup label="Zip / Postal Code" icon={<Hash size={14} />}>
-                <input {...register("zip_code")} className="input-field" placeholder="00100" />
+              <InputGroup label="Postal Code" icon={<Hash size={14} />}>
+                <input {...register("zip_code")} className="input-field" placeholder="00300" />
               </InputGroup>
             </div>
           </section>
@@ -181,8 +181,8 @@ export default function AddClientForm() {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <InputGroup label="Government ID (NIC)" icon={<Fingerprint size={14} />} error={errors.government_id}>
-                <input {...register("government_id", { required: "NIC is required" })} className="input-field" placeholder="19XXXXXXXXXX" />
+              <InputGroup label="National ID (NIC)" icon={<Fingerprint size={14} />} error={errors.government_id}>
+                <input {...register("government_id", { required: "NIC is required" })} className="input-field" placeholder="199512345678 or 951234567V" />
               </InputGroup>
 
               <InputGroup label="Driving License" icon={<CreditCard size={14} />}>
