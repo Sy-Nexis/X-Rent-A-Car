@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import vehicleInputRouter from './Admin/VehicleInput';
 import vehicleViwRouter from './Admin/VehicleView';
@@ -13,39 +14,19 @@ import { dynamoClient, STAFF_TABLE_NAME } from './config/dynamodb';
 import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import { ensureAllDynamoTables } from './config/ensureTables';
 
-// Security Middlewares
-import { helmetMiddleware, corsMiddleware, apiRateLimiter } from './middleware/security';
-import { sanitizeBodyMiddleware } from './middleware/validationMiddleware';
-import { errorHandler } from './middleware/errorHandler';
-
 // Load environment variables
 dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 8801;
 
-// 1. Attack Surface Reduction: Helmet Security Headers & Disable Fingerprinting
-app.use(helmetMiddleware);
-app.disable('x-powered-by');
+// Global Middleware
+app.use(cors()); // Allow cross-origin requests from the Frontend
+app.use(express.json()); // Parse incoming JSON payloads
 
-// 2. Strict Restricted CORS
-app.use(corsMiddleware);
-
-// 3. Payload Size Limitation (10kb max to prevent memory exhaustion DoS)
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
-// 4. Request Body XSS Sanitization
-app.use(sanitizeBodyMiddleware);
-
-// 5. Global API Rate Limiter
-app.use('/api', apiRateLimiter);
-
-// Request Logger (Development & Monitoring)
+// Request Logger Middleware
 app.use((req, res, next) => {
-    if (process.env.NODE_ENV !== 'production') {
-        console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    }
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
 
@@ -73,11 +54,8 @@ app.use('/api/logs/view', logRouter);
 
 // Health system monitoring endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: "Active", database: "AWS DynamoDB", timestamp: new Date().toISOString() });
+    res.status(200).json({ status: "Active", database: "AWS DynamoDB" });
 });
-
-// Centralized Error Handling Middleware (prevents info leakage)
-app.use(errorHandler);
 
 // Initialize and Start Server locally
 if (!process.env.VERCEL) {
