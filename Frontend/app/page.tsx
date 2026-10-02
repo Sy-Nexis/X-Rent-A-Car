@@ -11,7 +11,6 @@ export default function Home() {
     <main>
       <LoginView
         onLoginSuccess={() => router.push("/dashboard")}
-        onGoToRegister={() => router.push("/register")}
       />
     </main>
   );

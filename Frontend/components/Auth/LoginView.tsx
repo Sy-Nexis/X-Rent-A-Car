@@ -6,12 +6,12 @@ import { getApiBaseUrl } from "@/lib/api";
 
 interface LoginViewProps {
   onLoginSuccess: () => void;
-  onGoToRegister: () => void;
+  onGoToRegister?: () => void;
 }
 
 const getBackendApiUrl = () => process.env.NEXT_PUBLIC_BACKEND_API_URL || `${getApiBaseUrl()}/api`;
 
-export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewProps) {
+export default function LoginView({ onLoginSuccess }: LoginViewProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -190,17 +190,6 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
             </button>
           </form>
         </div>
-
-        {/* Register Link */}
-        <button
-          onClick={onGoToRegister}
-          className="group flex items-center gap-2 text-brand-cyan hover:opacity-75 text-xs font-black uppercase tracking-widest cursor-pointer transition-opacity"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-          </svg>
-          Register Account
-        </button>
       </div>
     </div>
   );
