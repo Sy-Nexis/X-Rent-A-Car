@@ -29,39 +29,6 @@ export interface ClientItem {
     updated_at?: string;
 }
 
-let inMemoryClients: ClientItem[] = [
-    {
-        id: 1,
-        first_name: "John",
-        last_name: "Perera",
-        email: "john.perera@example.com",
-        phone: "+94 77 123 4567",
-        address: "45 Galle Road",
-        city: "Colombo",
-        state: "Western Province",
-        zip_code: "00300",
-        government_id: "921543210V",
-        license_number: "B9215432",
-        status: "Active",
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 2,
-        first_name: "Sara",
-        last_name: "Fernando",
-        email: "sara.f@globalcorporate.lk",
-        phone: "+94 71 987 6543",
-        address: "12 Bauddhaloka Mawatha",
-        city: "Colombo",
-        state: "Western Province",
-        zip_code: "00700",
-        government_id: "958765432V",
-        license_number: "B9587654",
-        status: "Active",
-        created_at: new Date().toISOString()
-    }
-];
-
 export async function getAllClients(): Promise<ClientItem[]> {
     try {
         const command = new ScanCommand({
@@ -71,10 +38,10 @@ export async function getAllClients(): Promise<ClientItem[]> {
         if (response.Items && response.Items.length > 0) {
             return response.Items as ClientItem[];
         }
-        return inMemoryClients;
+        return [];
     } catch (error: any) {
-        console.warn('DynamoDB getAllClients fallback note:', error?.message);
-        return inMemoryClients;
+        console.error('DynamoDB getAllClients error:', error);
+        throw error;
     }
 }
 
@@ -86,12 +53,10 @@ export async function getClientById(id: number): Promise<ClientItem | null> {
         });
         const response = await dynamoDocClient.send(command);
         if (response.Item) return response.Item as ClientItem;
-
-        const memory = inMemoryClients.find(c => Number(c.id) === Number(id));
-        return memory || null;
-    } catch {
-        const memory = inMemoryClients.find(c => Number(c.id) === Number(id));
-        return memory || null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getClientById error:', error);
+        throw error;
     }
 }
 
@@ -109,11 +74,10 @@ export async function getClientByGovId(govId: string): Promise<ClientItem | null
         if (response.Items && response.Items.length > 0) {
             return response.Items[0] as ClientItem;
         }
-        const memory = inMemoryClients.find(c => c.government_id.toLowerCase() === normalizedGovId.toLowerCase());
-        return memory || null;
-    } catch {
-        const memory = inMemoryClients.find(c => c.government_id.toLowerCase() === normalizedGovId.toLowerCase());
-        return memory || null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getClientByGovId error:', error);
+        throw error;
     }
 }
 
@@ -131,11 +95,10 @@ export async function getClientByEmail(email: string): Promise<ClientItem | null
         if (response.Items && response.Items.length > 0) {
             return response.Items[0] as ClientItem;
         }
-        const memory = inMemoryClients.find(c => c.email.toLowerCase() === normalizedEmail);
-        return memory || null;
-    } catch {
-        const memory = inMemoryClients.find(c => c.email.toLowerCase() === normalizedEmail);
-        return memory || null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getClientByEmail error:', error);
+        throw error;
     }
 }
 
@@ -160,8 +123,6 @@ export async function createClient(data: Partial<ClientItem>): Promise<ClientIte
         updated_at: now,
     };
 
-    inMemoryClients.unshift(newClient);
-
     try {
         const command = new PutCommand({
             TableName: CLIENTS_TABLE_NAME,
@@ -169,11 +130,11 @@ export async function createClient(data: Partial<ClientItem>): Promise<ClientIte
             ConditionExpression: 'attribute_not_exists(id)',
         });
         await dynamoDocClient.send(command);
+        return newClient;
     } catch (err: any) {
-        console.warn('DynamoDB createClient note:', err?.message);
+        console.error('DynamoDB createClient error:', err);
+        throw err;
     }
-
-    return newClient;
 }
 
 export async function updateClient(id: number, updateData: Partial<ClientItem>): Promise<ClientItem | null> {
@@ -188,20 +149,17 @@ export async function updateClient(id: number, updateData: Partial<ClientItem>):
         updated_at: new Date().toISOString(),
     };
 
-    const idx = inMemoryClients.findIndex(c => Number(c.id) === targetId);
-    if (idx >= 0) inMemoryClients[idx] = merged;
-
     try {
         const command = new PutCommand({
             TableName: CLIENTS_TABLE_NAME,
             Item: merged,
         });
         await dynamoDocClient.send(command);
+        return merged;
     } catch (err: any) {
-        console.warn('DynamoDB updateClient note:', err?.message);
+        console.error('DynamoDB updateClient error:', err);
+        throw err;
     }
-
-    return merged;
 }
 
 export async function deleteClient(id?: number, govId?: string, email?: string): Promise<ClientItem | null> {
@@ -216,17 +174,16 @@ export async function deleteClient(id?: number, govId?: string, email?: string):
 
     if (!targetClient) return null;
 
-    inMemoryClients = inMemoryClients.filter(c => Number(c.id) !== Number(targetClient!.id));
-
     try {
         const command = new DeleteCommand({
             TableName: CLIENTS_TABLE_NAME,
             Key: { id: Number(targetClient.id) },
         });
         await dynamoDocClient.send(command);
+        return targetClient;
     } catch (err: any) {
-        console.warn('DynamoDB deleteClient note:', err?.message);
+        console.error('DynamoDB deleteClient error:', err);
+        throw err;
     }
-
-    return targetClient;
 }
+

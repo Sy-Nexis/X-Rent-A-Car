@@ -24,8 +24,6 @@ export interface AssignmentItem {
     updated_at?: string;
 }
 
-let inMemoryAssignments: AssignmentItem[] = [];
-
 // Helper to format assignment with joined client and vehicle objects
 export async function formatAssignmentJoined(item: any): Promise<any> {
     if (!item) return item;
@@ -76,16 +74,13 @@ export async function getAllAssignments(): Promise<any[]> {
         let items: any[] = [];
         if (response.Items && response.Items.length > 0) {
             items = response.Items;
-        } else {
-            items = inMemoryAssignments;
         }
 
         const joined = await Promise.all(items.map(formatAssignmentJoined));
         return joined.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     } catch (error: any) {
-        console.warn('DynamoDB getAllAssignments fallback note:', error?.message);
-        const joined = await Promise.all(inMemoryAssignments.map(formatAssignmentJoined));
-        return joined.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        console.error('DynamoDB getAllAssignments error:', error);
+        throw error;
     }
 }
 
@@ -97,12 +92,10 @@ export async function getAssignmentById(id: number): Promise<AssignmentItem | nu
         });
         const response = await dynamoDocClient.send(command);
         if (response.Item) return response.Item as AssignmentItem;
-
-        const memory = inMemoryAssignments.find(a => Number(a.id) === Number(id));
-        return memory || null;
-    } catch {
-        const memory = inMemoryAssignments.find(a => Number(a.id) === Number(id));
-        return memory || null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getAssignmentById error:', error);
+        throw error;
     }
 }
 
@@ -135,17 +128,11 @@ export async function createBatchAssignments(params: {
                 updated_at: now,
             };
 
-            inMemoryAssignments.unshift(item);
-
-            try {
-                const command = new PutCommand({
-                    TableName: ASSIGNMENTS_TABLE_NAME,
-                    Item: item,
-                });
-                await dynamoDocClient.send(command);
-            } catch (err: any) {
-                console.warn('DynamoDB createBatchAssignments note:', err?.message);
-            }
+            const command = new PutCommand({
+                TableName: ASSIGNMENTS_TABLE_NAME,
+                Item: item,
+            });
+            await dynamoDocClient.send(command);
 
             // Update vehicle status in DynamoDB to 'Rented'
             await updateVehicle(Number(vId), { status: 'Rented' });
@@ -170,18 +157,11 @@ export async function updateAssignment(id: number, updateData: Partial<Assignmen
         updated_at: new Date().toISOString(),
     };
 
-    const idx = inMemoryAssignments.findIndex(a => Number(a.id) === targetId);
-    if (idx >= 0) inMemoryAssignments[idx] = merged;
-
-    try {
-        const command = new PutCommand({
-            TableName: ASSIGNMENTS_TABLE_NAME,
-            Item: merged,
-        });
-        await dynamoDocClient.send(command);
-    } catch (err: any) {
-        console.warn('DynamoDB updateAssignment note:', err?.message);
-    }
+    const command = new PutCommand({
+        TableName: ASSIGNMENTS_TABLE_NAME,
+        Item: merged,
+    });
+    await dynamoDocClient.send(command);
 
     // If status completed/returned, reset vehicle to Available
     const newStatus = updateData.status || existing.status;
@@ -196,17 +176,11 @@ export async function deleteAssignment(id: number): Promise<boolean> {
     const targetId = Number(id);
     const existing = await getAssignmentById(targetId);
 
-    inMemoryAssignments = inMemoryAssignments.filter(a => Number(a.id) !== targetId);
-
-    try {
-        const command = new DeleteCommand({
-            TableName: ASSIGNMENTS_TABLE_NAME,
-            Key: { id: targetId },
-        });
-        await dynamoDocClient.send(command);
-    } catch (err: any) {
-        console.warn('DynamoDB deleteAssignment note:', err?.message);
-    }
+    const command = new DeleteCommand({
+        TableName: ASSIGNMENTS_TABLE_NAME,
+        Key: { id: targetId },
+    });
+    await dynamoDocClient.send(command);
 
     if (existing?.vehicle_id) {
         await updateVehicle(Number(existing.vehicle_id), { status: 'Available' });
@@ -214,3 +188,4 @@ export async function deleteAssignment(id: number): Promise<boolean> {
 
     return true;
 }
+

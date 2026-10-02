@@ -27,9 +27,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-# This is crucial so you don't leak your MySQL credentials!
-# .env*.local
-# .env
+.env*.local
+.env
+o.txt
 
 # vercel
 .vercel

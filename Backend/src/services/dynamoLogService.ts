@@ -1,7 +1,6 @@
 import {
     ScanCommand,
     PutCommand,
-    DeleteCommand
 } from '@aws-sdk/lib-dynamodb';
 import {
     dynamoDocClient,
@@ -21,33 +20,6 @@ export interface AuditLogItem {
     created_at: string;
 }
 
-let inMemoryLogs: AuditLogItem[] = [
-    {
-        id: 1,
-        user_name: 'Alex Rivera',
-        user_role: 'Fleet Manager',
-        user_email: 'alex.rivera@fleetcontrol.io',
-        action: 'Login',
-        entity_type: 'Auth',
-        entity_id: 'USR-01',
-        details: 'User authenticated successfully to neXus Fleet Control System.',
-        ip_address: '127.0.0.1',
-        created_at: new Date(Date.now() - 3 * 3600000).toISOString()
-    },
-    {
-        id: 2,
-        user_name: 'Alex Rivera',
-        user_role: 'Fleet Manager',
-        user_email: 'alex.rivera@fleetcontrol.io',
-        action: 'Assigned Vehicles',
-        entity_type: 'Assignment',
-        entity_id: 'ASN-101',
-        details: 'Dispatched multi-vehicle contract across corporate fleet units.',
-        ip_address: '127.0.0.1',
-        created_at: new Date(Date.now() - 2 * 3600000).toISOString()
-    }
-];
-
 export async function getAllLogs(filters: {
     user?: string;
     action?: string;
@@ -65,12 +37,10 @@ export async function getAllLogs(filters: {
         const response = await dynamoDocClient.send(command);
         if (response.Items && response.Items.length > 0) {
             items = response.Items as AuditLogItem[];
-        } else {
-            items = inMemoryLogs;
         }
     } catch (err: any) {
-        console.warn('DynamoDB getAllLogs fallback note:', err?.message);
-        items = inMemoryLogs;
+        console.error('DynamoDB getAllLogs error:', err);
+        throw err;
     }
 
     let results = [...items];
@@ -126,8 +96,6 @@ export async function recordAuditLog(log: {
         created_at: now,
     };
 
-    inMemoryLogs.unshift(entry);
-
     try {
         const command = new PutCommand({
             TableName: AUDIT_LOGS_TABLE_NAME,
@@ -135,13 +103,13 @@ export async function recordAuditLog(log: {
         });
         await dynamoDocClient.send(command);
     } catch (err: any) {
-        console.warn('DynamoDB recordAuditLog note:', err?.message);
+        console.error('DynamoDB recordAuditLog error:', err);
     }
 
     return entry;
 }
 
 export async function clearAllLogs(): Promise<boolean> {
-    inMemoryLogs = [];
     return true;
 }
+

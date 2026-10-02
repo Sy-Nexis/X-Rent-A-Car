@@ -3,7 +3,6 @@ import {
     GetCommand,
     QueryCommand,
     PutCommand,
-    UpdateCommand,
     DeleteCommand
 } from '@aws-sdk/lib-dynamodb';
 import {
@@ -31,44 +30,6 @@ export interface VehicleItem {
     created_at?: string;
     updated_at?: string;
 }
-
-// In-memory local fallback store for seamless offline/hybrid dev
-let inMemoryVehicles: VehicleItem[] = [
-    {
-        id: 1,
-        make: "Toyota",
-        model: "Prius",
-        year: 2023,
-        vin: "JTDKN3DU5F1234567",
-        license_plate: "WP-CAB-1234",
-        transmission: "Automatic",
-        fuel_type: "Hybrid",
-        engine_capacity: "1800cc",
-        color: "Pearl White",
-        mileage: 18500,
-        daily_rate: 18500,
-        branch: "Colombo Central",
-        status: "Available",
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 2,
-        make: "Toyota",
-        model: "Land Cruiser Prado",
-        year: 2024,
-        vin: "JTEBX3FJ8K7654321",
-        license_plate: "WP-CBA-9988",
-        transmission: "Automatic",
-        fuel_type: "Diesel",
-        engine_capacity: "2800cc",
-        color: "Attitude Black",
-        mileage: 8200,
-        daily_rate: 45000,
-        branch: "Colombo Central",
-        status: "Available",
-        created_at: new Date().toISOString()
-    }
-];
 
 export function decodeVehicle(vehicle: any): any {
     if (!vehicle) return vehicle;
@@ -109,10 +70,10 @@ export async function getAllVehicles(): Promise<VehicleItem[]> {
         if (response.Items && response.Items.length > 0) {
             return (response.Items as VehicleItem[]).map(decodeVehicle);
         }
-        return inMemoryVehicles.map(decodeVehicle);
+        return [];
     } catch (error: any) {
-        console.warn('DynamoDB getAllVehicles fallback note:', error?.message);
-        return inMemoryVehicles.map(decodeVehicle);
+        console.error('DynamoDB getAllVehicles error:', error);
+        throw error;
     }
 }
 
@@ -124,12 +85,10 @@ export async function getVehicleById(id: number): Promise<VehicleItem | null> {
         });
         const response = await dynamoDocClient.send(command);
         if (response.Item) return decodeVehicle(response.Item);
-
-        const memory = inMemoryVehicles.find(v => Number(v.id) === Number(id));
-        return memory ? decodeVehicle(memory) : null;
+        return null;
     } catch (error: any) {
-        const memory = inMemoryVehicles.find(v => Number(v.id) === Number(id));
-        return memory ? decodeVehicle(memory) : null;
+        console.error('DynamoDB getVehicleById error:', error);
+        throw error;
     }
 }
 
@@ -147,11 +106,10 @@ export async function getVehicleByVin(vin: string): Promise<VehicleItem | null> 
         if (response.Items && response.Items.length > 0) {
             return decodeVehicle(response.Items[0]);
         }
-        const memory = inMemoryVehicles.find(v => v.vin.toLowerCase() === normalizedVin.toLowerCase());
-        return memory ? decodeVehicle(memory) : null;
-    } catch {
-        const memory = inMemoryVehicles.find(v => v.vin.toLowerCase() === normalizedVin.toLowerCase());
-        return memory ? decodeVehicle(memory) : null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getVehicleByVin error:', error);
+        throw error;
     }
 }
 
@@ -169,11 +127,10 @@ export async function getVehicleByPlate(plate: string): Promise<VehicleItem | nu
         if (response.Items && response.Items.length > 0) {
             return decodeVehicle(response.Items[0]);
         }
-        const memory = inMemoryVehicles.find(v => v.license_plate.toLowerCase() === normalizedPlate.toLowerCase());
-        return memory ? decodeVehicle(memory) : null;
-    } catch {
-        const memory = inMemoryVehicles.find(v => v.license_plate.toLowerCase() === normalizedPlate.toLowerCase());
-        return memory ? decodeVehicle(memory) : null;
+        return null;
+    } catch (error: any) {
+        console.error('DynamoDB getVehicleByPlate error:', error);
+        throw error;
     }
 }
 
@@ -183,24 +140,22 @@ export async function createVehicle(data: Partial<VehicleItem>): Promise<Vehicle
 
     const newVehicle: VehicleItem = {
         id: numericId,
-        make: String(data.make || ''),
-        model: String(data.model || ''),
+        make: String(data.make || '').trim(),
+        model: String(data.model || '').trim(),
         year: Number(data.year) || new Date().getFullYear(),
-        vin: String(data.vin || ''),
-        license_plate: String(data.license_plate || ''),
-        transmission: String(data.transmission || 'Automatic'),
-        fuel_type: String(data.fuel_type || 'Petrol'),
-        engine_capacity: String(data.engine_capacity || ''),
-        color: String(data.color || ''),
+        vin: String(data.vin || '').trim(),
+        license_plate: String(data.license_plate || '').trim(),
+        transmission: String(data.transmission || 'Automatic').trim(),
+        fuel_type: String(data.fuel_type || 'Petrol').trim(),
+        engine_capacity: data.engine_capacity ? String(data.engine_capacity).trim() : undefined,
+        color: data.color ? String(data.color).trim() : undefined,
         mileage: Number(data.mileage) || 0,
         daily_rate: Number(data.daily_rate) || 0,
-        branch: String(data.branch || 'Main'),
-        status: String(data.status || 'Available'),
+        branch: String(data.branch || 'Main').trim(),
+        status: String(data.status || 'Available').trim(),
         created_at: now,
         updated_at: now,
     };
-
-    inMemoryVehicles.unshift(newVehicle);
 
     try {
         const command = new PutCommand({
@@ -209,11 +164,11 @@ export async function createVehicle(data: Partial<VehicleItem>): Promise<Vehicle
             ConditionExpression: 'attribute_not_exists(id)',
         });
         await dynamoDocClient.send(command);
+        return decodeVehicle(newVehicle);
     } catch (err: any) {
-        console.warn('DynamoDB createVehicle note:', err?.message);
+        console.error('DynamoDB createVehicle error:', err);
+        throw err;
     }
-
-    return decodeVehicle(newVehicle);
 }
 
 export async function updateVehicle(id: number, updateData: Partial<VehicleItem>): Promise<VehicleItem | null> {
@@ -228,21 +183,17 @@ export async function updateVehicle(id: number, updateData: Partial<VehicleItem>
         updated_at: new Date().toISOString()
     };
 
-    // Update in-memory
-    const idx = inMemoryVehicles.findIndex(v => Number(v.id) === targetId);
-    if (idx >= 0) inMemoryVehicles[idx] = merged;
-
     try {
         const command = new PutCommand({
             TableName: VEHICLES_TABLE_NAME,
             Item: merged,
         });
         await dynamoDocClient.send(command);
+        return decodeVehicle(merged);
     } catch (err: any) {
-        console.warn('DynamoDB updateVehicle note:', err?.message);
+        console.error('DynamoDB updateVehicle error:', err);
+        throw err;
     }
-
-    return decodeVehicle(merged);
 }
 
 export async function deleteVehicle(id?: number, vin?: string, plate?: string): Promise<VehicleItem | null> {
@@ -257,17 +208,16 @@ export async function deleteVehicle(id?: number, vin?: string, plate?: string): 
 
     if (!targetVehicle) return null;
 
-    inMemoryVehicles = inMemoryVehicles.filter(v => Number(v.id) !== Number(targetVehicle!.id));
-
     try {
         const command = new DeleteCommand({
             TableName: VEHICLES_TABLE_NAME,
             Key: { id: Number(targetVehicle.id) },
         });
         await dynamoDocClient.send(command);
+        return targetVehicle;
     } catch (err: any) {
-        console.warn('DynamoDB deleteVehicle note:', err?.message);
+        console.error('DynamoDB deleteVehicle error:', err);
+        throw err;
     }
-
-    return targetVehicle;
 }
+
