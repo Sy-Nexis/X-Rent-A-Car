@@ -1,0 +1,161 @@
+{
+  "tables": [
+    {
+      "TableName": "staff",
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "N" },
+        { "AttributeName": "email", "AttributeType": "S" }
+      ],
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      },
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "idx_staff_email",
+          "KeySchema": [
+            { "AttributeName": "email", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      ]
+    },
+    {
+      "TableName": "vehicles",
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "N" },
+        { "AttributeName": "vin", "AttributeType": "S" },
+        { "AttributeName": "license_plate", "AttributeType": "S" }
+      ],
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      },
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "idx_vehicles_vin",
+          "KeySchema": [
+            { "AttributeName": "vin", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        },
+        {
+          "IndexName": "idx_vehicles_plate",
+          "KeySchema": [
+            { "AttributeName": "license_plate", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      ]
+    },
+    {
+      "TableName": "clients",
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "N" },
+        { "AttributeName": "government_id", "AttributeType": "S" },
+        { "AttributeName": "email", "AttributeType": "S" }
+      ],
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      },
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "idx_clients_govid",
+          "KeySchema": [
+            { "AttributeName": "government_id", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        },
+        {
+          "IndexName": "idx_clients_email",
+          "KeySchema": [
+            { "AttributeName": "email", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      ]
+    },
+    {
+      "TableName": "vehicle_assignments",
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "N" },
+        { "AttributeName": "client_id", "AttributeType": "N" },
+        { "AttributeName": "vehicle_id", "AttributeType": "N" }
+      ],
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      },
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "idx_va_client_id",
+          "KeySchema": [
+            { "AttributeName": "client_id", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        },
+        {
+          "IndexName": "idx_va_vehicle_id",
+          "KeySchema": [
+            { "AttributeName": "vehicle_id", "KeyType": "HASH" }
+          ],
+          "Projection": { "ProjectionType": "ALL" },
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          }
+        }
+      ]
+    },
+    {
+      "TableName": "audit_logs",
+      "AttributeDefinitions": [
+        { "AttributeName": "id", "AttributeType": "N" }
+      ],
+      "KeySchema": [
+        { "AttributeName": "id", "KeyType": "HASH" }
+      ],
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}
