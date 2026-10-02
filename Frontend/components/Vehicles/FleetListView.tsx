@@ -285,7 +285,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
       </div>
 
       {/* Main Table Panel */}
-      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 shadow-md flex flex-col overflow-visible">
+      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 shadow-md flex flex-col flex-1 min-h-[520px] overflow-visible pb-16">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/5 gap-4">
           <h2 className="text-base font-black text-white tracking-tight">
             Fleet Registry
@@ -308,7 +308,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
           </div>
         </div>
 
-        <div className="hidden md:block overflow-x-auto overflow-y-visible">
+        <div className="hidden md:block overflow-x-auto overflow-y-visible flex-1">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/5 text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5">
@@ -360,18 +360,24 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
                           •••
                         </button>
                         {showDropdownRow === v.id && (
-                          <div className="absolute right-6 top-12 bg-[#1e1e1e] rounded-xl border border-white/5 shadow-lg p-2.5 z-30 w-44 text-left flex flex-col gap-1.5 animate-fadeIn">
-                            <button onClick={() => { setViewingVehicleId(v.id); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>👁</span> View Details
-                            </button>
-                            <button onClick={() => router.push("/vehicles/edit/" + v.id)} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>⚙</span> Edit Specifications
-                            </button>
-                            <hr className="border-white/5 my-0.5" />
-                            <button onClick={() => { setDeletingVehicle(v); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-brand-red hover:bg-rose-950/20 rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>🗑</span> Delete Vehicle
-                            </button>
-                          </div>
+                          <>
+                            <div
+                              className="fixed inset-0 z-20 cursor-default"
+                              onClick={() => setShowDropdownRow(null)}
+                            />
+                            <div className="absolute right-6 top-12 bg-[#1e1e1e] rounded-xl border border-white/10 shadow-2xl p-2.5 z-30 w-44 text-left flex flex-col gap-1.5 animate-fadeIn">
+                              <button onClick={() => { setViewingVehicleId(v.id); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>👁</span> View Details
+                              </button>
+                              <button onClick={() => { router.push("/vehicles/edit/" + v.id); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>⚙</span> Edit Specifications
+                              </button>
+                              <hr className="border-white/5 my-0.5" />
+                              <button onClick={() => { setDeletingVehicle(v); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-brand-red hover:bg-rose-950/20 rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>🗑</span> Delete Vehicle
+                              </button>
+                            </div>
+                          </>
                         )}
                       </td>
                     </tr>
