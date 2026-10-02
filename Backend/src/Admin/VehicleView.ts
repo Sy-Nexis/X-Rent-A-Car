@@ -40,11 +40,22 @@ const getVehiclesList = async (req: Request, res: Response): Promise<void> => {
 
 const getSingleVehicle = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id, vin, plate, license_plate } = req.query;
+        const { id: paramId } = req.params;
+        const { id: queryId, vin, plate, license_plate } = req.query;
+        const targetId = paramId || queryId;
+
         let vehicle = null;
 
-        if (id) {
-            vehicle = await getVehicleById(Number(id));
+        if (targetId && targetId !== 'view' && targetId !== 'all') {
+            if (!isNaN(Number(targetId))) {
+                vehicle = await getVehicleById(Number(targetId));
+            }
+            if (!vehicle) {
+                vehicle = await getVehicleByVin(String(targetId));
+            }
+            if (!vehicle) {
+                vehicle = await getVehicleByPlate(String(targetId));
+            }
         } else if (vin) {
             vehicle = await getVehicleByVin(String(vin));
         } else if (plate || license_plate) {
@@ -76,5 +87,6 @@ router.get('/', getVehiclesList);
 router.get('/all', getVehiclesList);
 router.get('/search', getSingleVehicle);
 router.get('/single', getSingleVehicle);
+router.get('/:id', getSingleVehicle);
 
 export default router;
