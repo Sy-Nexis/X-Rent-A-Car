@@ -154,31 +154,6 @@ export default function AdminHubClient({ vehicles: initialVehicles = [], clients
                </div>
             </motion.div>
          </div>
-
-         {/* 4. SYSTEM INTEGRITY STAT */}
-         <motion.div
-            variants={itemVariants}
-            className="w-full bg-[#1e1e1e] border border-white/5 rounded-2xl p-6 text-white relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md mt-2"
-         >
-            <div className="absolute right-4 bottom-0 opacity-[0.02] translate-y-4">
-               <LayoutDashboard className="w-32 h-32 text-brand-cyan" />
-            </div>
-            <div className="space-y-1">
-               <p className="text-[10px] font-extrabold text-gray-500 tracking-wider uppercase">
-                  Global System Integrity
-               </p>
-               <p className="text-3xl font-black text-white leading-none mt-1">
-                  99.98%
-               </p>
-               <p className="text-[11px] text-gray-400 font-bold mt-1">
-                  Operational Fleet Nodes Online
-               </p>
-            </div>
-            <div className="flex items-center gap-2 bg-brand-green/10 border border-brand-green/20 text-brand-green rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest">
-               <div className="w-1.5 h-1.5 rounded-full bg-brand-green animate-pulse" />
-               All Nodes Operational
-            </div>
-         </motion.div>
       </motion.div>
    );
 }
