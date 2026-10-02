@@ -5,6 +5,7 @@ import { AuthRequest, UserPayload } from '../types/auth';
 
 /**
  * Protect route middleware: Extracts JWT and verifies against Supabase DB active status
+ * Enforces explicit cryptographic signing algorithm checking (HS256)
  */
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
     let token: string | undefined;
@@ -14,16 +15,20 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
     }
 
     if (!token) {
-        return res.status(401).json({ message: 'Access denied, token missing' });
+        return res.status(401).json({ success: false, message: 'Access denied: Authentication token missing.' });
     }
 
     try {
         const jwtSecret = process.env.JWT_SECRET || 'xrent_secret_jwt_key_development_2026';
 
-        // Parse and verify the token signature
-        const decoded = jwt.verify(token, jwtSecret) as UserPayload;
+        // Enforce explicit cryptographic signing algorithm checking
+        const decoded = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] }) as UserPayload;
 
-        // High-speed active check directly to Supabase to verify User ID exists and status remains Active
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ success: false, message: 'Invalid token structure.' });
+        }
+
+        // Active status check in Supabase to verify User ID exists and remains Active
         const { data: staff, error } = await supabase
             .from('staff')
             .select('id, role, status')
@@ -31,31 +36,29 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
             .maybeSingle();
 
         if (error || !staff) {
-            console.log(`AUTH_REJECTED: User ID ${decoded.id} not found in Supabase`);
-            return res.status(401).json({ message: 'The user belonging to this token no longer exists' });
+            return res.status(401).json({ success: false, message: 'The user belonging to this token no longer exists.' });
         }
 
         if (staff.status !== 'Active') {
-            console.log(`AUTH_REJECTED: User ID ${decoded.id} is suspended/inactive`);
-            return res.status(401).json({ message: 'Account is suspended or inactive' });
+            return res.status(401).json({ success: false, message: 'Account is suspended or inactive.' });
         }
 
-        // Append the user payload details into a typed custom Express object reference (req.user)
+        // Append user payload details into custom Express object
         req.user = { id: staff.id, role: staff.role };
         next();
 
     } catch (error) {
-        return res.status(401).json({ message: 'Token invalid or expired' });
+        return res.status(401).json({ success: false, message: 'Token is invalid, revoked, or expired.' });
     }
 };
 
 /**
- * Restrict routes to specific roles
+ * Restrict routes to specific roles (RBAC)
  */
 export const restrictTo = (...roles: string[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (!req.user || !roles.includes(req.user.role)) {
-            return res.status(403).json({ message: 'Permission denied' });
+            return res.status(403).json({ success: false, message: 'Access forbidden: Insufficient security privileges.' });
         }
         next();
     };
