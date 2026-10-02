@@ -215,8 +215,8 @@ export async function recordLog(payload: {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_name: userName || "Alex Rivera",
-      user_role: userRole || "Fleet Manager",
+      user_name: userName || "Staff User",
+      user_role: userRole || "Staff",
       action: payload.action,
       entity_type: payload.entityType || "General",
       entity_id: payload.entityId,

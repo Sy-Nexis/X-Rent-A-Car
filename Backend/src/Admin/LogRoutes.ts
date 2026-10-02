@@ -80,9 +80,9 @@ router.post('/record', async (req: Request, res: Response): Promise<void> => {
         }
 
         const logged = await recordAuditLog({
-            userName: user_name || userName || 'Alex Rivera',
-            userRole: user_role || userRole || 'Fleet Manager',
-            userEmail: user_email || userEmail || '',
+            userName: (req.headers['x-user-name'] as string) || user_name || userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || user_role || userRole || 'Staff',
+            userEmail: (req.headers['x-user-email'] as string) || user_email || userEmail || '',
             action: action,
             entityType: entity_type || entityType || 'System',
             entityId: entity_id || entityId,

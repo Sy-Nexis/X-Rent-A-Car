@@ -86,8 +86,8 @@ export async function recordAuditLog(log: {
 
     const entry: AuditLogItem = {
         id: numericId,
-        user_name: log.userName || 'Alex Rivera',
-        user_role: log.userRole || 'Fleet Manager',
+        user_name: log.userName || 'Staff User',
+        user_role: log.userRole || 'Staff',
         user_email: log.userEmail || '',
         action: log.action,
         entity_type: log.entityType,

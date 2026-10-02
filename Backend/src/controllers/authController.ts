@@ -170,16 +170,7 @@ export const getProfile = async (req: Request, res: Response) => {
 
     try {
         if (!email) {
-            return res.status(200).json({
-                user: {
-                    name: "Alex Rivera",
-                    email: "alex.rivera@fleetcontrol.io",
-                    phone: "+1 (555) 012-3456",
-                    department: "Logistics Operations",
-                    bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
-                    role: "Fleet Manager"
-                }
-            });
+            return res.status(400).json({ message: 'User email is required to retrieve profile.' });
         }
 
         const staff = await getStaffByEmail(email);
@@ -188,15 +179,17 @@ export const getProfile = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'User profile not found.' });
         }
 
+        const fullName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
+
         return res.status(200).json({
             user: {
                 id: staff.id,
-                name: `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email,
+                name: fullName,
                 email: staff.email,
-                phone: "+1 (555) 012-3456",
-                department: "Logistics Operations",
-                bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
-                role: staff.role || "Fleet Manager"
+                phone: "+94 (77) 123-4567",
+                department: "Fleet Operations",
+                bio: `${staff.role || 'Staff'} at neXus Fleet Control.`,
+                role: staff.role || "Staff"
             }
         });
     } catch (err: any) {
@@ -220,12 +213,12 @@ export const updateProfile = async (req: Request, res: Response) => {
             success: true,
             message: 'Profile updated successfully!',
             user: {
-                name: name || "Alex Rivera",
+                name: name || "Staff User",
                 email: email,
-                phone: phone || "+1 (555) 012-3456",
-                department: department || "Logistics Operations",
+                phone: phone || "",
+                department: department || "Operations",
                 bio: bio || "",
-                role: role || "Fleet Manager"
+                role: role || "Staff"
             }
         });
     } catch (err: any) {

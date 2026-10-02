@@ -70,8 +70,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         const clientFullName = `${first_name || ''} ${last_name || ''}`.trim() || 'New Client';
         recordAuditLog({
-            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: 'Registered Client',
             entityType: 'Client',
             entityId: created.id,
@@ -211,8 +211,8 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             : `Saved profile for ${clientFullName} with no field modifications.`;
 
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: 'Updated Client',
             entityType: 'Client',
             entityId: existingClient.id,

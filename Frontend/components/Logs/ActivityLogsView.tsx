@@ -420,8 +420,8 @@ export default function ActivityLogsView() {
               ) : (
                 filteredLogs.map((log) => {
                   const badge = getActionBadge(log.action);
-                  const userName = log.user_name || log.userName || "Alex Rivera";
-                  const userRole = log.user_role || log.userRole || "Fleet Manager";
+                  const userName = log.user_name || log.userName || "Staff User";
+                  const userRole = log.user_role || log.userRole || "Staff";
                   const timestamp = log.created_at || log.createdAt;
 
                   return (

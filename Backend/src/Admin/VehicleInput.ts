@@ -75,8 +75,8 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         // Record audit log
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: 'Registered Vehicle',
             entityType: 'Vehicle',
             entityId: newVehicle.id,
@@ -186,8 +186,8 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             : `Saved vehicle details for ${updated?.make} ${updated?.model} (${updated?.license_plate || updated?.vin}) with no field changes.`;
 
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: 'Updated Vehicle',
             entityType: 'Vehicle',
             entityId: existingVehicle.id,

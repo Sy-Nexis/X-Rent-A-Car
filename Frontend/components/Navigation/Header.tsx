@@ -28,8 +28,8 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // User state
-  const [userName, setUserName] = useState("Alex Management");
-  const [userRole, setUserRole] = useState("FLEET MANAGER");
+  const [userName, setUserName] = useState("Staff User");
+  const [userRole, setUserRole] = useState("STAFF");
 
   const syncUserData = () => {
     if (typeof window !== "undefined") {

@@ -36,8 +36,8 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
         const clientName = `${deletedClient.first_name || ''} ${deletedClient.last_name || ''}`.trim() || deletedClient.email || deletedClient.government_id;
 
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Staff',
             action: 'Deleted Client',
             entityType: 'Client',
             entityId: String(deletedClient.id),

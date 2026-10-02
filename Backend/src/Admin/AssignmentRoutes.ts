@@ -96,8 +96,8 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
         const vehicleNames = Array.from(new Set(createdItems.map(i => `${i.vehicle?.make} ${i.vehicle?.model} (${i.vehicle?.licensePlate || 'N/A'})`).filter(Boolean))).join(', ');
 
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: 'Assigned Vehicles to Clients',
             entityType: 'Assignment',
             details: `Assigned ${targetVehicleIds.length} vehicle(s) [${vehicleNames || targetVehicleIds.join(', ')}] to ${targetClientIds.length} client(s) [${clientNames || targetClientIds.join(', ')}]. Daily Rate: LKR ${Number(daily_rate || 0).toLocaleString()}.`
@@ -173,8 +173,8 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         // Record audit log
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
             action: isReturn ? 'Returned Vehicle' : 'Updated Assignment',
             entityType: 'Assignment',
             entityId: String(targetId),
@@ -217,8 +217,8 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
 
         // Record audit log
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Staff',
             action: 'Terminated Assignment',
             entityType: 'Assignment',
             entityId: String(id),

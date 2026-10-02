@@ -100,8 +100,8 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
 
     try {
       const govId = client.government_id || (client as any).governmentId;
-      let userName = "Alex Rivera";
-      let userRole = "Fleet Manager";
+      let userName = "Staff User";
+      let userRole = "Staff";
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem("user");
         if (stored) {

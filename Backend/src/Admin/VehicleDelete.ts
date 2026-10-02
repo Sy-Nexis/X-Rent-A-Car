@@ -36,8 +36,8 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
         const vehName = `${deletedVeh.year || ''} ${deletedVeh.make || ''} ${deletedVeh.model || ''} (${deletedVeh.license_plate || deletedVeh.vin || id})`.trim();
 
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
-            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Staff User',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Staff',
             action: 'Deleted Vehicle',
             entityType: 'Vehicle',
             entityId: deletedVeh.id,

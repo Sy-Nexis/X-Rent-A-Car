@@ -90,8 +90,8 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
     },
   ];
 
-  const [userName, setUserName] = useState("Alex Rivera");
-  const [userRole, setUserRole] = useState("Fleet Manager");
+  const [userName, setUserName] = useState("Staff User");
+  const [userRole, setUserRole] = useState("Staff");
 
   const syncUser = () => {
     if (typeof window !== "undefined") {
@@ -121,7 +121,7 @@ export default function Sidebar({ isDrawerOpen = false, onCloseDrawer }: Sidebar
   const getInitials = (name: string) => {
     const parts = name.trim().split(" ");
     if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return name.slice(0, 2).toUpperCase() || "AR";
+    return name.slice(0, 2).toUpperCase() || "SU";
   };
 
   const handleLogout = () => {

@@ -77,8 +77,8 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
       };
 
       // 2. API CALL
-      let userName = "Alex Rivera";
-      let userRole = "Fleet Manager";
+      let userName = "Staff User";
+      let userRole = "Staff";
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem("user");
         if (stored) {

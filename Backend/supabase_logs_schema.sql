@@ -37,11 +37,3 @@ CREATE POLICY "Allow public delete access to audit_logs"
     ON public.audit_logs FOR DELETE
     USING (true);
 
--- Insert initial demonstration audit logs
-INSERT INTO public.audit_logs (user_name, user_role, action, entity_type, details, created_at)
-VALUES 
-    ('Alex Rivera', 'Fleet Manager', 'Login', 'Auth', 'User logged into neXus Fleet Control Portal successfully.', NOW() - INTERVAL '3 hours'),
-    ('Alex Rivera', 'Fleet Manager', 'Assigned Vehicles', 'Assignment', 'Dispatched multi-vehicle corporate contract to clients with active status.', NOW() - INTERVAL '2 hours'),
-    ('Alex Rivera', 'Fleet Manager', 'Updated Client', 'Client', 'Updated contact and licensing verification records in registry.', NOW() - INTERVAL '1 hour'),
-    ('Alex Rivera', 'Fleet Manager', 'Registered Vehicle', 'Vehicle', 'Added new Toyota Land Cruiser Prado to active fleet database.', NOW() - INTERVAL '35 minutes')
-ON CONFLICT DO NOTHING;
