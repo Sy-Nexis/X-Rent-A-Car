@@ -3,9 +3,15 @@ import { supabase } from '../config/supabase';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { recordAuditLog } from '../Admin/LogRoutes';
+import {
+    getStaffByEmail,
+    createStaff,
+    updateStaffLastLogin,
+    updateStaffPassword
+} from '../services/dynamoStaffService';
 
 /**
- * Handle user login
+ * Handle user login (DynamoDB Primary with Supabase fallback)
  */
 export const login = async (req: Request, res: Response) => {
     console.log("LOGIN_REQUEST_RECEIVED:", req.body?.email);
@@ -20,7 +26,63 @@ export const login = async (req: Request, res: Response) => {
     const jwtSecret = process.env.JWT_SECRET || 'xrent_secret_jwt_key_development_2026';
 
     try {
-        // 1. Query staff table in Supabase
+        // 1. Check DynamoDB first using idx_staff_email Global Secondary Index
+        let dynamoStaff = null;
+        try {
+            dynamoStaff = await getStaffByEmail(normalizedEmail);
+        } catch (dynErr: any) {
+            console.warn("DynamoDB staff lookup note (will check Supabase fallback):", dynErr.message);
+        }
+
+        if (dynamoStaff) {
+            console.log(`DYNAMODB_STAFF_FOUND: ${dynamoStaff.email}, Status: ${dynamoStaff.status}`);
+
+            if (dynamoStaff.status && dynamoStaff.status !== 'Active') {
+                return res.status(401).json({ message: 'Your account is inactive. Please contact your administrator.' });
+            }
+
+            let isMatch = false;
+            if (dynamoStaff.password_hash) {
+                try {
+                    isMatch = await bcrypt.compare(password, dynamoStaff.password_hash);
+                } catch (bcryptErr) {
+                    console.error("Bcrypt compare error:", bcryptErr);
+                }
+            }
+
+            if (isMatch) {
+                const token = jwt.sign(
+                    { id: dynamoStaff.id, role: dynamoStaff.role, email: dynamoStaff.email },
+                    jwtSecret,
+                    { expiresIn: '12h' }
+                );
+
+                // Update last_login in DynamoDB
+                updateStaffLastLogin(dynamoStaff.id).catch(() => {});
+
+                const userName = `${dynamoStaff.first_name || ''} ${dynamoStaff.last_name || ''}`.trim() || dynamoStaff.email;
+                recordAuditLog({
+                    userName: userName,
+                    userRole: dynamoStaff.role || 'Staff',
+                    userEmail: dynamoStaff.email,
+                    action: 'Login',
+                    entityType: 'Auth',
+                    details: `${userName} (${dynamoStaff.role || 'Staff'}) signed in via DynamoDB.`
+                }).catch(() => {});
+
+                return res.status(200).json({
+                    token,
+                    user: {
+                        id: dynamoStaff.id,
+                        name: userName,
+                        email: dynamoStaff.email,
+                        role: dynamoStaff.role || 'Staff'
+                    }
+                });
+            }
+        }
+
+        // 2. Query staff table in Supabase (fallback / legacy sync)
         const { data: staff, error: dbError } = await supabase
             .from('staff')
             .select('*')
@@ -31,9 +93,9 @@ export const login = async (req: Request, res: Response) => {
             console.error("SUPABASE_QUERY_ERROR:", dbError.message);
         }
 
-        // 2. If staff record exists with bcrypt hash, verify password
+        // If staff record exists in Supabase with bcrypt hash, verify password
         if (staff) {
-            console.log(`STAFF_RECORD_FOUND: ${staff.email}, Status: ${staff.status}`);
+            console.log(`STAFF_RECORD_FOUND_SUPABASE: ${staff.email}, Status: ${staff.status}`);
 
             if (staff.status && staff.status !== 'Active') {
                 return res.status(401).json({ message: 'Your account is inactive. Please contact your administrator.' });
@@ -61,6 +123,19 @@ export const login = async (req: Request, res: Response) => {
                     .update({ last_login: new Date().toISOString() })
                     .eq('id', staff.id)
                     .then();
+
+                // Lazy-sync into DynamoDB
+                try {
+                    createStaff({
+                        id: staff.id,
+                        first_name: staff.first_name || 'Staff',
+                        last_name: staff.last_name || '',
+                        email: staff.email,
+                        password_hash: staff.password_hash,
+                        role: staff.role,
+                        status: staff.status
+                    }).catch(() => {});
+                } catch {}
 
                 const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
                 recordAuditLog({
@@ -114,6 +189,16 @@ export const login = async (req: Request, res: Response) => {
                     password_hash: hashedPassword,
                     last_login: new Date().toISOString()
                 }, { onConflict: 'email' });
+
+                // Also save to DynamoDB
+                createStaff({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: normalizedEmail,
+                    password_hash: hashedPassword,
+                    role: role,
+                    status: 'Active'
+                }).catch(() => {});
             } catch (syncErr) {
                 console.warn("Staff upsert sync notice:", syncErr);
             }
@@ -152,7 +237,7 @@ export const login = async (req: Request, res: Response) => {
 };
 
 /**
- * Handle staff registration
+ * Handle staff registration with DynamoDB Unique Email Constraint Verification
  */
 export const register = async (req: Request, res: Response) => {
     console.log("REGISTER_REQUEST_RECEIVED:", req.body?.email);
@@ -166,9 +251,47 @@ export const register = async (req: Request, res: Response) => {
 
     try {
         const normalizedEmail = String(email).trim().toLowerCase();
+
+        // =========================================================================
+        // STEP 3: ENFORCE UNIQUE EMAIL CONSTRAINT
+        // Query the DynamoDB GSI (idx_staff_email) to verify no duplicate email exists
+        // =========================================================================
+        try {
+            const existingDynamoStaff = await getStaffByEmail(normalizedEmail);
+            if (existingDynamoStaff) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'A staff member with this email address already exists. Please choose a different email or log in.'
+                });
+            }
+        } catch (checkErr: any) {
+            console.warn("DynamoDB pre-flight email check note:", checkErr?.message);
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 1. Insert record into Supabase staff table
+        // 1. Create in DynamoDB (with application-level unique email constraint check)
+        let createdDynamoStaff = null;
+        try {
+            createdDynamoStaff = await createStaff({
+                first_name: String(first_name).trim(),
+                last_name: String(last_name).trim(),
+                email: normalizedEmail,
+                password_hash: hashedPassword,
+                role: finalRole,
+                status: finalStatus,
+            });
+        } catch (dynCreateErr: any) {
+            if (dynCreateErr.code === 'DUPLICATE_EMAIL') {
+                return res.status(409).json({
+                    success: false,
+                    message: 'A staff member with this email address already exists.'
+                });
+            }
+            console.warn("DynamoDB createStaff note:", dynCreateErr.message);
+        }
+
+        // 2. Also insert record into Supabase staff table for redundancy
         const { data: staffData, error: staffError } = await supabase
             .from('staff')
             .upsert([
@@ -187,7 +310,7 @@ export const register = async (req: Request, res: Response) => {
             console.error("SUPABASE_STAFF_INSERT_ERROR:", staffError.message);
         }
 
-        // 2. Also create user in Supabase Auth (GoTrue)
+        // 3. Also create user in Supabase Auth (GoTrue)
         try {
             await supabase.auth.signUp({
                 email: normalizedEmail,
@@ -204,9 +327,12 @@ export const register = async (req: Request, res: Response) => {
             console.warn("Supabase Auth signUp sync notice:", authErr);
         }
 
+        const userObj = createdDynamoStaff || (staffData ? staffData[0] : { email: normalizedEmail, role: finalRole });
+
         return res.status(201).json({
+            success: true,
             message: 'Account created successfully in database.',
-            user: staffData ? staffData[0] : { email: normalizedEmail, role: finalRole }
+            user: userObj
         });
 
     } catch (error: any) {
@@ -360,6 +486,9 @@ export const changePassword = async (req: Request, res: Response) => {
         if (dbError) {
             console.error("STAFF_PASSWORD_UPDATE_ERROR:", dbError.message);
         }
+
+        // Also update in DynamoDB
+        updateStaffPassword(normalizedEmail, hashedPassword).catch(() => {});
 
         return res.status(200).json({
             success: true,
