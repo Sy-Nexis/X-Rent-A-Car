@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 interface Vehicle {
-  id: number;
+  id: number | string;
   make: string;
   model: string;
   year: number;
@@ -39,7 +39,7 @@ interface Vehicle {
 interface VehicleDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vehicleId: number | null;
+  vehicleId: number | string | null;
 }
 
 export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: VehicleDetailsModalProps) {
@@ -106,7 +106,7 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
     } catch (err: any) {
       // console.error suppressed to prevent dev overlay
       // Mock Fallback if backend is empty/failing for the mock IDs
-      if (vehicleId >= 1 && vehicleId <= 4) {
+      if (Number(vehicleId) >= 1 && Number(vehicleId) <= 4) {
         const MOCK = [
           { id: 1, make: "Freightliner", model: "Cascadia", year: 2024, vin: "ID: FC-992-K", license_plate: "TX-78-PXQ", daily_rate: 245.00, status: "ACTIVE", fuel_type: "Heavy Duty", transmission: "EV-100" },
           { id: 2, make: "Volvo", model: "VNL 860", year: 2023, vin: "ID: FC-441-S", license_plate: "CA-12-LMN", daily_rate: 210.50, status: "MAINTENANCE", fuel_type: "Sleeper", transmission: "Diesel-V6" },

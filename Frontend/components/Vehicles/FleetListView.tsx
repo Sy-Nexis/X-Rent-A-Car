@@ -97,7 +97,7 @@ function AnimatedBar({
 }
 
 interface Vehicle {
-  id: number;
+  id: number | string;
   make: string;
   model: string;
   year: number;
@@ -119,6 +119,7 @@ interface FleetListViewProps {
 const statusStyles: Record<string, { badge: string; dot: string }> = {
   active: { badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", dot: "bg-brand-green" },
   available: { badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", dot: "bg-brand-green" },
+  rented: { badge: "bg-purple-500/10 text-purple-400 border-purple-500/20", dot: "bg-purple-400" },
   maintenance: { badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", dot: "bg-brand-red" },
   "in prep": { badge: "bg-blue-500/10 text-blue-400 border-blue-500/20", dot: "bg-blue-400" },
   inprep: { badge: "bg-blue-500/10 text-blue-400 border-blue-500/20", dot: "bg-blue-400" },
@@ -130,11 +131,11 @@ import { fetchVehicles, invalidateClientDataCache } from "@/lib/api";
 export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"All" | "Active" | "Maintenance" | "InPrep">("All");
-  const [showDropdownRow, setShowDropdownRow] = useState<number | null>(null);
+  const [showDropdownRow, setShowDropdownRow] = useState<number | string | null>(null);
 
   const [liveVehicles, setLiveVehicles] = useState<Vehicle[]>(vehicles);
   const [deletingVehicle, setDeletingVehicle] = useState<Vehicle | null>(null);
-  const [viewingVehicleId, setViewingVehicleId] = useState<number | null>(null);
+  const [viewingVehicleId, setViewingVehicleId] = useState<number | string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -206,7 +207,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const filteredVehicles = displayVehicles.filter((v) => {
     const status = (v.status || "").toLowerCase();
     if (activeTab === "All") return true;
-    if (activeTab === "Active") return status === "active" || status === "available";
+    if (activeTab === "Active") return status === "active" || status === "available" || status === "rented";
     if (activeTab === "Maintenance") return status === "maintenance";
     if (activeTab === "InPrep") return status === "in prep" || status === "inprep";
     return true;
@@ -214,7 +215,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
 
   const activeCount = displayVehicles.filter((v) => {
     const s = (v.status || "").toLowerCase();
-    return s === "active" || s === "available";
+    return s === "active" || s === "available" || s === "rented";
   }).length;
 
   const maintenanceCount = displayVehicles.filter((v) => (v.status || "").toLowerCase() === "maintenance").length;

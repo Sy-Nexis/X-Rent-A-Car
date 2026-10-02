@@ -64,12 +64,12 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
         const rawClientIds: any[] = client_ids || clientIds || (client_id ? [client_id] : []);
         const rawVehicleIds: any[] = vehicle_ids || vehicleIds || (vehicle_id ? [vehicle_id] : []);
 
-        const targetClientIds: number[] = Array.isArray(rawClientIds)
-            ? rawClientIds.map(Number).filter(n => !isNaN(n) && n > 0)
+        const targetClientIds: (number | string)[] = Array.isArray(rawClientIds)
+            ? rawClientIds.map(c => String(c).trim()).filter(Boolean)
             : [];
 
-        const targetVehicleIds: number[] = Array.isArray(rawVehicleIds)
-            ? rawVehicleIds.map(Number).filter(n => !isNaN(n) && n > 0)
+        const targetVehicleIds: (number | string)[] = Array.isArray(rawVehicleIds)
+            ? rawVehicleIds.map(v => String(v).trim()).filter(Boolean)
             : [];
 
         if (targetClientIds.length === 0 || targetVehicleIds.length === 0) {
@@ -130,9 +130,9 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
 router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id, status, end_date, daily_rate, notes } = req.body;
-        const targetId = Number(id || req.query.id);
+        const targetId = id || req.query.id;
 
-        if (!targetId || isNaN(targetId)) {
+        if (!targetId) {
             res.status(400).json({
                 success: false,
                 message: 'Valid assignment ID is required for update.'
@@ -177,7 +177,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
             action: isReturn ? 'Returned Vehicle' : 'Updated Assignment',
             entityType: 'Assignment',
-            entityId: targetId,
+            entityId: String(targetId),
             details: detailMsg
         }).catch(() => {});
 
@@ -205,7 +205,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 router.delete('/del', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.query;
-        if (!id || isNaN(Number(id))) {
+        if (!id) {
             res.status(400).json({
                 success: false,
                 message: 'Assignment ID is required.'
@@ -213,7 +213,7 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        await deleteDynamoAssignment(Number(id));
+        await deleteDynamoAssignment(String(id));
 
         // Record audit log
         recordAuditLog({

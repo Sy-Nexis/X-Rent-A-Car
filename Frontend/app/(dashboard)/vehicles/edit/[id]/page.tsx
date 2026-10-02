@@ -29,7 +29,7 @@ import {
 
 // --- TYPES ---
 interface Vehicle {
-  id: number;
+  id: number | string;
   make: string;
   model: string;
   year: number;

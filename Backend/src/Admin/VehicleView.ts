@@ -44,10 +44,15 @@ const getSingleVehicle = async (req: Request, res: Response): Promise<void> => {
         const { id: queryId, vin, plate, license_plate } = req.query;
         const targetId = paramId || queryId;
 
+        if (targetId === 'view' || targetId === 'all') {
+            return getVehiclesList(req, res);
+        }
+
         let vehicle = null;
 
-        if (targetId && targetId !== 'view' && targetId !== 'all') {
-            if (!isNaN(Number(targetId))) {
+        if (targetId) {
+            vehicle = await getVehicleById(String(targetId));
+            if (!vehicle && !isNaN(Number(targetId))) {
                 vehicle = await getVehicleById(Number(targetId));
             }
             if (!vehicle) {
@@ -85,6 +90,7 @@ const getSingleVehicle = async (req: Request, res: Response): Promise<void> => {
 
 router.get('/', getVehiclesList);
 router.get('/all', getVehiclesList);
+router.get('/view', getVehiclesList);
 router.get('/search', getSingleVehicle);
 router.get('/single', getSingleVehicle);
 router.get('/:id', getSingleVehicle);
