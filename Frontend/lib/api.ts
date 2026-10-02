@@ -23,14 +23,15 @@ export async function fetchVehicles(forceRefresh = false): Promise<any[]> {
     const res = await fetch(`${API_BASE}/api/vehicles/view`, {
       cache: "no-store",
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      return cached?.data || [];
+    }
     const json = await res.json();
     const list = Array.isArray(json.data) ? json.data : [];
     memoryCache.set(cacheKey, { data: list, timestamp: now });
     return list;
   } catch (err) {
-    if (cached) return cached.data; // fallback to stale cache on network failure
-    throw err;
+    return cached?.data || [];
   }
 }
 
@@ -47,14 +48,15 @@ export async function fetchClients(forceRefresh = false): Promise<any[]> {
     const res = await fetch(`${API_BASE}/api/clients/view`, {
       cache: "no-store",
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      return cached?.data || [];
+    }
     const json = await res.json();
     const list = Array.isArray(json.data) ? json.data : [];
     memoryCache.set(cacheKey, { data: list, timestamp: now });
     return list;
   } catch (err) {
-    if (cached) return cached.data; // fallback to stale cache on network failure
-    throw err;
+    return cached?.data || [];
   }
 }
 
@@ -71,16 +73,18 @@ export async function fetchAssignments(forceRefresh = false): Promise<any[]> {
     const res = await fetch(`${API_BASE}/api/assignments`, {
       cache: "no-store",
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      return cached?.data || [];
+    }
     const json = await res.json();
     const list = Array.isArray(json.data) ? json.data : [];
     memoryCache.set(cacheKey, { data: list, timestamp: now });
     return list;
   } catch (err) {
-    if (cached) return cached.data;
-    throw err;
+    return cached?.data || [];
   }
 }
+
 
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
