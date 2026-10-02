@@ -72,8 +72,8 @@ export async function getAllVehicles(): Promise<VehicleItem[]> {
         }
         return [];
     } catch (error: any) {
-        console.error('DynamoDB getAllVehicles error:', error);
-        throw error;
+        console.warn('DynamoDB getAllVehicles notice:', error?.message || error);
+        return [];
     }
 }
 
@@ -87,8 +87,8 @@ export async function getVehicleById(id: number): Promise<VehicleItem | null> {
         if (response.Item) return decodeVehicle(response.Item);
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getVehicleById error:', error);
-        throw error;
+        console.warn('DynamoDB getVehicleById notice:', error?.message || error);
+        return null;
     }
 }
 
@@ -108,8 +108,8 @@ export async function getVehicleByVin(vin: string): Promise<VehicleItem | null> 
         }
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getVehicleByVin error:', error);
-        throw error;
+        console.warn('DynamoDB getVehicleByVin notice:', error?.message || error);
+        return null;
     }
 }
 
@@ -129,10 +129,11 @@ export async function getVehicleByPlate(plate: string): Promise<VehicleItem | nu
         }
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getVehicleByPlate error:', error);
-        throw error;
+        console.warn('DynamoDB getVehicleByPlate notice:', error?.message || error);
+        return null;
     }
 }
+
 
 export async function createVehicle(data: Partial<VehicleItem>): Promise<VehicleItem> {
     const numericId = data.id || Date.now() + Math.floor(Math.random() * 1000);

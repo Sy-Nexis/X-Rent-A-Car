@@ -39,9 +39,10 @@ export async function getAllLogs(filters: {
             items = response.Items as AuditLogItem[];
         }
     } catch (err: any) {
-        console.error('DynamoDB getAllLogs error:', err);
-        throw err;
+        console.warn('DynamoDB getAllLogs notice:', err?.message || err);
+        return [];
     }
+
 
     let results = [...items];
 

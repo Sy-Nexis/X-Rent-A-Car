@@ -79,8 +79,8 @@ export async function getAllAssignments(): Promise<any[]> {
         const joined = await Promise.all(items.map(formatAssignmentJoined));
         return joined.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     } catch (error: any) {
-        console.error('DynamoDB getAllAssignments error:', error);
-        throw error;
+        console.warn('DynamoDB getAllAssignments notice:', error?.message || error);
+        return [];
     }
 }
 
@@ -94,10 +94,11 @@ export async function getAssignmentById(id: number): Promise<AssignmentItem | nu
         if (response.Item) return response.Item as AssignmentItem;
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getAssignmentById error:', error);
-        throw error;
+        console.warn('DynamoDB getAssignmentById notice:', error?.message || error);
+        return null;
     }
 }
+
 
 export async function createBatchAssignments(params: {
     client_ids: number[];

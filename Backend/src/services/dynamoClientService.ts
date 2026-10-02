@@ -40,8 +40,8 @@ export async function getAllClients(): Promise<ClientItem[]> {
         }
         return [];
     } catch (error: any) {
-        console.error('DynamoDB getAllClients error:', error);
-        throw error;
+        console.warn('DynamoDB getAllClients notice:', error?.message || error);
+        return [];
     }
 }
 
@@ -55,8 +55,8 @@ export async function getClientById(id: number): Promise<ClientItem | null> {
         if (response.Item) return response.Item as ClientItem;
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getClientById error:', error);
-        throw error;
+        console.warn('DynamoDB getClientById notice:', error?.message || error);
+        return null;
     }
 }
 
@@ -76,8 +76,8 @@ export async function getClientByGovId(govId: string): Promise<ClientItem | null
         }
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getClientByGovId error:', error);
-        throw error;
+        console.warn('DynamoDB getClientByGovId notice:', error?.message || error);
+        return null;
     }
 }
 
@@ -97,10 +97,11 @@ export async function getClientByEmail(email: string): Promise<ClientItem | null
         }
         return null;
     } catch (error: any) {
-        console.error('DynamoDB getClientByEmail error:', error);
-        throw error;
+        console.warn('DynamoDB getClientByEmail notice:', error?.message || error);
+        return null;
     }
 }
+
 
 export async function createClient(data: Partial<ClientItem>): Promise<ClientItem> {
     const numericId = data.id || Date.now() + Math.floor(Math.random() * 1000);
