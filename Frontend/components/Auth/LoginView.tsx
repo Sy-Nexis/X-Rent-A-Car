@@ -76,13 +76,10 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 text-center select-none">
-          <span className="font-serif text-white text-5xl tracking-wide flex items-center leading-none mb-1.5">
+          <span className="font-serif text-white text-5xl tracking-wide flex items-center leading-none">
             ne
             <span className="font-serif text-white text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
             us
-          </span>
-          <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-            Powered by X Rent A Car
           </span>
         </div>
 
@@ -192,41 +189,18 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
               )}
             </button>
           </form>
-
-          {/* Backend / Supabase status info */}
-          <div className="flex items-center justify-center gap-2 mt-6 pt-5 border-t border-white/5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-bold text-gray-400 tracking-wider">
-              Connected via Backend & Supabase
-            </span>
-          </div>
         </div>
 
         {/* Register Link */}
         <button
           onClick={onGoToRegister}
-          className="group flex items-center gap-2 text-brand-cyan hover:opacity-75 text-xs font-black uppercase tracking-widest cursor-pointer mb-8 transition-opacity"
+          className="group flex items-center gap-2 text-brand-cyan hover:opacity-75 text-xs font-black uppercase tracking-widest cursor-pointer transition-opacity"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
           </svg>
           Register Account
         </button>
-
-        {/* Encrypted shield line */}
-        <div className="flex items-center gap-2 text-gray-500 mb-2">
-          <svg className="w-4 h-4 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span className="text-[9px] font-bold uppercase tracking-wider">
-            Standard protocol encrypted connection
-          </span>
-        </div>
-
-        {/* Copyright */}
-        <span className="text-[9px] font-extrabold text-gray-600 tracking-wider">
-          © {new Date().getFullYear()} X RENT A CAR. ALL RIGHTS RESERVED.
-        </span>
       </div>
     </div>
   );
