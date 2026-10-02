@@ -267,7 +267,7 @@ export default function ClientRegistryView({ initialClients = [] }: ClientRegist
       </div>
 
       {/* Main Table Panel */}
-      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 shadow-md flex flex-col overflow-visible pb-20 md:pb-0">
+      <div className="bg-[#1e1e1e] rounded-2xl border border-white/5 shadow-md flex flex-col flex-1 min-h-[520px] overflow-visible pb-16">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border-b border-white/5 gap-4">
           <h2 className="text-base font-black text-white tracking-tight">
             Corporate Client Registry
@@ -306,13 +306,13 @@ export default function ClientRegistryView({ initialClients = [] }: ClientRegist
         </div>
 
         {filteredClients.length === 0 ? (
-          <div className="p-12 text-center flex flex-col items-center justify-center">
+          <div className="p-12 text-center flex flex-col items-center justify-center flex-1">
             <Database size={36} className="text-gray-600 mb-3" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1">No matching clients found</h3>
             <p className="text-xs text-gray-500">Register a new client using the &quot;Add New Client&quot; button above.</p>
           </div>
         ) : (
-          <div className="hidden md:block overflow-x-auto overflow-y-visible">
+          <div className="hidden md:block overflow-x-auto overflow-y-visible flex-1">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[9px] font-black text-gray-500 uppercase tracking-widest bg-white/5">
@@ -366,18 +366,24 @@ export default function ClientRegistryView({ initialClients = [] }: ClientRegist
                           •••
                         </button>
                         {showDropdownRow === c.id && (
-                          <div className="absolute right-6 top-10 bg-[#1e1e1e] rounded-xl border border-white/5 shadow-2xl p-2.5 z-30 w-44 text-left flex flex-col gap-1.5 animate-fadeIn">
-                            <button onClick={() => { setViewingClientId(Number(c.id) || 1); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>👁</span> View Details
-                            </button>
-                            <button onClick={() => router.push("/clients/edit/" + c.id)} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>⚙</span> Edit Specifications
-                            </button>
-                            <hr className="border-white/5 my-0.5" />
-                            <button onClick={() => { setDeletingClient(c); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-brand-red hover:bg-rose-950/20 rounded-md transition-all w-full text-left cursor-pointer">
-                              <span>🗑</span> Delete Client
-                            </button>
-                          </div>
+                          <>
+                            <div
+                              className="fixed inset-0 z-20 cursor-default"
+                              onClick={() => setShowDropdownRow(null)}
+                            />
+                            <div className="absolute right-6 top-10 bg-[#1e1e1e] rounded-xl border border-white/10 shadow-2xl p-2.5 z-30 w-44 text-left flex flex-col gap-1.5 animate-fadeIn">
+                              <button onClick={() => { setViewingClientId(Number(c.id) || 1); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>👁</span> View Details
+                              </button>
+                              <button onClick={() => { router.push("/clients/edit/" + c.id); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-300 hover:bg-white/5 hover:text-white rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>⚙</span> Edit Specifications
+                              </button>
+                              <hr className="border-white/5 my-0.5" />
+                              <button onClick={() => { setDeletingClient(c); setShowDropdownRow(null); }} className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wide text-brand-red hover:bg-rose-950/20 rounded-md transition-all w-full text-left cursor-pointer">
+                                <span>🗑</span> Delete Client
+                              </button>
+                            </div>
+                          </>
                         )}
                       </td>
                     </tr>
