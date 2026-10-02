@@ -131,21 +131,15 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
           </div>
         </div>
 
-        {/* Database connection status & Add Unit button */}
-        {activeView === "FleetList" && (
+        {/* Add Unit button */}
+        {activeView === "FleetList" && onAddUnit && (
           <div className="hidden sm:flex items-center gap-5">
-            <div className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase text-gray-500 tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-brand-green animate-pulse" />
-              Database Connected
-            </div>
-            {onAddUnit && (
-              <button
-                onClick={onAddUnit}
-                className="bg-brand-gradient hover:opacity-90 active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-lg shadow-md transition-all cursor-pointer flex items-center gap-1"
-              >
-                <span>+</span> Add Unit to Fleet
-              </button>
-            )}
+            <button
+              onClick={onAddUnit}
+              className="bg-brand-gradient hover:opacity-90 active:scale-95 text-white text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-lg shadow-md transition-all cursor-pointer flex items-center gap-1"
+            >
+              <span>+</span> Add Unit to Fleet
+            </button>
           </div>
         )}
       </div>
