@@ -201,10 +201,11 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Year of Manufacture</label>
+            <label className="text-[10px] font-black text-[#6e6e73] uppercase tracking-[0.15em] ml-1">Year of Manufacture (YYYY)</label>
             <input
               type="number"
-              {...register("year", { required: true, min: 1990, max: 2026 })}
+              placeholder="e.g. 2024"
+              {...register("year", { required: true, min: 1950, max: 2030 })}
               className="w-full px-6 py-4 bg-white dark:bg-[#1c1c1e] border-2 border-gray-100 dark:border-white/5 focus:border-blue-500/50 focus:ring-8 focus:ring-blue-500/5 rounded-2xl text-sm font-bold transition-all outline-none"
             />
           </div>

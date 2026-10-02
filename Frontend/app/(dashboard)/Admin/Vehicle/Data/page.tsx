@@ -332,11 +332,11 @@ export default function VehicleDataEntry() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Year of Manufacture</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Year of Manufacture (YYYY)</label>
                   <input
-                    {...register("year", { required: "Year is required", min: { value: 1900, message: "Invalid year" } })}
+                    {...register("year", { required: "Year is required", min: { value: 1950, message: "Invalid year" }, max: { value: 2030, message: "Invalid year" } })}
                     type="number"
-                    placeholder="2024"
+                    placeholder="e.g. 2024"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                   {errors.year && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.year.message}</p>}
