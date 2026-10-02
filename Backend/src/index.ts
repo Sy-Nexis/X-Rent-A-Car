@@ -12,6 +12,7 @@ import logRouter from './Admin/LogRoutes';
 import authRoutes from './routes/authRoutes';
 import { dynamoClient, STAFF_TABLE_NAME } from './config/dynamodb';
 import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
+import { ensureAllDynamoTables } from './config/ensureTables';
 
 // Load environment variables
 dotenv.config();
@@ -60,12 +61,14 @@ app.get('/api/health', (req: Request, res: Response) => {
 app.listen(PORT, async () => {
     console.log(`neXus API Server running on http://localhost:${PORT}`);
 
+    // Auto-verify and create any missing tables in user's AWS DynamoDB account
+    await ensureAllDynamoTables();
+
     try {
-        // Ping DynamoDB table descriptor to verify AWS credentials / connectivity
         const command = new DescribeTableCommand({ TableName: STAFF_TABLE_NAME });
         const res = await dynamoClient.send(command);
-        console.log(`CONNECTION STATUS: AWS DynamoDB connected successfully. Table '${STAFF_TABLE_NAME}' status: ${res.Table?.TableStatus || 'ACTIVE'}`);
+        console.log(`CONNECTION STATUS: AWS DynamoDB table '${STAFF_TABLE_NAME}' status: ${res.Table?.TableStatus || 'ACTIVE'}`);
     } catch (error: any) {
-        console.warn(`DynamoDB notice: Using configured / in-memory resilient data service. (${error?.message || 'Check AWS Credentials in .env'})`);
+        console.warn(`DynamoDB status note: ${error?.message || 'Table initializing'}`);
     }
 });
