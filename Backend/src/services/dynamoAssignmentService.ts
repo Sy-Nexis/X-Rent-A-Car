@@ -12,9 +12,9 @@ import { getClientById } from './dynamoClientService';
 import { getVehicleById, updateVehicle } from './dynamoVehicleService';
 
 export interface AssignmentItem {
-    id: number;
-    client_id: number;
-    vehicle_id: number;
+    id: number | string;
+    client_id: number | string;
+    vehicle_id: number | string;
     start_date: string;
     end_date?: string | null;
     daily_rate: number;
@@ -29,14 +29,14 @@ export async function formatAssignmentJoined(item: any): Promise<any> {
     if (!item) return item;
 
     const [client, vehicle] = await Promise.all([
-        getClientById(Number(item.client_id || item.clientId)),
-        getVehicleById(Number(item.vehicle_id || item.vehicleId))
+        getClientById(item.client_id || item.clientId),
+        getVehicleById(item.vehicle_id || item.vehicleId)
     ]);
 
     const clientName = client ? `${client.first_name || ''} ${client.last_name || ''}`.trim() : 'Corporate Client';
 
     return {
-        id: item.id,
+        id: isNaN(Number(item.id)) ? item.id : Number(item.id),
         clientId: item.client_id || item.clientId,
         vehicleId: item.vehicle_id || item.vehicleId,
         startDate: item.start_date || item.startDate,
@@ -84,11 +84,11 @@ export async function getAllAssignments(): Promise<any[]> {
     }
 }
 
-export async function getAssignmentById(id: number): Promise<AssignmentItem | null> {
+export async function getAssignmentById(id: number | string): Promise<AssignmentItem | null> {
     try {
         const command = new GetCommand({
             TableName: ASSIGNMENTS_TABLE_NAME,
-            Key: { id: Number(id) },
+            Key: { id: String(id) },
         });
         const response = await dynamoDocClient.send(command);
         if (response.Item) return response.Item as AssignmentItem;
@@ -99,10 +99,9 @@ export async function getAssignmentById(id: number): Promise<AssignmentItem | nu
     }
 }
 
-
 export async function createBatchAssignments(params: {
-    client_ids: number[];
-    vehicle_ids: number[];
+    client_ids: (number | string)[];
+    vehicle_ids: (number | string)[];
     start_date?: string;
     end_date?: string;
     daily_rate?: number;
@@ -115,11 +114,11 @@ export async function createBatchAssignments(params: {
 
     for (const cId of client_ids) {
         for (const vId of vehicle_ids) {
-            const numericId = Date.now() + Math.floor(Math.random() * 10000);
-            const item: AssignmentItem = {
-                id: numericId,
-                client_id: Number(cId),
-                vehicle_id: Number(vId),
+            const rawId = String(Date.now() + Math.floor(Math.random() * 10000));
+            const item: any = {
+                id: rawId,
+                client_id: String(cId),
+                vehicle_id: String(vId),
                 start_date: start_date ? new Date(start_date).toISOString() : now,
                 end_date: end_date ? new Date(end_date).toISOString() : null,
                 daily_rate: Number(daily_rate) || 0,
@@ -136,7 +135,7 @@ export async function createBatchAssignments(params: {
             await dynamoDocClient.send(command);
 
             // Update vehicle status in DynamoDB to 'Rented'
-            await updateVehicle(Number(vId), { status: 'Rented' });
+            await updateVehicle(vId, { status: 'Rented' });
 
             const formatted = await formatAssignmentJoined(item);
             createdItems.push(formatted);
@@ -146,15 +145,14 @@ export async function createBatchAssignments(params: {
     return createdItems;
 }
 
-export async function updateAssignment(id: number, updateData: Partial<AssignmentItem>): Promise<any | null> {
-    const targetId = Number(id);
-    const existing = await getAssignmentById(targetId);
+export async function updateAssignment(id: number | string, updateData: Partial<AssignmentItem>): Promise<any | null> {
+    const existing = await getAssignmentById(id);
     if (!existing) return null;
 
-    const merged: AssignmentItem = {
+    const merged: any = {
         ...existing,
         ...updateData,
-        id: targetId,
+        id: String(existing.id),
         updated_at: new Date().toISOString(),
     };
 
@@ -167,26 +165,26 @@ export async function updateAssignment(id: number, updateData: Partial<Assignmen
     // If status completed/returned, reset vehicle to Available
     const newStatus = updateData.status || existing.status;
     if (newStatus === 'Completed' || newStatus === 'Terminated' || newStatus === 'Returned') {
-        await updateVehicle(Number(existing.vehicle_id), { status: 'Available' });
+        await updateVehicle(existing.vehicle_id, { status: 'Available' });
     }
 
     return await formatAssignmentJoined(merged);
 }
 
-export async function deleteAssignment(id: number): Promise<boolean> {
-    const targetId = Number(id);
-    const existing = await getAssignmentById(targetId);
+export async function deleteAssignment(id: number | string): Promise<boolean> {
+    const existing = await getAssignmentById(id);
 
     const command = new DeleteCommand({
         TableName: ASSIGNMENTS_TABLE_NAME,
-        Key: { id: targetId },
+        Key: { id: String(id) },
     });
     await dynamoDocClient.send(command);
 
     if (existing?.vehicle_id) {
-        await updateVehicle(Number(existing.vehicle_id), { status: 'Available' });
+        await updateVehicle(existing.vehicle_id, { status: 'Available' });
     }
 
     return true;
 }
+
 

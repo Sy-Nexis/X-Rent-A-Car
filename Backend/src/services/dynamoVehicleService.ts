@@ -13,7 +13,7 @@ import {
 } from '../config/dynamodb';
 
 export interface VehicleItem {
-    id: number;
+    id: number | string;
     make: string;
     model: string;
     year: number;
@@ -48,6 +48,7 @@ export function decodeVehicle(vehicle: any): any {
 
     return {
         ...vehicle,
+        id: isNaN(Number(vehicle.id)) ? vehicle.id : Number(vehicle.id),
         status,
         branch,
         licensePlate: licensePlateStr,
@@ -77,11 +78,11 @@ export async function getAllVehicles(): Promise<VehicleItem[]> {
     }
 }
 
-export async function getVehicleById(id: number): Promise<VehicleItem | null> {
+export async function getVehicleById(id: number | string): Promise<VehicleItem | null> {
     try {
         const command = new GetCommand({
             TableName: VEHICLES_TABLE_NAME,
-            Key: { id: Number(id) },
+            Key: { id: String(id) },
         });
         const response = await dynamoDocClient.send(command);
         if (response.Item) return decodeVehicle(response.Item);
@@ -134,13 +135,12 @@ export async function getVehicleByPlate(plate: string): Promise<VehicleItem | nu
     }
 }
 
-
 export async function createVehicle(data: Partial<VehicleItem>): Promise<VehicleItem> {
-    const numericId = data.id || Date.now() + Math.floor(Math.random() * 1000);
+    const rawId = data.id !== undefined ? String(data.id) : String(Date.now() + Math.floor(Math.random() * 1000));
     const now = new Date().toISOString();
 
-    const newVehicle: VehicleItem = {
-        id: numericId,
+    const newVehicle: any = {
+        id: rawId,
         make: String(data.make || '').trim(),
         model: String(data.model || '').trim(),
         year: Number(data.year) || new Date().getFullYear(),
@@ -152,7 +152,7 @@ export async function createVehicle(data: Partial<VehicleItem>): Promise<Vehicle
         color: data.color ? String(data.color).trim() : undefined,
         mileage: Number(data.mileage) || 0,
         daily_rate: Number(data.daily_rate) || 0,
-        branch: String(data.branch || 'Main').trim(),
+        branch: String(data.branch || 'Colombo Central').trim(),
         status: String(data.status || 'Available').trim(),
         created_at: now,
         updated_at: now,
@@ -172,15 +172,14 @@ export async function createVehicle(data: Partial<VehicleItem>): Promise<Vehicle
     }
 }
 
-export async function updateVehicle(id: number, updateData: Partial<VehicleItem>): Promise<VehicleItem | null> {
-    const targetId = Number(id);
-    const existing = await getVehicleById(targetId);
+export async function updateVehicle(id: number | string, updateData: Partial<VehicleItem>): Promise<VehicleItem | null> {
+    const existing = await getVehicleById(id);
     if (!existing) return null;
 
-    const merged: VehicleItem = {
+    const merged: any = {
         ...existing,
         ...updateData,
-        id: targetId,
+        id: String(existing.id),
         updated_at: new Date().toISOString()
     };
 
@@ -197,9 +196,9 @@ export async function updateVehicle(id: number, updateData: Partial<VehicleItem>
     }
 }
 
-export async function deleteVehicle(id?: number, vin?: string, plate?: string): Promise<VehicleItem | null> {
+export async function deleteVehicle(id?: number | string, vin?: string, plate?: string): Promise<VehicleItem | null> {
     let targetVehicle: VehicleItem | null = null;
-    if (id) {
+    if (id !== undefined) {
         targetVehicle = await getVehicleById(id);
     } else if (vin) {
         targetVehicle = await getVehicleByVin(vin);
@@ -212,7 +211,7 @@ export async function deleteVehicle(id?: number, vin?: string, plate?: string): 
     try {
         const command = new DeleteCommand({
             TableName: VEHICLES_TABLE_NAME,
-            Key: { id: Number(targetVehicle.id) },
+            Key: { id: String(targetVehicle.id) },
         });
         await dynamoDocClient.send(command);
         return targetVehicle;
@@ -221,4 +220,5 @@ export async function deleteVehicle(id?: number, vin?: string, plate?: string): 
         throw err;
     }
 }
+
 

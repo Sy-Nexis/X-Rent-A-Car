@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
+const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'eu-north-1';
 
 const clientConfig: any = {
     region,
@@ -41,10 +41,10 @@ export const STAFF_EMAIL_GSI_NAME = 'idx_staff_email';
 
 export const VEHICLES_TABLE_NAME = process.env.DYNAMODB_VEHICLES_TABLE || 'vehicles';
 export const VEHICLES_VIN_GSI = 'idx_vehicles_vin';
-export const VEHICLES_PLATE_GSI = 'idx_vehicles_plate';
+export const VEHICLES_PLATE_GSI = 'idx_vehicles_license_plate';
 
 export const CLIENTS_TABLE_NAME = process.env.DYNAMODB_CLIENTS_TABLE || 'clients';
-export const CLIENTS_GOVID_GSI = 'idx_clients_govid';
+export const CLIENTS_GOVID_GSI = 'idx_clients_government_id';
 export const CLIENTS_EMAIL_GSI = 'idx_clients_email';
 
 export const ASSIGNMENTS_TABLE_NAME = process.env.DYNAMODB_ASSIGNMENTS_TABLE || 'vehicle_assignments';
@@ -52,4 +52,5 @@ export const ASSIGNMENTS_CLIENT_GSI = 'idx_va_client_id';
 export const ASSIGNMENTS_VEHICLE_GSI = 'idx_va_vehicle_id';
 
 export const AUDIT_LOGS_TABLE_NAME = process.env.DYNAMODB_LOGS_TABLE || 'audit_logs';
+
 
