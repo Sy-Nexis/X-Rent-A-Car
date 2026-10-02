@@ -15,13 +15,13 @@ export default function FleetManagementView() {
   const [plate, setPlate] = useState("");
 
   const [transmission, setTransmission] = useState("AUTO");
-  const [fuelType, setFuelType] = useState("Diesel");
+  const [fuelType, setFuelType] = useState("Petrol");
   const [engine, setEngine] = useState("");
   const [color, setColor] = useState("");
   const [mileage, setMileage] = useState("");
 
   const [rate, setRate] = useState("");
-  const [branch, setBranch] = useState("Central Distribution Center");
+  const [branch, setBranch] = useState("Colombo HQ (Head Office)");
   const [status, setStatus] = useState("Active");
 
   const [isSaving, setIsSaving] = useState(false);
@@ -35,12 +35,12 @@ export default function FleetManagementView() {
     setVin("");
     setPlate("");
     setTransmission("AUTO");
-    setFuelType("Diesel");
+    setFuelType("Petrol");
     setEngine("");
     setColor("");
     setMileage("");
     setRate("");
-    setBranch("Central Distribution Center");
+    setBranch("Colombo HQ (Head Office)");
     setStatus("Active");
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -52,7 +52,7 @@ export default function FleetManagementView() {
     setSuccessMessage(null);
 
     if (!brand.trim() || !model.trim() || !vin.trim() || !plate.trim()) {
-      setErrorMessage("Please fill in all core identification fields (Brand, Model, VIN, Plate).");
+      setErrorMessage("Please fill in all core identification fields (Brand, Model, Chassis/VIN, Plate).");
       setIsSaving(false);
       return;
     }
@@ -66,7 +66,7 @@ export default function FleetManagementView() {
         model: model.trim(),
         year: parseInt(year) || 2024,
         vin: vin.trim(),
-        licensePlate: plate.trim(),
+        licensePlate: plate.trim().toUpperCase(),
         transmission: transmission === "AUTO" ? "Automatic" : "Manual",
         fuelType: fuelType,
         engineCapacity: engine.trim(),
@@ -117,7 +117,7 @@ export default function FleetManagementView() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-white tracking-tight mb-1">Add Vehicle Record</h1>
         <p className="text-sm text-gray-400 font-medium">
-          Register a new asset into the Precision Logistics ecosystem.
+          Register a new asset into the Sri Lankan Fleet Management System.
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export default function FleetManagementView() {
                   type="text"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder="e.g. Mercedes-Benz"
+                  placeholder="e.g. Toyota, Honda, Suzuki"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -178,13 +178,13 @@ export default function FleetManagementView() {
                   type="text"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder="e.g. Actros"
+                  placeholder="e.g. Prius, Axio, Vezel, Wagon R"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  Year
+                  Year of Manufacture
                 </label>
                 <div className="relative">
                   <select
@@ -198,6 +198,12 @@ export default function FleetManagementView() {
                     <option value="2023">2023</option>
                     <option value="2022">2022</option>
                     <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
                   </select>
                   <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-500">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,27 +217,30 @@ export default function FleetManagementView() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="md:col-span-2">
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  VIN/Chassis Number
+                  Chassis / VIN Number
                 </label>
                 <input
                   type="text"
                   value={vin}
                   onChange={(e) => setVin(e.target.value)}
-                  placeholder="17-digit alphanumeric string"
+                  placeholder="e.g. ZVW50-1049281 or 17-digit VIN"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  License Plate
+                  License Plate (Sri Lanka)
                 </label>
                 <input
                   type="text"
                   value={plate}
-                  onChange={(e) => setPlate(e.target.value)}
-                  placeholder="ABC-1234"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono"
+                  onChange={(e) => setPlate(e.target.value.toUpperCase())}
+                  placeholder="WP CAB-1234"
+                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500 font-mono uppercase"
                 />
+                <span className="text-[9px] text-gray-500 font-medium block mt-1">
+                  Format: [Province] [Series]-[Number] (e.g. WP CAB-1234)
+                </span>
               </div>
             </div>
           </div>
@@ -286,10 +295,10 @@ export default function FleetManagementView() {
                     onChange={(e) => setFuelType(e.target.value)}
                     className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none appearance-none cursor-pointer transition-all"
                   >
-                    <option value="Diesel">Diesel</option>
                     <option value="Petrol">Petrol</option>
-                    <option value="Electric">Electric</option>
+                    <option value="Diesel">Diesel</option>
                     <option value="Hybrid">Hybrid</option>
+                    <option value="Electric">Electric</option>
                   </select>
                   <span className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-gray-500">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,13 +310,13 @@ export default function FleetManagementView() {
 
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                  Engine KWh/CC
+                  Engine (cc / kWh)
                 </label>
                 <input
                   type="text"
                   value={engine}
                   onChange={(e) => setEngine(e.target.value)}
-                  placeholder="450"
+                  placeholder="e.g. 1500 cc / 1800 cc"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -320,7 +329,7 @@ export default function FleetManagementView() {
                   type="text"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  placeholder="Fleet White"
+                  placeholder="e.g. Pearl White"
                   className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-3.5 py-2 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
                 />
               </div>
@@ -357,7 +366,7 @@ export default function FleetManagementView() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
                   <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                    Daily Rental Rate (LKR)
+                    Daily Rental Rate (LKR - Rs.)
                   </label>
                   <input
                     type="text"
@@ -369,7 +378,7 @@ export default function FleetManagementView() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
-                    Assigned Branch
+                    Assigned Branch (Sri Lanka)
                   </label>
                   <div className="relative">
                     <select
@@ -377,11 +386,15 @@ export default function FleetManagementView() {
                       onChange={(e) => setBranch(e.target.value)}
                       className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none appearance-none cursor-pointer transition-all"
                     >
-                      <option value="Central Distribution Center">Central Distribution Center</option>
-                      <option value="North Terminal">North Terminal</option>
-                      <option value="East Hub">East Hub</option>
-                      <option value="Coastal Logistics Terminal">Coastal Logistics Terminal</option>
-                      <option value="Main">Main</option>
+                      <option value="Colombo HQ (Head Office)">Colombo HQ (Head Office)</option>
+                      <option value="Kandy Branch">Kandy Branch</option>
+                      <option value="Galle Coastal Branch">Galle Coastal Branch</option>
+                      <option value="Negombo Airport Branch">Negombo Airport Branch</option>
+                      <option value="Jaffna Branch">Jaffna Branch</option>
+                      <option value="Kurunegala Branch">Kurunegala Branch</option>
+                      <option value="Matara Branch">Matara Branch</option>
+                      <option value="Batticaloa Branch">Batticaloa Branch</option>
+                      <option value="Anuradhapura Branch">Anuradhapura Branch</option>
                     </select>
                     <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-500">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

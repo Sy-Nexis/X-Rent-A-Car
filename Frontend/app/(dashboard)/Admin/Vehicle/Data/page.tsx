@@ -183,7 +183,7 @@ export default function VehicleDataEntry() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Make</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Make / Brand</label>
                   <input
                     {...register("make", { required: "Make is required" })}
                     placeholder="e.g. Toyota"
@@ -195,13 +195,13 @@ export default function VehicleDataEntry() {
                   <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Model</label>
                   <input
                     {...register("model", { required: "Model is required" })}
-                    placeholder="e.g. Prius"
+                    placeholder="e.g. Prius, Axio, Vezel"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                   {errors.model && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.model.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Year</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Year of Manufacture</label>
                   <input
                     {...register("year", { required: "Year is required", min: { value: 1900, message: "Invalid year" } })}
                     type="number"
@@ -211,19 +211,19 @@ export default function VehicleDataEntry() {
                   {errors.year && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.year.message}</p>}
                 </div>
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">VIN / Chassis Number</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Chassis / VIN Number</label>
                   <input
                     {...register("vin", { required: "VIN is required" })}
-                    placeholder="17-character alphanumeric code"
+                    placeholder="e.g. ZVW50-1049281 or 17-digit VIN"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 uppercase min-h-[44px]"
                   />
                   {errors.vin && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.vin.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">License Plate</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">License Plate (Sri Lanka)</label>
                   <input
                     {...register("licensePlate", { required: "Plate is required" })}
-                    placeholder="ABC-1234"
+                    placeholder="WP CAB-1234"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 uppercase min-h-[44px]"
                   />
                   {errors.licensePlate && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.licensePlate.message}</p>}
@@ -251,9 +251,10 @@ export default function VehicleDataEntry() {
                       {...register("transmission")}
                       className="w-full px-4 py-3 bg-black/20 border border-white/5 rounded-xl outline-none focus:border-blue-500/50 text-sm text-white font-bold cursor-pointer min-h-[44px] appearance-none"
                     >
-                      <option value="Automatic" className="bg-[#2c2c2e]">Automatic</option>
-                      <option value="Manual" className="bg-[#2c2c2e]">Manual</option>
+                      <option value="Automatic" className="bg-[#2c2c2e]">Automatic (AUTO)</option>
+                      <option value="Manual" className="bg-[#2c2c2e]">Manual (MAN)</option>
                       <option value="CVT" className="bg-[#2c2c2e]">CVT</option>
+                      <option value="Tiptronic" className="bg-[#2c2c2e]">Tiptronic</option>
                     </select>
                   </div>
                 </div>
@@ -272,10 +273,10 @@ export default function VehicleDataEntry() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Engine Capacity / kWh</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Engine Capacity (cc / kWh)</label>
                   <input
                     {...register("engineCapacity")}
-                    placeholder="e.g. 1800cc or 50kWh"
+                    placeholder="e.g. 1500cc / 1800cc or 64kWh"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                 </div>
@@ -283,7 +284,7 @@ export default function VehicleDataEntry() {
                   <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Color</label>
                   <input
                     {...register("color")}
-                    placeholder="e.g. Pearl White"
+                    placeholder="e.g. Pearl White, Metallic Silver"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                 </div>
@@ -328,16 +329,19 @@ export default function VehicleDataEntry() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Assigned Branch</label>
+                  <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Assigned Branch (Sri Lanka)</label>
                   <div className="relative">
                     <select
                       {...register("location")}
                       className="w-full px-4 py-3 bg-black/20 border border-white/5 rounded-xl outline-none focus:border-blue-500/50 text-sm text-white font-bold cursor-pointer min-h-[44px] appearance-none"
                     >
-                      <option value="Colombo HQ" className="bg-[#2c2c2e]">Colombo HQ</option>
+                      <option value="Colombo HQ" className="bg-[#2c2c2e]">Colombo HQ (Head Office)</option>
                       <option value="Kandy Branch" className="bg-[#2c2c2e]">Kandy Branch</option>
-                      <option value="Galle Coastal" className="bg-[#2c2c2e]">Galle Coastal</option>
-                      <option value="Negombo Airport" className="bg-[#2c2c2e]">Negombo Airport</option>
+                      <option value="Galle Coastal" className="bg-[#2c2c2e]">Galle Coastal Branch</option>
+                      <option value="Negombo Airport" className="bg-[#2c2c2e]">Negombo Airport Branch</option>
+                      <option value="Jaffna Branch" className="bg-[#2c2c2e]">Jaffna Branch</option>
+                      <option value="Kurunegala Branch" className="bg-[#2c2c2e]">Kurunegala Branch</option>
+                      <option value="Matara Branch" className="bg-[#2c2c2e]">Matara Branch</option>
                     </select>
                   </div>
                 </div>
@@ -374,7 +378,7 @@ export default function VehicleDataEntry() {
                 <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
                 <div>
                   <h3 className="text-[9px] font-black text-blue-500 uppercase tracking-[0.25em]">Section 04</h3>
-                  <h2 className="text-base font-black uppercase text-white">Documentation</h2>
+                  <h2 className="text-base font-black uppercase text-white">Documentation (Sri Lanka DMT / MTA 6)</h2>
                 </div>
               </header>
 
@@ -396,8 +400,8 @@ export default function VehicleDataEntry() {
                       <FileText size={22} />
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-white">Registration & Insurance</p>
-                      <p className="text-[9px] font-bold text-gray-500 tracking-wider uppercase mt-1">PDF or Scanned Images</p>
+                      <p className="text-xs font-bold text-white">CR Book (MTA 6) & Revenue License</p>
+                      <p className="text-[9px] font-bold text-gray-500 tracking-wider uppercase mt-1">PDF or Scanned Copy</p>
                     </div>
                   </div>
                 </div>

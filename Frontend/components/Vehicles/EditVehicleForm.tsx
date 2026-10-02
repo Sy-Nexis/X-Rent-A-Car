@@ -167,14 +167,14 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
 
           <div className="space-y-6 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
             <FormInput
-              label="VIN Number"
+              label="Chassis / VIN Number"
               value={vehicle.vin}
               disabled
               icon={<Info size={14} />}
               isMono
             />
             <FormInput
-              label="License Plate"
+              label="License Plate (Sri Lanka)"
               {...register("licensePlate")}
               icon={<Info size={14} />}
               isMono

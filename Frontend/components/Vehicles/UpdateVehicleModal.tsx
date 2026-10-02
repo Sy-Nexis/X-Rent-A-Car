@@ -254,12 +254,12 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
 
                     <div className="grid grid-cols-2 gap-x-10 gap-y-10">
                       <InputCard label="Production Year" icon={<Calendar size={18} />} {...register("year")} />
-                      <InputCard label="License Plate" icon={<Database size={18} />} {...register("licensePlate")} />
+                      <InputCard label="License Plate (Sri Lanka)" icon={<Database size={18} />} {...register("licensePlate")} />
                       <InputCard label="Fuel Architecture" icon={<Fuel size={18} />} {...register("fuelType")} isSelect options={['Petrol', 'Diesel', 'Hybrid', 'Electric']} />
                       <InputCard label="Transmission" icon={<Gauge size={18} />} {...register("transmission")} isSelect options={['Automatic', 'Manual', 'Tiptronic']} />
-                      <InputCard label="Engine Capacity" icon={<Zap size={18} />} {...register("engineCapacity")} />
+                      <InputCard label="Engine Capacity (cc / kWh)" icon={<Zap size={18} />} {...register("engineCapacity")} />
                       <InputCard label="Exterior Palette" icon={<Palette size={18} />} {...register("color")} />
-                      <InputCard label="Operational Mileage" icon={<Activity size={18} />} {...register("mileage")} type="number" />
+                      <InputCard label="Operational Mileage (Km)" icon={<Activity size={18} />} {...register("mileage")} type="number" />
                       <InputCard label="Daily Rental Rate (LKR)" icon={<span className="text-blue-500 font-bold text-xs">LKR</span>} {...register("dailyRate")} type="number" step="0.01" />
                     </div>
 
