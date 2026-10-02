@@ -73,13 +73,10 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-8 text-center select-none">
-          <span className="font-serif text-white text-5xl tracking-wide flex items-center leading-none mb-1.5">
+          <span className="font-serif text-white text-5xl tracking-wide flex items-center leading-none">
             ne
             <span className="font-serif text-white text-6xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
             us
-          </span>
-          <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-            Powered by X Rent A Car
           </span>
         </div>
 
@@ -248,7 +245,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
         {/* Login Link */}
         <button
           onClick={onGoToLogin}
-          className="group flex items-center gap-2 text-gray-400 hover:text-brand-cyan text-xs font-black uppercase tracking-widest cursor-pointer mt-4 mb-6 transition-colors"
+          className="group flex items-center gap-2 text-gray-400 hover:text-brand-cyan text-xs font-black uppercase tracking-widest cursor-pointer mt-4 transition-colors"
         >
           <svg className="w-4 h-4 group-hover:text-brand-cyan transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -258,13 +255,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
             <span className="text-brand-cyan">Login</span>
           </span>
         </button>
-
-        {/* Certifications footer */}
-        <div className="flex items-center justify-center gap-6 text-gray-600 text-[9px] font-bold uppercase tracking-wider">
-          <span>&#10003; AES-256</span>
-          <span>&#10003; ISO 27001</span>
-          <span>&#10003; 99.9% Uptime</span>
-        </div>
       </div>
     </div>
   );

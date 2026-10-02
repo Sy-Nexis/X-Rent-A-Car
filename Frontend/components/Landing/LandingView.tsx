@@ -17,13 +17,10 @@ export default function LandingView({ onEnter }: LandingViewProps) {
       <div className="flex flex-col items-center justify-center text-center relative z-10">
         {/* Logo Section */}
         <div className="flex flex-col items-center mb-10 select-none">
-          <span className="font-serif text-white text-7xl tracking-wide flex items-center select-none leading-none mb-1">
+          <span className="font-serif text-white text-7xl tracking-wide flex items-center select-none leading-none">
             ne
             <span className="font-serif text-white text-8xl font-normal mx-0.5" style={{ fontFamily: "Georgia, serif" }}>X</span>
             us
-          </span>
-          <span className="text-[11px] font-normal tracking-wider text-gray-400 uppercase">
-            Powered by X Rent A Car
           </span>
         </div>
 
