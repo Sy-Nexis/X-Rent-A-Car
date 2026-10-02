@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
+import { searchBrands, searchVehicles, VehicleCatalogItem, POPULAR_BRANDS } from "@/lib/vehicleCatalog";
 
 export default function FleetManagementView() {
   const router = useRouter();
@@ -24,9 +25,56 @@ export default function FleetManagementView() {
   const [branch, setBranch] = useState("Colombo HQ (Head Office)");
   const [status, setStatus] = useState("Active");
 
+  // Autocomplete UI states
+  const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
+  const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+  const [autoFilledNote, setAutoFilledNote] = useState<string | null>(null);
+
+  const brandRef = useRef<HTMLDivElement>(null);
+  const modelRef = useRef<HTMLDivElement>(null);
+
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (brandRef.current && !brandRef.current.contains(e.target as Node)) {
+        setShowBrandSuggestions(false);
+      }
+      if (modelRef.current && !modelRef.current.contains(e.target as Node)) {
+        setShowModelSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectCatalogItem = (item: VehicleCatalogItem) => {
+    setBrand(item.brand);
+    setModel(item.model);
+    setFuelType(item.fuelType);
+    setTransmission(item.transmission);
+    setEngine(item.engineCapacity);
+    setRate(String(item.dailyRate));
+    if (!color.trim() && item.color) {
+      setColor(item.color);
+    }
+    setShowBrandSuggestions(false);
+    setShowModelSuggestions(false);
+    setAutoFilledNote(`Auto-filled specifications for ${item.brand} ${item.model}`);
+    setTimeout(() => setAutoFilledNote(null), 4000);
+  };
+
+  const handleSelectBrand = (selectedBrand: string) => {
+    setBrand(selectedBrand);
+    setShowBrandSuggestions(false);
+    setShowModelSuggestions(true);
+  };
+
+  const matchingBrands = searchBrands(brand);
+  const matchingModels = searchVehicles(model, brand);
 
   const handleClear = () => {
     setBrand("");
@@ -44,6 +92,7 @@ export default function FleetManagementView() {
     setStatus("Active");
     setErrorMessage(null);
     setSuccessMessage(null);
+    setAutoFilledNote(null);
   };
 
   const handleSaveVehicle = async () => {
@@ -122,6 +171,20 @@ export default function FleetManagementView() {
       </div>
 
       {/* Alerts */}
+      {autoFilledNote && (
+        <div className="mb-6 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold flex items-center justify-between gap-3 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-brand-cyan flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>{autoFilledNote} (Fuel, Engine cc, Transmission, & Rental Rate)</span>
+          </div>
+          <button onClick={() => setAutoFilledNote(null)} className="text-cyan-400 hover:text-white text-xs">
+            ✕
+          </button>
+        </div>
+      )}
+
       {successMessage && (
         <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-3">
           <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,36 +215,142 @@ export default function FleetManagementView() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 014 0" />
                 </svg>
               </div>
-              <h2 className="text-xs font-extrabold uppercase text-white tracking-wider">
-                Core Identification
-              </h2>
+              <div className="flex-1 flex items-center justify-between">
+                <h2 className="text-xs font-extrabold uppercase text-white tracking-wider">
+                  Core Identification
+                </h2>
+                <span className="text-[10px] text-brand-cyan font-bold uppercase tracking-wider bg-brand-cyan/10 px-2 py-0.5 rounded border border-brand-cyan/20">
+                  Smart Auto-Fill Active
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-              <div>
+              {/* BRAND WITH AUTOCOMPLETE */}
+              <div ref={brandRef} className="relative">
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
                   Brand / Manufacturer
                 </label>
-                <input
-                  type="text"
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  placeholder="e.g. Toyota, Honda, Suzuki"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={brand}
+                    onChange={(e) => {
+                      setBrand(e.target.value);
+                      setShowBrandSuggestions(true);
+                    }}
+                    onFocus={() => setShowBrandSuggestions(true)}
+                    placeholder="e.g. Toyota, Honda, Suzuki"
+                    className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                  />
+                  {brand && (
+                    <button
+                      type="button"
+                      onClick={() => setBrand("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Brand Suggestion Popover */}
+                {showBrandSuggestions && (
+                  <div className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-[#16161a] border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
+                    <div className="p-2 border-b border-white/5 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                      Popular Manufacturers ({matchingBrands.length})
+                    </div>
+                    {matchingBrands.length > 0 ? (
+                      matchingBrands.map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => handleSelectBrand(b)}
+                          className="w-full text-left px-3.5 py-2.5 hover:bg-brand-cyan/10 hover:text-brand-cyan text-xs font-bold text-gray-200 flex items-center justify-between border-b border-white/[0.02] transition-colors"
+                        >
+                          <span>{b}</span>
+                          <span className="text-[10px] text-gray-500">Select Brand →</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-3 text-xs text-gray-500">Use custom &quot;{brand}&quot;</div>
+                    )}
+                  </div>
+                )}
               </div>
-              <div>
+
+              {/* MODEL WITH AUTOCOMPLETE & SPEC PREVIEWS */}
+              <div ref={modelRef} className="relative">
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
                   Model
                 </label>
-                <input
-                  type="text"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  placeholder="e.g. Prius, Axio, Vezel, Wagon R"
-                  className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={model}
+                    onChange={(e) => {
+                      setModel(e.target.value);
+                      setShowModelSuggestions(true);
+                    }}
+                    onFocus={() => setShowModelSuggestions(true)}
+                    placeholder="e.g. Prius, Axio, Vezel"
+                    className="w-full bg-[#0e0e11] border border-white/5 rounded-lg px-4 py-2.5 text-xs font-semibold text-white focus:bg-[#0e0e11] focus:border-brand-cyan focus:outline-none transition-all placeholder:text-gray-500"
+                  />
+                  {model && (
+                    <button
+                      type="button"
+                      onClick={() => setModel("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Model Suggestion & Auto-spec Popover */}
+                {showModelSuggestions && (
+                  <div className="absolute z-50 left-0 -right-20 md:right-0 top-full mt-1.5 bg-[#16161a] border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-72 overflow-y-auto custom-scrollbar">
+                    <div className="p-2.5 bg-black/40 border-b border-white/5 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-gray-400">
+                      <span>Vehicle Spec Presets ({matchingModels.length})</span>
+                      <span className="text-brand-cyan">Click to auto-fill</span>
+                    </div>
+                    {matchingModels.length > 0 ? (
+                      matchingModels.map((item, idx) => (
+                        <button
+                          key={`${item.brand}-${item.model}-${idx}`}
+                          type="button"
+                          onClick={() => handleSelectCatalogItem(item)}
+                          className="w-full text-left p-3 hover:bg-white/5 border-b border-white/[0.03] transition-all group flex flex-col gap-1 cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-extrabold text-white group-hover:text-brand-cyan transition-colors">
+                                {item.brand} {item.model}
+                              </span>
+                              <span className="text-[9px] font-bold text-gray-400 bg-white/5 px-1.5 py-0.5 rounded">
+                                {item.category}
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-black text-brand-cyan">
+                              LKR {item.dailyRate.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[10px] text-gray-400 font-medium">
+                            <span className="text-emerald-400 font-bold">{item.fuelType}</span>
+                            <span>•</span>
+                            <span>{item.engineCapacity}</span>
+                            <span>•</span>
+                            <span>{item.transmission}</span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-3 text-xs text-gray-500">No preset found. Custom name &quot;{model}&quot; will be used.</div>
+                    )}
+                  </div>
+                )}
               </div>
+
               <div>
                 <label className="block text-[10px] font-extrabold text-gray-500 uppercase tracking-wider mb-2">
                   Year of Manufacture

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,9 +11,11 @@ import {
   CheckCircle2,
   Loader2,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Sparkles
 } from "lucide-react";
 import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
+import { searchBrands, searchVehicles, VehicleCatalogItem } from "@/lib/vehicleCatalog";
 
 type VehicleFormData = {
   make: string;
@@ -35,11 +37,20 @@ export default function VehicleDataEntry() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoFilledNote, setAutoFilledNote] = useState<string | null>(null);
+
+  const [showMakeSuggestions, setShowMakeSuggestions] = useState(false);
+  const [showModelSuggestions, setShowModelSuggestions] = useState(false);
+
+  const makeRef = useRef<HTMLDivElement>(null);
+  const modelRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<VehicleFormData>({
     defaultValues: {
@@ -49,6 +60,47 @@ export default function VehicleDataEntry() {
       status: "Available"
     }
   });
+
+  const watchedMake = watch("make") || "";
+  const watchedModel = watch("model") || "";
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (makeRef.current && !makeRef.current.contains(e.target as Node)) {
+        setShowMakeSuggestions(false);
+      }
+      if (modelRef.current && !modelRef.current.contains(e.target as Node)) {
+        setShowModelSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectCatalogItem = (item: VehicleCatalogItem) => {
+    setValue("make", item.brand, { shouldValidate: true });
+    setValue("model", item.model, { shouldValidate: true });
+    setValue("transmission", item.transmission === "AUTO" ? "Automatic" : "Manual");
+    setValue("fuelType", item.fuelType);
+    setValue("engineCapacity", item.engineCapacity);
+    setValue("dailyRate", item.dailyRate);
+    if (item.color) {
+      setValue("color", item.color);
+    }
+    setShowMakeSuggestions(false);
+    setShowModelSuggestions(false);
+    setAutoFilledNote(`Auto-filled specs for ${item.brand} ${item.model}`);
+    setTimeout(() => setAutoFilledNote(null), 4000);
+  };
+
+  const handleSelectBrand = (brandName: string) => {
+    setValue("make", brandName, { shouldValidate: true });
+    setShowMakeSuggestions(false);
+    setShowModelSuggestions(true);
+  };
+
+  const matchingMakes = searchBrands(watchedMake);
+  const matchingModels = searchVehicles(watchedModel, watchedMake);
 
   const onSubmit = async (data: VehicleFormData) => {
     setIsSubmitting(true);
@@ -120,6 +172,19 @@ export default function VehicleDataEntry() {
           </motion.div>
         )}
 
+        {autoFilledNote && (
+          <motion.div
+            key="autofill-notification"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 10 }}
+            exit={{ opacity: 0, y: -50 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] bg-[#1c1c1f]/95 backdrop-blur-md border border-blue-500/40 shadow-2xl rounded-2xl px-5 py-3 flex items-center gap-3 text-blue-400"
+          >
+            <Sparkles size={18} className="text-blue-400" />
+            <span className="text-xs font-bold text-white">{autoFilledNote}</span>
+          </motion.div>
+        )}
+
         {error && (
           <motion.div
             key="error-notification"
@@ -159,7 +224,7 @@ export default function VehicleDataEntry() {
             Register <span className="text-[#6e6e73]">Fleet Vehicle</span>
           </h1>
           <p className="text-[#86868b] text-sm md:text-base font-medium max-w-xl">
-            Enter comprehensive vehicle specifications for the neXus active fleet.
+            Enter comprehensive vehicle specifications with intelligent model auto-fill.
           </p>
         </div>
 
@@ -173,32 +238,98 @@ export default function VehicleDataEntry() {
 
             {/* SECTION 1: CORE IDENTIFICATION */}
             <div className="p-6 md:p-8">
-              <header className="mb-8 flex items-center gap-3">
-                <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
-                <div>
-                  <h3 className="text-[9px] font-black text-blue-500 uppercase tracking-[0.25em]">Section 01</h3>
-                  <h2 className="text-base font-black uppercase text-white">Core Identification</h2>
+              <header className="mb-8 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
+                  <div>
+                    <h3 className="text-[9px] font-black text-blue-500 uppercase tracking-[0.25em]">Section 01</h3>
+                    <h2 className="text-base font-black uppercase text-white">Core Identification</h2>
+                  </div>
                 </div>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 flex items-center gap-1.5">
+                  <Sparkles size={11} /> Auto-Fill Specs Active
+                </span>
               </header>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
+                {/* MAKE / BRAND WITH AUTOCOMPLETE */}
+                <div ref={makeRef} className="space-y-2 relative">
                   <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Make / Brand</label>
                   <input
                     {...register("make", { required: "Make is required" })}
-                    placeholder="e.g. Toyota"
+                    onFocus={() => setShowMakeSuggestions(true)}
+                    placeholder="e.g. Toyota, Honda, Suzuki"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                   {errors.make && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.make.message}</p>}
+
+                  {showMakeSuggestions && (
+                    <div className="absolute z-50 left-0 right-0 top-full mt-1.5 bg-[#1c1c1f] border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
+                      <div className="p-2.5 bg-black/40 border-b border-white/5 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                        Popular Manufacturers ({matchingMakes.length})
+                      </div>
+                      {matchingMakes.map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => handleSelectBrand(b)}
+                          className="w-full text-left px-3.5 py-2.5 hover:bg-blue-500/10 hover:text-blue-400 text-xs font-bold text-gray-200 flex items-center justify-between border-b border-white/[0.02] transition-colors"
+                        >
+                          <span>{b}</span>
+                          <span className="text-[10px] text-gray-500">Select →</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-2">
+
+                {/* MODEL WITH AUTOCOMPLETE & SPEC PREVIEWS */}
+                <div ref={modelRef} className="space-y-2 relative">
                   <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Model</label>
                   <input
                     {...register("model", { required: "Model is required" })}
+                    onFocus={() => setShowModelSuggestions(true)}
                     placeholder="e.g. Prius, Axio, Vezel"
                     className="w-full px-4 py-3 bg-black/20 border border-white/5 focus:border-blue-500/50 rounded-xl outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm text-white font-bold placeholder:text-gray-600 min-h-[44px]"
                   />
                   {errors.model && <p className="text-[10px] text-red-500 mt-1 flex items-center gap-1 font-bold"><AlertCircle size={12} /> {errors.model.message}</p>}
+
+                  {showModelSuggestions && (
+                    <div className="absolute z-50 left-0 -right-20 md:right-0 top-full mt-1.5 bg-[#1c1c1f] border border-white/10 rounded-xl shadow-2xl overflow-hidden max-h-64 overflow-y-auto custom-scrollbar">
+                      <div className="p-2.5 bg-black/40 border-b border-white/5 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-gray-400">
+                        <span>Matching Presets ({matchingModels.length})</span>
+                        <span className="text-blue-400">Click to fill</span>
+                      </div>
+                      {matchingModels.length > 0 ? (
+                        matchingModels.map((item, idx) => (
+                          <button
+                            key={`${item.brand}-${item.model}-${idx}`}
+                            type="button"
+                            onClick={() => handleSelectCatalogItem(item)}
+                            className="w-full text-left p-3 hover:bg-white/5 border-b border-white/[0.03] transition-all group flex flex-col gap-1 cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                                {item.brand} {item.model}
+                              </span>
+                              <span className="text-[10px] font-black text-blue-400">
+                                LKR {item.dailyRate.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                              <span className="text-emerald-400 font-bold">{item.fuelType}</span>
+                              <span>•</span>
+                              <span>{item.engineCapacity}</span>
+                              <span>•</span>
+                              <span>{item.transmission}</span>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-3 text-xs text-gray-500">Custom model &quot;{watchedModel}&quot;</div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[9px] font-black text-[#86868b] uppercase tracking-widest ml-1">Year of Manufacture</label>
