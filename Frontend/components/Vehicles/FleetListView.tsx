@@ -261,7 +261,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
           { label: "Total Fleet",    value: displayVehicles.length, sub: "Registered", linePercent: 100, lineColor: "bg-brand-gradient" },
           { label: "Active Numbers", value: activeCount, sub: "UTILIZED", linePercent: displayVehicles.length ? (activeCount / displayVehicles.length) * 100 : 0,  lineColor: "bg-brand-cyan" },
           { label: "Maintenances",   value: maintenanceCount, sub: "In Shop", linePercent: displayVehicles.length ? (maintenanceCount / displayVehicles.length) * 100 : 0,  lineColor: "bg-brand-red" },
-          { label: "In_Prep",        value: inPrepCount,  sub: "QUEUED", linePercent: displayVehicles.length ? (inPrepCount / displayVehicles.length) * 100 : 0,  lineColor: "bg-brand-cyan" },
+          { label: "In Prep",        value: inPrepCount,  sub: "QUEUED", linePercent: displayVehicles.length ? (inPrepCount / displayVehicles.length) * 100 : 0,  lineColor: "bg-brand-cyan" },
         ].map((card) => (
           <div key={card.label} className="bg-[#1e1e1e] rounded-xl border border-white/5 p-4 flex flex-col justify-between shadow-md h-28 relative overflow-hidden">
             <div className="flex flex-col">
@@ -302,7 +302,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
                   activeTab === tab ? "bg-[#1e1e1e] text-white shadow-xs" : "text-gray-400 hover:text-white"
                 }`}
               >
-                {tab}
+                {tab === "InPrep" ? "In Prep" : tab}
               </button>
             ))}
           </div>

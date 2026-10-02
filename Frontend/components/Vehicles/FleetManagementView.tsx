@@ -401,9 +401,9 @@ export default function FleetManagementView() {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { name: "Active", color: "bg-brand-green", border: "hover:border-brand-green/20", activeBg: "bg-brand-green/10 text-brand-green border-brand-green/20" },
-                    { name: "InPrep", color: "bg-amber-500", border: "hover:border-amber-500/20", activeBg: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
-                    { name: "Maintenance", color: "bg-brand-red", border: "hover:border-brand-red/20", activeBg: "bg-brand-red/10 text-brand-red border-brand-red/20" },
+                    { name: "Active", label: "Active", color: "bg-brand-green", border: "hover:border-brand-green/20", activeBg: "bg-brand-green/10 text-brand-green border-brand-green/20" },
+                    { name: "InPrep", label: "In Prep", color: "bg-amber-500", border: "hover:border-amber-500/20", activeBg: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+                    { name: "Maintenance", label: "Maintenance", color: "bg-brand-red", border: "hover:border-brand-red/20", activeBg: "bg-brand-red/10 text-brand-red border-brand-red/20" },
                   ].map((s) => {
                     const isActive = status === s.name;
                     return (
@@ -416,7 +416,7 @@ export default function FleetManagementView() {
                         }`}
                       >
                         <span className={`w-2 h-2 rounded-full ${s.color} mb-1.5`} />
-                        <span className="text-[10px] font-extrabold uppercase tracking-wide">{s.name}</span>
+                        <span className="text-[10px] font-extrabold uppercase tracking-wide">{s.label}</span>
                       </button>
                     );
                   })}
