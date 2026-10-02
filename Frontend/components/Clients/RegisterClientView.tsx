@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getApiBaseUrl } from "@/lib/api";
+import { getApiBaseUrl, getAuthHeaders, invalidateClientDataCache } from "@/lib/api";
 
 export default function RegisterClientView() {
   const router = useRouter();
@@ -67,7 +67,7 @@ export default function RegisterClientView() {
 
       const res = await fetch(`${getApiBaseUrl()}/api/clients/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
@@ -75,6 +75,8 @@ export default function RegisterClientView() {
       if (!res.ok) {
         throw new Error(result.message || "Failed to register client to database");
       }
+
+      invalidateClientDataCache("clients");
 
       setSuccessMessage("Client registered successfully in Supabase! Redirecting to client registry...");
       setTimeout(() => {

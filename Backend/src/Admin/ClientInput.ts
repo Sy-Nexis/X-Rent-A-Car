@@ -8,6 +8,7 @@ import {
 } from '../services/dynamoClientService';
 import { recordAuditLog } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
+import { getReqUserInfo } from '../utils/authUtils';
 
 const router = Router();
 
@@ -68,10 +69,13 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
 
         cache.invalidate('client');
 
+        const userInfo = getReqUserInfo(req);
         const clientFullName = `${first_name || ''} ${last_name || ''}`.trim() || 'New Client';
+
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: 'Registered Client',
             entityType: 'Client',
             entityId: created.id,
@@ -210,9 +214,12 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             ? `Updated client ${clientFullName} (ID: ${existingClient.government_id || existingClient.id}). Changed: ${changedDiffs.join(', ')}.`
             : `Saved profile for ${clientFullName} with no field modifications.`;
 
+        const userInfo = getReqUserInfo(req);
+
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: 'Updated Client',
             entityType: 'Client',
             entityId: existingClient.id,

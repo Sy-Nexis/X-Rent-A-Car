@@ -47,20 +47,54 @@ export default function ActivityLogsView() {
     loadLogs();
   }, []);
 
+  const [currentLoggedInUser, setCurrentLoggedInUser] = useState<{ name: string; role: string } | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        try {
+          const u = JSON.parse(stored);
+          const name = u.name || u.fullName || u.userName || u.user_name || u.email;
+          const role = u.role || u.user_role || "Staff";
+          if (name) setCurrentLoggedInUser({ name, role });
+        } catch {}
+      }
+    }
+  }, []);
+
+  const resolveUserName = (rawName?: string) => {
+    if (!rawName || rawName === "Staff User" || rawName === "Alex Rivera") {
+      if (currentLoggedInUser?.name) return currentLoggedInUser.name;
+      return "Staff User";
+    }
+    return rawName;
+  };
+
+  const resolveUserRole = (rawRole?: string, rawName?: string) => {
+    if (!rawRole || rawName === "Staff User" || rawName === "Alex Rivera") {
+      if (currentLoggedInUser?.role) return currentLoggedInUser.role;
+      return "STAFF";
+    }
+    return rawRole;
+  };
+
   // Unique list of users for dropdown filter
   const uniqueUsers = useMemo(() => {
     const set = new Set<string>();
     logs.forEach((l) => {
-      const name = l.user_name || l.userName;
+      const name = resolveUserName(l.user_name || l.userName);
       if (name) set.add(name);
     });
+    if (currentLoggedInUser?.name) set.add(currentLoggedInUser.name);
     return Array.from(set);
-  }, [logs]);
+  }, [logs, currentLoggedInUser]);
 
   // Filtered logs
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
-      const userName = (log.user_name || log.userName || "").toLowerCase();
+      const resolvedName = resolveUserName(log.user_name || log.userName);
+      const userName = resolvedName.toLowerCase();
       const action = (log.action || "").toLowerCase();
       const details = (log.details || "").toLowerCase();
       const entityType = (log.entity_type || log.entityType || "").toLowerCase();
@@ -75,7 +109,7 @@ export default function ActivityLogsView() {
 
       // User filter
       if (selectedUser !== "All") {
-        if ((log.user_name || log.userName) !== selectedUser) {
+        if (resolvedName !== selectedUser) {
           return false;
         }
       }
@@ -92,7 +126,7 @@ export default function ActivityLogsView() {
 
       return true;
     });
-  }, [logs, searchQuery, selectedCategory, selectedUser]);
+  }, [logs, searchQuery, selectedCategory, selectedUser, currentLoggedInUser]);
 
   // Relative time helper
   const formatTimeAgo = (dateStr: string) => {
@@ -204,8 +238,8 @@ export default function ActivityLogsView() {
     const headers = ["ID", "User Name", "User Role", "Action", "Category", "Details", "Timestamp"];
     const rows = logs.map((l) => [
       l.id,
-      `"${(l.user_name || l.userName || "").replace(/"/g, '""')}"`,
-      `"${(l.user_role || l.userRole || "").replace(/"/g, '""')}"`,
+      `"${(resolveUserName(l.user_name || l.userName) || "").replace(/"/g, '""')}"`,
+      `"${(resolveUserRole(l.user_role || l.userRole, l.user_name || l.userName) || "").replace(/"/g, '""')}"`,
       `"${(l.action || "").replace(/"/g, '""')}"`,
       `"${(l.entity_type || l.entityType || "").replace(/"/g, '""')}"`,
       `"${(l.details || "").replace(/"/g, '""')}"`,
@@ -420,8 +454,8 @@ export default function ActivityLogsView() {
               ) : (
                 filteredLogs.map((log) => {
                   const badge = getActionBadge(log.action);
-                  const userName = log.user_name || log.userName || "Staff User";
-                  const userRole = log.user_role || log.userRole || "Staff";
+                  const userName = resolveUserName(log.user_name || log.userName);
+                  const userRole = resolveUserRole(log.user_role || log.userRole, log.user_name || log.userName);
                   const timestamp = log.created_at || log.createdAt;
 
                   return (

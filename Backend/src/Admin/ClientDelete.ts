@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { deleteClient } from '../services/dynamoClientService';
 import { recordAuditLog } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
+import { getReqUserInfo } from '../utils/authUtils';
 
 const router = Router();
 
@@ -35,9 +36,12 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
 
         const clientName = `${deletedClient.first_name || ''} ${deletedClient.last_name || ''}`.trim() || deletedClient.email || deletedClient.government_id;
 
+        const userInfo = getReqUserInfo(req);
+
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Staff',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: 'Deleted Client',
             entityType: 'Client',
             entityId: String(deletedClient.id),

@@ -13,7 +13,7 @@ import {
   Trash2,
   AlertCircle
 } from "lucide-react";
-import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 
 type VehicleFormData = {
   make: string;
@@ -70,7 +70,7 @@ export default function VehicleDataEntry() {
 
       const response = await fetch(`${getApiBaseUrl()}/api/vehicles/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 

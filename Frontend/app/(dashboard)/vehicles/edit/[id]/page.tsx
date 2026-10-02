@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -181,7 +181,7 @@ export default function EditVehiclePage() {
 
       const response = await fetch(`${getApiBaseUrl()}/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 

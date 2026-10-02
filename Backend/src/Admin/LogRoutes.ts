@@ -5,6 +5,7 @@ import {
     clearAllLogs
 } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
+import { getReqUserInfo } from '../utils/authUtils';
 
 const router = Router();
 
@@ -79,10 +80,12 @@ router.post('/record', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        const userInfo = getReqUserInfo(req);
+
         const logged = await recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || user_name || userName || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || user_role || userRole || 'Staff',
-            userEmail: (req.headers['x-user-email'] as string) || user_email || userEmail || '',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: action,
             entityType: entity_type || entityType || 'System',
             entityId: entity_id || entityId,

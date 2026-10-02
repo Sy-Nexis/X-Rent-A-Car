@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { cache } from '../utils/cache';
 import { recordAuditLog } from './LogRoutes';
+import { getReqUserInfo } from '../utils/authUtils';
 import {
     createVehicle,
     updateVehicle,
@@ -73,10 +74,13 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
         // Invalidate vehicle cache immediately
         cache.invalidate('vehicle');
 
+        const userInfo = getReqUserInfo(req);
+
         // Record audit log
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: 'Registered Vehicle',
             entityType: 'Vehicle',
             entityId: newVehicle.id,
@@ -185,9 +189,12 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             ? `Updated vehicle ${updated?.make} ${updated?.model} (${updated?.license_plate || updated?.vin || existingVehicle.id}). Changed: ${changedDiffs.join(', ')}.`
             : `Saved vehicle details for ${updated?.make} ${updated?.model} (${updated?.license_plate || updated?.vin}) with no field changes.`;
 
+        const userInfo = getReqUserInfo(req);
+
         recordAuditLog({
-            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Staff User',
-            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Staff',
+            userName: userInfo.userName,
+            userRole: userInfo.userRole,
+            userEmail: userInfo.userEmail,
             action: 'Updated Vehicle',
             entityType: 'Vehicle',
             entityId: existingVehicle.id,

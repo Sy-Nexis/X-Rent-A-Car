@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -119,7 +119,7 @@ export default function EditClientPage() {
       const govId = client.government_id || id;
       const response = await fetch(`${getApiBaseUrl()}/api/clients/update?government=${govId}&id=${client.id || id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data),
       });
 

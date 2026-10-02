@@ -54,8 +54,10 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
+        const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
+
         const token = jwt.sign(
-            { id: staff.id, role: staff.role, email: staff.email },
+            { id: staff.id, role: staff.role, email: staff.email, name: userName },
             jwtSecret,
             { expiresIn: '12h' }
         );
@@ -63,7 +65,6 @@ export const login = async (req: Request, res: Response) => {
         // Update last_login in DynamoDB
         updateStaffLastLogin(staff.id).catch(() => {});
 
-        const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
         recordAuditLog({
             userName: userName,
             userRole: staff.role || 'Staff',

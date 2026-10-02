@@ -10,7 +10,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -47,6 +47,7 @@ export default function DeleteClientConfirmModal({
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/clients/del?nic=${client.government_id}`, {
         method: "DELETE",
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {

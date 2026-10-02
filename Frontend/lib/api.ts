@@ -97,19 +97,37 @@ export async function fetchAssignments(forceRefresh = false): Promise<any[]> {
 }
 
 
-function getAuthHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+export function getLoggedInUser(): { name: string; role: string; email: string } {
   if (typeof window !== "undefined") {
     const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
         const u = JSON.parse(userStr);
-        if (u.name) headers["x-user-name"] = u.name;
-        if (u.role) headers["x-user-role"] = u.role;
+        const name = u.name || u.fullName || u.userName || u.user_name || u.email;
+        const role = u.role || u.user_role || "Staff";
+        const email = u.email || "";
+        return {
+          name: name || "Staff User",
+          role: role || "Staff",
+          email: email || "",
+        };
       } catch {}
     }
+  }
+  return { name: "Staff User", role: "Staff", email: "" };
+}
+
+export function getAuthHeaders(extraHeaders?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...extraHeaders,
+  };
+  if (typeof window !== "undefined") {
+    const user = getLoggedInUser();
+    if (user.name) headers["x-user-name"] = user.name;
+    if (user.role) headers["x-user-role"] = user.role;
+    if (user.email) headers["x-user-email"] = user.email;
+
     const token = localStorage.getItem("token");
     if (token) headers["Authorization"] = `Bearer ${token}`;
   }
@@ -208,26 +226,17 @@ export async function recordLog(payload: {
   userName?: string;
   userRole?: string;
 }): Promise<any> {
-  let userName = payload.userName;
-  let userRole = payload.userRole;
-
-  if (typeof window !== "undefined" && (!userName || !userRole)) {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.name) userName = parsed.name;
-        if (parsed.role) userRole = parsed.role;
-      } catch {}
-    }
-  }
+  const loggedIn = getLoggedInUser();
+  const userName = payload.userName || loggedIn.name;
+  const userRole = payload.userRole || loggedIn.role;
 
   const res = await fetch(`${getApiBaseUrl()}/api/logs/record`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getAuthHeaders(),
     body: JSON.stringify({
-      user_name: userName || "Staff User",
-      user_role: userRole || "Staff",
+      user_name: userName,
+      user_role: userRole,
+      user_email: loggedIn.email,
       action: payload.action,
       entity_type: payload.entityType || "General",
       entity_id: payload.entityId,

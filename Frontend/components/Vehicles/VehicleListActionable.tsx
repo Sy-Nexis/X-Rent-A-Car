@@ -17,7 +17,7 @@ import Link from "next/link";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
 import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
 import UpdateVehicleModal from "./UpdateVehicleModal";
-import { getApiBaseUrl } from "@/lib/api";
+import { getApiBaseUrl, getAuthHeaders } from "@/lib/api";
 
 interface Vehicle {
   id: number;
@@ -71,9 +71,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
 
       const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {

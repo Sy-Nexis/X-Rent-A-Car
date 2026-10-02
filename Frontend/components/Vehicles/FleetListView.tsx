@@ -126,7 +126,7 @@ const statusStyles: Record<string, { badge: string; dot: string }> = {
   retired: { badge: "bg-gray-500/10 text-gray-400 border-gray-500/20", dot: "bg-gray-500" },
 };
 
-import { fetchVehicles, getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { fetchVehicles, getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 
 export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
   const router = useRouter();
@@ -182,7 +182,7 @@ export default function FleetListView({ vehicles = [] }: FleetListViewProps) {
       const url = `${getApiBaseUrl()}/api/vehicles/del?${queryParams}`;
       const response = await fetch(url, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {

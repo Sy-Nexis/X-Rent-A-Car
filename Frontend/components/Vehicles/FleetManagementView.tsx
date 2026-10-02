@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache, getAuthHeaders } from "@/lib/api";
 
 export default function FleetManagementView() {
   const router = useRouter();
@@ -80,7 +80,7 @@ export default function FleetManagementView() {
 
       const res = await fetch(`${getApiBaseUrl()}/api/vehicles/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 

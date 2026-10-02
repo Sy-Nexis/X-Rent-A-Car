@@ -20,7 +20,7 @@ import {
   Hash
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getApiBaseUrl } from "@/lib/api";
+import { getApiBaseUrl, getAuthHeaders, invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface ClientFormValues {
@@ -62,7 +62,7 @@ export default function AddClientForm() {
     try {
       const response = await fetch(`${getApiBaseUrl()}/api/clients/add`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data),
       });
 
@@ -71,6 +71,7 @@ export default function AddClientForm() {
         throw new Error(result.message || "Failed to register client");
       }
 
+      invalidateClientDataCache("clients");
       setSuccess(true);
       reset();
 
