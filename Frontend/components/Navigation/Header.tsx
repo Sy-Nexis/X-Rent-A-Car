@@ -83,27 +83,9 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
     router.push("/");
   };
 
-  // Search placeholder based on active view
-  const getSearchPlaceholder = () => {
-    switch (activeView) {
-      case "Dashboard":
-        return "Search fleet or driver...";
-      case "AdminPortal":
-        return "Search operational data...";
-      case "FleetManagement":
-        return "Search fleet assets...";
-      case "FleetList":
-        return "Search registry...";
-      case "ClientRegistry":
-        return "Search clients...";
-      default:
-        return "Search...";
-    }
-  };
-
   return (
     <header className="h-16 border-b border-white/5 bg-[#0e0e11] flex items-center justify-between px-4 md:px-8 relative z-10 flex-shrink-0">
-      {/* Left: Hamburger (mobile only) + Search Bar */}
+      {/* Left: Hamburger (mobile only) */}
       <div className="flex items-center gap-3 md:gap-6 flex-1">
         {/* Mobile hamburger — always shown on mobile */}
         <button
@@ -115,21 +97,6 @@ export default function Header({ onAddUnit, onOpenMenu }: HeaderProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-
-        <div className="flex items-center gap-4 flex-1 max-w-md">
-          <div className="relative w-full">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder={getSearchPlaceholder()}
-              className="w-full bg-[#1e1e1e] text-white placeholder-gray-500 text-xs font-medium pl-10 pr-4 py-2 rounded-lg border border-white/5 focus:border-brand-cyan/50 focus:outline-none transition-all"
-            />
-          </div>
-        </div>
 
         {/* Add Unit button */}
         {activeView === "FleetList" && onAddUnit && (
