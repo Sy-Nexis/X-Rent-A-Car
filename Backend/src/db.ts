@@ -1,1 +1,1 @@
-export { supabase } from './config/supabase';
+export { dynamoClient, dynamoDocClient, STAFF_TABLE_NAME, VEHICLES_TABLE_NAME, CLIENTS_TABLE_NAME, ASSIGNMENTS_TABLE_NAME, AUDIT_LOGS_TABLE_NAME } from './config/dynamodb';

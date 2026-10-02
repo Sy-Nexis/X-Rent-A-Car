@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import { deleteClient } from '../services/dynamoClientService';
+import { recordAuditLog } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
-import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -19,30 +19,13 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        let deleteQuery = supabase.from('clients').delete();
+        const targetId = id ? Number(id) : undefined;
+        const targetGovId = (government_id || nic) ? String(government_id || nic) : undefined;
+        const targetEmail = email ? String(email) : undefined;
 
-        if (id) {
-            deleteQuery = deleteQuery.eq('id', id);
-        } else if (government_id) {
-            deleteQuery = deleteQuery.eq('government_id', String(government_id));
-        } else if (nic) {
-            deleteQuery = deleteQuery.eq('government_id', String(nic));
-        } else if (email) {
-            deleteQuery = deleteQuery.eq('email', String(email));
-        }
+        const deletedClient = await deleteClient(targetId, targetGovId, targetEmail);
 
-        const { data, error } = await deleteQuery.select();
-
-        if (error) {
-            console.error('Supabase DELETE error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while terminating client record.'
-            });
-            return;
-        }
-
-        if (!data || data.length === 0) {
+        if (!deletedClient) {
             res.status(404).json({
                 success: false,
                 message: 'No client found matching the provided identifier.'
@@ -50,18 +33,15 @@ router.delete('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const deletedClient = data[0];
-        const clientName = deletedClient
-            ? `${deletedClient.first_name || ''} ${deletedClient.last_name || ''}`.trim() || deletedClient.email || deletedClient.government_id
-            : `Client #${id || government_id || nic}`;
+        const clientName = `${deletedClient.first_name || ''} ${deletedClient.last_name || ''}`.trim() || deletedClient.email || deletedClient.government_id;
 
         recordAuditLog({
             userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
             userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
             action: 'Deleted Client',
             entityType: 'Client',
-            entityId: id ? String(id) : (deletedClient?.id ? String(deletedClient.id) : undefined),
-            details: `Deleted client record for ${clientName} (${deletedClient?.government_id || deletedClient?.email || 'No ID'}).`
+            entityId: String(deletedClient.id),
+            details: `Deleted client record for ${clientName} (${deletedClient.government_id || deletedClient.email || 'No ID'}).`
         }).catch(() => {});
 
         cache.invalidate('client');

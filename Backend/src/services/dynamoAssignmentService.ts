@@ -59,7 +59,7 @@ export async function formatAssignmentJoined(item: any): Promise<any> {
             make: vehicle?.make || '',
             model: vehicle?.model || '',
             year: vehicle?.year || 2024,
-            licensePlate: vehicle?.license_plate || vehicle?.licensePlate || '',
+            licensePlate: vehicle?.license_plate || '',
             vin: vehicle?.vin || '',
             dailyRate: Number(vehicle?.daily_rate || 0),
             status: vehicle?.status || 'Active',

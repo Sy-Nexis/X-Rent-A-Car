@@ -24,6 +24,7 @@ if (process.env.DYNAMODB_ENDPOINT) {
 }
 
 export const rawDynamoClient = new DynamoDBClient(clientConfig);
+export const dynamoClient = rawDynamoClient;
 
 export const dynamoDocClient = DynamoDBDocumentClient.from(rawDynamoClient, {
     marshallOptions: {

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import { getAllClients as fetchDynamoClients, getClientById, getClientByGovId } from '../services/dynamoClientService';
 import { cache } from '../utils/cache';
 
 const router = Router();
@@ -35,20 +35,7 @@ const getAllClients = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const { data, error } = await supabase
-            .from('clients')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Supabase SELECT error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching client data.'
-            });
-            return;
-        }
-
+        const data = await fetchDynamoClients();
         const decodedData = data ? data.map(decodeClient) : [];
         cache.set(cacheKey, decodedData, 30000); // 30s TTL
 
@@ -92,22 +79,12 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        let query = supabase.from('clients').select('*');
+        let data = null;
         if (!isNaN(Number(id))) {
-            query = query.or(`id.eq.${id},government_id.eq.${id}`);
-        } else {
-            query = query.eq('government_id', String(id));
+            data = await getClientById(Number(id));
         }
-
-        const { data, error } = await query.maybeSingle();
-
-        if (error) {
-            console.error('Supabase SELECT single client error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching client details.'
-            });
-            return;
+        if (!data) {
+            data = await getClientByGovId(String(id));
         }
 
         if (!data) {

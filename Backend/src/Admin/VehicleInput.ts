@@ -1,134 +1,96 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
 import { cache } from '../utils/cache';
 import { recordAuditLog } from './LogRoutes';
+import {
+    createVehicle,
+    updateVehicle,
+    getVehicleById,
+    getVehicleByVin,
+    getVehicleByPlate
+} from '../services/dynamoVehicleService';
 
 const router = Router();
 
 // /api/vehicles/add
 router.post('/add', async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("VEHICLE_ADD_REQUEST:", req.body);
+        console.log("DYNAMODB_VEHICLE_ADD_REQUEST:", req.body);
         const {
             make, model, year, vin, licensePlate, license_plate, transmission,
             fuelType, fuel_type, engineCapacity, engine_capacity, color, mileage, dailyRate, daily_rate, location, branch, status
         } = req.body;
 
-        // Map incoming fields with extreme robustness
         const rawDailyRate = Number(dailyRate) || Number(daily_rate) || 0;
         const numericDailyRate = isNaN(rawDailyRate) ? 0 : Math.min(Math.max(rawDailyRate, 0), 99999999.99);
 
         const rawMileage = Number(mileage) || 0;
         const numericMileage = isNaN(rawMileage) ? 0 : Math.min(Math.max(Math.floor(rawMileage), 0), 2147483647);
 
-        // Map status and branch values to avoid DB enum constraint violations
-        const rawStatus = String(status || 'Available').trim();
-        let dbStatus = 'Available';
-        let dbBranch = String(branch || 'Main');
+        const targetPlate = String(licensePlate || license_plate || '').trim();
+        const targetVin = String(vin || '').trim();
 
-        if (rawStatus.toLowerCase() === 'in prep' || rawStatus.toLowerCase() === 'inprep') {
-            dbStatus = 'Maintenance';
-            dbBranch = `${dbBranch}|In Prep`;
-        } else if (rawStatus.toLowerCase() === 'retired') {
-            dbStatus = 'Maintenance';
-            dbBranch = `${dbBranch}|Retired`;
-        } else if (rawStatus.toLowerCase() === 'active' || rawStatus.toLowerCase() === 'available') {
-            dbStatus = 'Available';
-        } else if (rawStatus.toLowerCase() === 'maintenance') {
-            dbStatus = 'Maintenance';
-        } else if (rawStatus.toLowerCase() === 'rented') {
-            dbStatus = 'Rented';
-        } else {
-            dbStatus = 'Available';
+        // 1. UNIQUE CONSTRAINT CHECK (Plate & VIN)
+        if (targetVin) {
+            const existingVin = await getVehicleByVin(targetVin);
+            if (existingVin) {
+                res.status(400).json({
+                    success: false,
+                    message: 'A vehicle with that VIN already exists in DynamoDB.'
+                });
+                return;
+            }
+        }
+
+        if (targetPlate) {
+            const existingPlate = await getVehicleByPlate(targetPlate);
+            if (existingPlate) {
+                res.status(400).json({
+                    success: false,
+                    message: 'A vehicle with that License Plate already exists in DynamoDB.'
+                });
+                return;
+            }
         }
 
         const vehicleData = {
             make: String(make || ''),
             model: String(model || ''),
             year: Number(year) || new Date().getFullYear(),
-            vin: String(vin || ''),
-            license_plate: String(licensePlate || license_plate || ''),
+            vin: targetVin,
+            license_plate: targetPlate,
             transmission: String(transmission || 'Automatic'),
             fuel_type: String(fuelType || fuel_type || 'Petrol'),
             engine_capacity: String(engineCapacity || engine_capacity || ''),
             color: String(color || ''),
             mileage: numericMileage,
             daily_rate: numericDailyRate,
-            branch: dbBranch,
-            status: dbStatus
+            branch: String(branch || 'Colombo Central'),
+            status: String(status || 'Available')
         };
 
-        console.log("INSERTING_VEHICLE_DATA:", vehicleData);
-
-        const { data, error } = await supabase
-            .from('vehicles')
-            .insert([vehicleData])
-            .select();
-
-        if (error) {
-            console.error('Supabase INSERT error:', error);
-            try {
-                const fs = require('fs');
-                fs.writeFileSync('supabase_error.log', JSON.stringify({
-                    timestamp: new Date().toISOString(),
-                    error,
-                    payload: vehicleData
-                }, null, 2));
-            } catch (e) {}
-
-            if (error.code === '23505') {
-                res.status(400).json({
-                    success: false,
-                    message: 'A vehicle with that VIN or License Plate already exists.'
-                });
-                return;
-            }
-
-            res.status(500).json({
-                success: false,
-                message: `Database Error: ${error.message}`,
-                detail: error.details,
-                hint: error.hint
-            });
-            return;
-        }
-
-        // Decode returned data so that frontend receives the expected status strings
-        const decodedData = data ? data.map(vehicle => {
-            let statusVal = vehicle.status;
-            let branchVal = vehicle.branch;
-            if (branchVal && branchVal.includes('|')) {
-                const parts = branchVal.split('|');
-                branchVal = parts[0];
-                statusVal = parts[1];
-            } else if (statusVal === 'Available') {
-                statusVal = 'Active';
-            }
-            return { ...vehicle, status: statusVal, branch: branchVal };
-        }) : [];
+        const newVehicle = await createVehicle(vehicleData);
 
         // Invalidate vehicle cache immediately
         cache.invalidate('vehicle');
 
         // Record audit log
         recordAuditLog({
-            userName: req.body.user_name || req.body.userName || 'Alex Rivera',
-            userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || req.body.user_role || req.body.userRole || 'Fleet Manager',
             action: 'Registered Vehicle',
             entityType: 'Vehicle',
-            entityId: data && data[0] ? data[0].id : undefined,
-            details: `Added new vehicle ${vehicleData.year} ${vehicleData.make} ${vehicleData.model} (${vehicleData.license_plate}) to fleet.`
+            entityId: newVehicle.id,
+            details: `Added new vehicle ${newVehicle.year} ${newVehicle.make} ${newVehicle.model} (${newVehicle.license_plate}) to fleet.`
         }).catch(() => {});
 
         res.status(201).json({
             success: true,
-            message: 'Vehicle successfully registered to the fleet.',
-            data: decodedData
+            message: 'Vehicle successfully registered in DynamoDB.',
+            data: [newVehicle]
         });
 
     } catch (error: any) {
-        console.error('Unexpected error inserting vehicle:', error);
-
+        console.error('Unexpected error inserting vehicle into DynamoDB:', error);
         res.status(500).json({
             success: false,
             message: 'Internal Server Error while saving vehicle data.',
@@ -145,10 +107,19 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         const targetId = id || req.body.id;
         const targetPlate = licensePlate || plate || req.body.licensePlate || req.body.license_plate;
 
-        if (!targetVin && !targetId && !targetPlate) {
-            res.status(400).json({
+        let existingVehicle = null;
+        if (targetId) {
+            existingVehicle = await getVehicleById(Number(targetId));
+        } else if (targetVin) {
+            existingVehicle = await getVehicleByVin(String(targetVin));
+        } else if (targetPlate) {
+            existingVehicle = await getVehicleByPlate(String(targetPlate));
+        }
+
+        if (!existingVehicle) {
+            res.status(404).json({
                 success: false,
-                message: 'Please provide the vehicle VIN, ID, or License Plate in query parameters or request body.'
+                message: 'No vehicle found matching that identifier in DynamoDB.'
             });
             return;
         }
@@ -158,153 +129,24 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             engineCapacity, color, mileage, dailyRate, branch, status
         } = req.body;
 
-        // 1. OVERFLOW GUARD: Prevent NUMERIC(10,2) overflow for daily_rate
-        if (dailyRate && Number(dailyRate) >= 100000000) {
-            res.status(400).json({
-                success: false,
-                message: 'Daily rate is too high. Maximum allowed value is 99,999,999.99.'
-            });
-            return;
-        }
-
-        // Fetch existing vehicle to merge fields cleanly and preserve branch/status encoding
-        let findQuery = supabase.from('vehicles').select('*');
-        if (targetId) {
-            findQuery = findQuery.eq('id', targetId);
-        } else if (targetVin) {
-            findQuery = findQuery.eq('vin', String(targetVin));
-        } else if (targetPlate) {
-            findQuery = findQuery.eq('license_plate', String(targetPlate));
-        }
-
-        const { data: existingVehicle, error: fetchError } = await findQuery.maybeSingle();
-
-        if (fetchError) {
-            console.error('Supabase fetch error during update:', fetchError);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while checking vehicle details.'
-            });
-            return;
-        }
-
-        if (!existingVehicle) {
-            res.status(404).json({
-                success: false,
-                message: 'No vehicle found matching that identifier.'
-            });
-            return;
-        }
-
-        const currentStatus = existingVehicle.status || 'Available';
-        const currentBranch = existingVehicle.branch || 'Main';
-
-        // Extract clean branch and current real status from existing record
-        let cleanBranch = currentBranch;
-        let realStatus = currentStatus;
-        if (currentBranch && currentBranch.includes('|')) {
-            const parts = currentBranch.split('|');
-            cleanBranch = parts[0];
-            realStatus = parts[1]; // e.g. 'In Prep' or 'Retired'
-        } else if (currentStatus === 'Available') {
-            realStatus = 'Active';
-        }
-
-        // Merge existing fields with update request values
-        const newStatus = status !== undefined ? String(status).trim() : realStatus;
-        const newBranch = branch !== undefined ? String(branch).trim() : cleanBranch;
-
-        // Map status/branch to DB representation
-        let dbStatus = 'Available';
-        let dbBranch = newBranch;
-
-        if (newStatus.toLowerCase() === 'in prep' || newStatus.toLowerCase() === 'inprep') {
-            dbStatus = 'Maintenance';
-            dbBranch = `${newBranch}|In Prep`;
-        } else if (newStatus.toLowerCase() === 'retired') {
-            dbStatus = 'Maintenance';
-            dbBranch = `${newBranch}|Retired`;
-        } else if (newStatus.toLowerCase() === 'active' || newStatus.toLowerCase() === 'available') {
-            dbStatus = 'Available';
-        } else if (newStatus.toLowerCase() === 'maintenance') {
-            dbStatus = 'Maintenance';
-        } else if (newStatus.toLowerCase() === 'rented') {
-            dbStatus = 'Rented';
-        } else {
-            dbStatus = 'Available';
-        }
-
-        // Normalize incoming fields
-        const yearVal = year !== undefined ? Number(year) : (req.body.year !== undefined ? Number(req.body.year) : undefined);
-        const mileageVal = mileage !== undefined ? Number(mileage) : (req.body.mileage !== undefined ? Number(req.body.mileage) : undefined);
-        const dailyRateRaw = dailyRate !== undefined ? dailyRate : req.body.daily_rate;
-        const numericDailyRate = dailyRateRaw !== undefined ? Number(dailyRateRaw) : undefined;
-        const licensePlateVal = licensePlate || req.body.license_plate || undefined;
-        const fuelTypeVal = fuelType || req.body.fuel_type || undefined;
-        const engineCapacityVal = engineCapacity || req.body.engine_capacity || undefined;
-
-        // Build clean update object without undefined overwrites
         const updateData: any = {};
         if (make !== undefined) updateData.make = String(make);
         if (model !== undefined) updateData.model = String(model);
-        if (yearVal !== undefined && !isNaN(yearVal)) updateData.year = yearVal;
+        if (year !== undefined) updateData.year = Number(year);
         if (transmission !== undefined) updateData.transmission = String(transmission);
         if (color !== undefined) updateData.color = String(color);
-        if (mileageVal !== undefined && !isNaN(mileageVal)) updateData.mileage = mileageVal;
-        if (dbBranch !== undefined) updateData.branch = dbBranch;
-        if (dbStatus !== undefined) updateData.status = dbStatus;
-        if (licensePlateVal !== undefined) updateData.license_plate = String(licensePlateVal);
-        if (fuelTypeVal !== undefined) updateData.fuel_type = String(fuelTypeVal);
-        if (engineCapacityVal !== undefined) updateData.engine_capacity = String(engineCapacityVal);
-        if (numericDailyRate !== undefined && !isNaN(numericDailyRate)) updateData.daily_rate = numericDailyRate;
+        if (mileage !== undefined) updateData.mileage = Number(mileage);
+        if (branch !== undefined) updateData.branch = String(branch);
+        if (status !== undefined) updateData.status = String(status);
+        if (req.body.licensePlate || req.body.license_plate) updateData.license_plate = String(req.body.licensePlate || req.body.license_plate);
+        if (fuelType || req.body.fuel_type) updateData.fuel_type = String(fuelType || req.body.fuel_type);
+        if (engineCapacity || req.body.engine_capacity) updateData.engine_capacity = String(engineCapacity || req.body.engine_capacity);
+        if (dailyRate !== undefined || req.body.daily_rate !== undefined) updateData.daily_rate = Number(dailyRate !== undefined ? dailyRate : req.body.daily_rate);
 
-        console.log("EXECUTING_VEHICLE_UPDATE:", { id: existingVehicle.id, updateData });
-
-        const { data, error } = await supabase
-            .from('vehicles')
-            .update(updateData)
-            .eq('id', existingVehicle.id)
-            .select();
-
-        if (error) {
-            console.error('Supabase UPDATE error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while attempting to update vehicle data.'
-            });
-            return;
-        }
-
-        if (!data || data.length === 0) {
-            res.status(404).json({
-                success: false,
-                message: 'No vehicle found matching that identifier.'
-            });
-            return;
-        }
-
-        // Decode returned data so frontend receives clean status and branch
-        const decodedData = data.map(vehicle => {
-            let statusVal = vehicle.status;
-            let branchVal = vehicle.branch;
-            if (branchVal && branchVal.includes('|')) {
-                const parts = branchVal.split('|');
-                branchVal = parts[0];
-                statusVal = parts[1];
-            } else if (statusVal === 'Available') {
-                statusVal = 'Active';
-            }
-            return { ...vehicle, status: statusVal, branch: branchVal };
-        });
-
-        // Invalidate vehicle cache immediately
-        cache.invalidate('vehicle');
-
-        const updatedVeh = decodedData[0] || existingVehicle;
+        const updated = await updateVehicle(existingVehicle.id, updateData);
 
         // Compute exact fields that ACTUALLY changed
         const changedDiffs: string[] = [];
-
         function checkFieldDiff(label: string, oldVal: any, newVal: any, formatFn?: (v: any) => string) {
             if (newVal === undefined) return;
             const strOld = (oldVal === null || oldVal === undefined) ? '' : String(oldVal).trim();
@@ -336,12 +178,12 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         checkFieldDiff('Plate', existingVehicle.license_plate, updateData.license_plate);
         checkFieldDiff('Fuel', existingVehicle.fuel_type, updateData.fuel_type);
         checkFieldDiff('Engine', existingVehicle.engine_capacity, updateData.engine_capacity);
-        checkFieldDiff('Status', realStatus, newStatus);
-        checkFieldDiff('Branch', cleanBranch, newBranch);
+        checkFieldDiff('Status', existingVehicle.status, updateData.status);
+        checkFieldDiff('Branch', existingVehicle.branch, updateData.branch);
 
         const changeDescription = changedDiffs.length > 0
-            ? `Updated vehicle ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin || existingVehicle.id}). Changed: ${changedDiffs.join(', ')}.`
-            : `Saved vehicle details for ${updatedVeh.make} ${updatedVeh.model} (${updatedVeh.license_plate || updatedVeh.vin}) with no field changes.`;
+            ? `Updated vehicle ${updated?.make} ${updated?.model} (${updated?.license_plate || updated?.vin || existingVehicle.id}). Changed: ${changedDiffs.join(', ')}.`
+            : `Saved vehicle details for ${updated?.make} ${updated?.model} (${updated?.license_plate || updated?.vin}) with no field changes.`;
 
         recordAuditLog({
             userName: (req.headers['x-user-name'] as string) || req.body.user_name || req.body.userName || 'Alex Rivera',
@@ -352,15 +194,16 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
             details: changeDescription
         }).catch(() => {});
 
+        cache.invalidate('vehicle');
+
         res.status(200).json({
             success: true,
-            message: `Vehicle ${existingVehicle.make} ${existingVehicle.model} (${existingVehicle.vin}) has been successfully updated.`,
-            data: decodedData
+            message: `Vehicle ${existingVehicle.make} ${existingVehicle.model} has been successfully updated in DynamoDB.`,
+            data: [updated]
         });
 
     } catch (error: any) {
-        console.error('Unexpected error updating vehicle:', error);
-
+        console.error('Unexpected error updating vehicle in DynamoDB:', error);
         res.status(500).json({
             success: false,
             message: 'Internal Server Error while attempting to update vehicle data.'

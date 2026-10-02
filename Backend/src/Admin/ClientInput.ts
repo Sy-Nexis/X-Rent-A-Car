@@ -1,7 +1,13 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import {
+    createClient,
+    updateClient,
+    getClientById,
+    getClientByGovId,
+    getClientByEmail
+} from '../services/dynamoClientService';
+import { recordAuditLog } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
-import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
 
@@ -13,33 +19,52 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             city, state, zip_code, government_id, license_number, status
         } = req.body;
 
-        const { data, error } = await supabase
-            .from('clients')
-            .insert([
-                {
-                    first_name, last_name, email, phone, address,
-                    city, state, zip_code, government_id, license_number, status
-                }
-            ])
-            .select();
-
-        if (error) {
-            console.error('Supabase INSERT error:', error);
-
-            if (error.code === '23505') { // Postgres Unique Violation code
-                res.status(400).json({
-                    success: false,
-                    message: 'A client with that Government ID or Email already exists.'
-                });
-                return;
-            }
-
-            res.status(500).json({
+        if (!first_name || !last_name) {
+            res.status(400).json({
                 success: false,
-                message: 'Database Error while saving client data.'
+                message: 'First name and Last name are required.'
             });
             return;
         }
+
+        // 1. Pre-flight Unique Government ID check via GSI
+        if (government_id) {
+            const existingGov = await getClientByGovId(String(government_id));
+            if (existingGov) {
+                res.status(400).json({
+                    success: false,
+                    message: `A client with Government ID "${government_id}" is already registered.`
+                });
+                return;
+            }
+        }
+
+        // 2. Pre-flight Unique Email check via GSI
+        if (email) {
+            const existingEmail = await getClientByEmail(String(email));
+            if (existingEmail) {
+                res.status(400).json({
+                    success: false,
+                    message: `A client with email address "${email}" is already registered.`
+                });
+                return;
+            }
+        }
+
+        // 3. Persist client in DynamoDB
+        const created = await createClient({
+            first_name,
+            last_name,
+            email,
+            phone,
+            address,
+            city,
+            state,
+            zip_code,
+            government_id,
+            license_number,
+            status: status || 'Active'
+        });
 
         cache.invalidate('client');
 
@@ -49,14 +74,14 @@ router.post('/add', async (req: Request, res: Response): Promise<void> => {
             userRole: req.body.user_role || req.body.userRole || 'Fleet Manager',
             action: 'Registered Client',
             entityType: 'Client',
-            entityId: data && data[0] ? data[0].id : undefined,
+            entityId: created.id,
             details: `Registered client ${clientFullName} (${government_id || email || 'No ID'}).`
         }).catch(() => {});
 
         res.status(201).json({
             success: true,
             message: 'Client successfully registered to the DB.',
-            data: data
+            data: [created]
         });
 
     } catch (error: any) {
@@ -88,28 +113,15 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         }
 
         // 1. Locate existing client record by ID, government_id, or email
-        let findQuery = supabase.from('clients').select('*');
+        let existingClient = null;
         if (targetId && !isNaN(Number(targetId))) {
-            findQuery = findQuery.or(`id.eq.${Number(targetId)},government_id.eq.${targetId}`);
-        } else if (targetGovId) {
-            if (!isNaN(Number(targetGovId))) {
-                findQuery = findQuery.or(`id.eq.${Number(targetGovId)},government_id.eq.${String(targetGovId)}`);
-            } else {
-                findQuery = findQuery.eq('government_id', String(targetGovId));
-            }
-        } else if (targetEmail) {
-            findQuery = findQuery.eq('email', String(targetEmail));
+            existingClient = await getClientById(Number(targetId));
         }
-
-        const { data: existingClient, error: fetchError } = await findQuery.maybeSingle();
-
-        if (fetchError) {
-            console.error('Supabase fetch error during client update:', fetchError);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while checking client details.'
-            });
-            return;
+        if (!existingClient && targetGovId) {
+            existingClient = await getClientByGovId(String(targetGovId));
+        }
+        if (!existingClient && targetEmail) {
+            existingClient = await getClientByEmail(String(targetEmail));
         }
 
         if (!existingClient) {
@@ -155,23 +167,10 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 
         console.log("EXECUTING_CLIENT_UPDATE:", { id: existingClient.id, updateData });
 
-        // 3. Execute update on verified client ID
-        const { data, error } = await supabase
-            .from('clients')
-            .update(updateData)
-            .eq('id', existingClient.id)
-            .select();
+        // 3. Execute update on verified client ID in DynamoDB
+        const updated = await updateClient(existingClient.id, updateData);
 
-        if (error) {
-            console.error('Supabase UPDATE client error:', error);
-            res.status(500).json({
-                success: false,
-                message: `Database Error: ${error.message}`
-            });
-            return;
-        }
-
-        if (!data || data.length === 0) {
+        if (!updated) {
             res.status(404).json({
                 success: false,
                 message: 'Failed to apply update to client record.'
@@ -182,8 +181,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         // Invalidate client cache immediately
         cache.invalidate('client');
 
-        const updatedClient = (data && data[0]) || existingClient;
-        const clientFullName = `${updatedClient.first_name || ''} ${updatedClient.last_name || ''}`.trim() || 'Client';
+        const clientFullName = `${updated.first_name || ''} ${updated.last_name || ''}`.trim() || 'Client';
 
         // Compute exact fields that ACTUALLY changed
         const changedDiffs: string[] = [];
@@ -224,7 +222,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             success: true,
             message: `Client ${existingClient.first_name} ${existingClient.last_name} has been successfully updated.`,
-            data: data
+            data: [updated]
         });
 
     } catch (error: any) {

@@ -1,4 +1,3 @@
-// src/index.ts
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -8,8 +7,11 @@ import vehicleDeleteRouter from './Admin/VehicleDelete';
 import clientInputRouter from './Admin/ClientInput';
 import clientViwRouter from './Admin/ClientView';
 import clientDeleteRouter from './Admin/ClientDelete';
+import assignmentRouter from './Admin/AssignmentRoutes';
+import logRouter from './Admin/LogRoutes';
 import authRoutes from './routes/authRoutes';
-import { supabase } from './config/supabase';
+import { dynamoClient, STAFF_TABLE_NAME } from './config/dynamodb';
+import { DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 // Load environment variables
 dotenv.config();
@@ -26,9 +28,6 @@ app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
-
-import assignmentRouter from './Admin/AssignmentRoutes';
-import logRouter from './Admin/LogRoutes';
 
 // Mounting Routing Layers
 app.use('/api/auth', authRoutes);
@@ -54,23 +53,19 @@ app.use('/api/logs/view', logRouter);
 
 // Health system monitoring endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: "Active" });
+    res.status(200).json({ status: "Active", database: "AWS DynamoDB" });
 });
 
 // Initialize and Start Server
 app.listen(PORT, async () => {
-    console.log(`API Server running on http://localhost:${PORT}`);
+    console.log(`neXus API Server running on http://localhost:${PORT}`);
 
     try {
-        // Execute a single lightweight metadata query mock to Supabase to verify table accessibility on startup
-        const { error } = await supabase.from('staff').select('id').limit(1);
-
-        if (error) {
-            console.error('Supabase connection verification failed. Check environment variables:', error.message);
-        } else {
-            console.log('CONNECTION STATUS: Supabase DB connected successfully. Metadata query execution passed.');
-        }
-    } catch (error) {
-        console.error('Unexpected Supabase connection error on startup validation:', error);
+        // Ping DynamoDB table descriptor to verify AWS credentials / connectivity
+        const command = new DescribeTableCommand({ TableName: STAFF_TABLE_NAME });
+        const res = await dynamoClient.send(command);
+        console.log(`CONNECTION STATUS: AWS DynamoDB connected successfully. Table '${STAFF_TABLE_NAME}' status: ${res.Table?.TableStatus || 'ACTIVE'}`);
+    } catch (error: any) {
+        console.warn(`DynamoDB notice: Using configured / in-memory resilient data service. (${error?.message || 'Check AWS Credentials in .env'})`);
     }
 });

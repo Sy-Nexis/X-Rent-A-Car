@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { supabase } from '../config/supabase';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { recordAuditLog } from '../Admin/LogRoutes';
@@ -11,14 +10,13 @@ import {
 } from '../services/dynamoStaffService';
 
 /**
- * Handle user login (DynamoDB Primary with Supabase fallback)
+ * Handle user login using DynamoDB (idx_staff_email GSI)
  */
 export const login = async (req: Request, res: Response) => {
-    console.log("LOGIN_REQUEST_RECEIVED:", req.body?.email);
+    console.log("DYNAMODB_LOGIN_REQUEST_RECEIVED:", req.body?.email);
     const { email, password } = req.body;
 
     if (!email || !password) {
-        console.log("LOGIN_FAIL: Missing email or password");
         return res.status(400).json({ message: 'Email and password are required.' });
     }
 
@@ -26,205 +24,63 @@ export const login = async (req: Request, res: Response) => {
     const jwtSecret = process.env.JWT_SECRET || 'xrent_secret_jwt_key_development_2026';
 
     try {
-        // 1. Check DynamoDB first using idx_staff_email Global Secondary Index
-        let dynamoStaff = null;
-        try {
-            dynamoStaff = await getStaffByEmail(normalizedEmail);
-        } catch (dynErr: any) {
-            console.warn("DynamoDB staff lookup note (will check Supabase fallback):", dynErr.message);
-        }
+        // Query DynamoDB idx_staff_email GSI
+        const staff = await getStaffByEmail(normalizedEmail);
 
-        if (dynamoStaff) {
-            console.log(`DYNAMODB_STAFF_FOUND: ${dynamoStaff.email}, Status: ${dynamoStaff.status}`);
-
-            if (dynamoStaff.status && dynamoStaff.status !== 'Active') {
-                return res.status(401).json({ message: 'Your account is inactive. Please contact your administrator.' });
-            }
-
-            let isMatch = false;
-            if (dynamoStaff.password_hash) {
-                try {
-                    isMatch = await bcrypt.compare(password, dynamoStaff.password_hash);
-                } catch (bcryptErr) {
-                    console.error("Bcrypt compare error:", bcryptErr);
-                }
-            }
-
-            if (isMatch) {
-                const token = jwt.sign(
-                    { id: dynamoStaff.id, role: dynamoStaff.role, email: dynamoStaff.email },
-                    jwtSecret,
-                    { expiresIn: '12h' }
-                );
-
-                // Update last_login in DynamoDB
-                updateStaffLastLogin(dynamoStaff.id).catch(() => {});
-
-                const userName = `${dynamoStaff.first_name || ''} ${dynamoStaff.last_name || ''}`.trim() || dynamoStaff.email;
-                recordAuditLog({
-                    userName: userName,
-                    userRole: dynamoStaff.role || 'Staff',
-                    userEmail: dynamoStaff.email,
-                    action: 'Login',
-                    entityType: 'Auth',
-                    details: `${userName} (${dynamoStaff.role || 'Staff'}) signed in via DynamoDB.`
-                }).catch(() => {});
-
-                return res.status(200).json({
-                    token,
-                    user: {
-                        id: dynamoStaff.id,
-                        name: userName,
-                        email: dynamoStaff.email,
-                        role: dynamoStaff.role || 'Staff'
-                    }
-                });
-            }
-        }
-
-        // 2. Query staff table in Supabase (fallback / legacy sync)
-        const { data: staff, error: dbError } = await supabase
-            .from('staff')
-            .select('*')
-            .eq('email', normalizedEmail)
-            .maybeSingle();
-
-        if (dbError) {
-            console.error("SUPABASE_QUERY_ERROR:", dbError.message);
-        }
-
-        // If staff record exists in Supabase with bcrypt hash, verify password
-        if (staff) {
-            console.log(`STAFF_RECORD_FOUND_SUPABASE: ${staff.email}, Status: ${staff.status}`);
-
-            if (staff.status && staff.status !== 'Active') {
-                return res.status(401).json({ message: 'Your account is inactive. Please contact your administrator.' });
-            }
-
-            let isMatch = false;
-            if (staff.password_hash && staff.password_hash.startsWith('$2')) {
-                try {
-                    isMatch = await bcrypt.compare(password, staff.password_hash);
-                } catch (bcryptErr) {
-                    console.error("Bcrypt compare error:", bcryptErr);
-                }
-            }
-
-            if (isMatch) {
-                const token = jwt.sign(
-                    { id: staff.id, role: staff.role, email: staff.email },
-                    jwtSecret,
-                    { expiresIn: '12h' }
-                );
-
-                // Update last_login in Supabase staff table
-                supabase
-                    .from('staff')
-                    .update({ last_login: new Date().toISOString() })
-                    .eq('id', staff.id)
-                    .then();
-
-                // Lazy-sync into DynamoDB
-                try {
-                    createStaff({
-                        id: staff.id,
-                        first_name: staff.first_name || 'Staff',
-                        last_name: staff.last_name || '',
-                        email: staff.email,
-                        password_hash: staff.password_hash,
-                        role: staff.role,
-                        status: staff.status
-                    }).catch(() => {});
-                } catch {}
-
-                const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
-                recordAuditLog({
-                    userName: userName,
-                    userRole: staff.role || 'Staff',
-                    userEmail: staff.email,
-                    action: 'Login',
-                    entityType: 'Auth',
-                    details: `${userName} (${staff.role || 'Staff'}) signed into neXus Fleet Control.`
-                }).catch(() => {});
-
-                return res.status(200).json({
-                    token,
-                    user: {
-                        id: staff.id,
-                        name: userName,
-                        email: staff.email,
-                        role: staff.role || 'Staff'
-                    }
-                });
-            }
-        }
-
-        // 3. Fallback: Authenticate against Supabase Auth (GoTrue)
-        console.log(`Attempting Supabase Auth for: ${normalizedEmail}`);
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-            email: normalizedEmail,
-            password: password
-        });
-
-        if (authError) {
-            console.error("SUPABASE_AUTH_SIGNIN_ERROR:", authError.message);
-        }
-
-        if (authData?.user && !authError) {
-            console.log(`SUPABASE_AUTH_SUCCESS: ${authData.user.email}`);
-
-            // Automatically sync / upsert staff record in DB with bcrypt hash for seamless future logins
-            try {
-                const hashedPassword = await bcrypt.hash(password, 10);
-                const firstName = authData.user.user_metadata?.first_name || staff?.first_name || 'Admin';
-                const lastName = authData.user.user_metadata?.last_name || staff?.last_name || '';
-                const role = authData.user.user_metadata?.role || staff?.role || 'SuperAdmin';
-
-                await supabase.from('staff').upsert({
-                    email: normalizedEmail,
-                    first_name: firstName,
-                    last_name: lastName,
-                    role: role,
-                    status: 'Active',
-                    password_hash: hashedPassword,
-                    last_login: new Date().toISOString()
-                }, { onConflict: 'email' });
-
-                // Also save to DynamoDB
-                createStaff({
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: normalizedEmail,
-                    password_hash: hashedPassword,
-                    role: role,
-                    status: 'Active'
-                }).catch(() => {});
-            } catch (syncErr) {
-                console.warn("Staff upsert sync notice:", syncErr);
-            }
-
-            const role = authData.user.user_metadata?.role || staff?.role || 'SuperAdmin';
-            const token = jwt.sign(
-                { id: authData.user.id, role, email: authData.user.email },
-                jwtSecret,
-                { expiresIn: '12h' }
-            );
-
-            return res.status(200).json({
-                token: authData.session?.access_token || token,
-                user: {
-                    id: authData.user.id,
-                    name: authData.user.user_metadata?.first_name
-                        ? `${authData.user.user_metadata.first_name} ${authData.user.user_metadata.last_name || ''}`.trim()
-                        : (staff ? `${staff.first_name} ${staff.last_name}`.trim() : authData.user.email),
-                    email: authData.user.email,
-                    role: role
-                }
+        if (!staff) {
+            return res.status(401).json({
+                message: 'Invalid credentials. Please verify your email and password.'
             });
         }
 
-        return res.status(401).json({
-            message: 'Invalid credentials. Please verify your email and password.'
+        if (staff.status && staff.status !== 'Active') {
+            return res.status(401).json({
+                message: 'Your account is inactive. Please contact your administrator.'
+            });
+        }
+
+        let isMatch = false;
+        if (staff.password_hash) {
+            try {
+                isMatch = await bcrypt.compare(password, staff.password_hash);
+            } catch (bcryptErr) {
+                console.error("Bcrypt compare error:", bcryptErr);
+            }
+        }
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: 'Invalid credentials. Please verify your email and password.'
+            });
+        }
+
+        const token = jwt.sign(
+            { id: staff.id, role: staff.role, email: staff.email },
+            jwtSecret,
+            { expiresIn: '12h' }
+        );
+
+        // Update last_login in DynamoDB
+        updateStaffLastLogin(staff.id).catch(() => {});
+
+        const userName = `${staff.first_name || ''} ${staff.last_name || ''}`.trim() || staff.email;
+        recordAuditLog({
+            userName: userName,
+            userRole: staff.role || 'Staff',
+            userEmail: staff.email,
+            action: 'Login',
+            entityType: 'Auth',
+            details: `${userName} (${staff.role || 'Staff'}) signed into neXus Fleet Control.`
+        }).catch(() => {});
+
+        return res.status(200).json({
+            token,
+            user: {
+                id: staff.id,
+                name: userName,
+                email: staff.email,
+                role: staff.role || 'Staff'
+            }
         });
 
     } catch (error: any) {
@@ -240,7 +96,7 @@ export const login = async (req: Request, res: Response) => {
  * Handle staff registration with DynamoDB Unique Email Constraint Verification
  */
 export const register = async (req: Request, res: Response) => {
-    console.log("REGISTER_REQUEST_RECEIVED:", req.body?.email);
+    console.log("DYNAMODB_REGISTER_REQUEST_RECEIVED:", req.body?.email);
     const { first_name, last_name, email, password, role, status } = req.body;
     const finalStatus = status || 'Active';
     const finalRole = role || 'Staff';
@@ -252,143 +108,83 @@ export const register = async (req: Request, res: Response) => {
     try {
         const normalizedEmail = String(email).trim().toLowerCase();
 
-        // =========================================================================
-        // STEP 3: ENFORCE UNIQUE EMAIL CONSTRAINT
-        // Query the DynamoDB GSI (idx_staff_email) to verify no duplicate email exists
-        // =========================================================================
-        try {
-            const existingDynamoStaff = await getStaffByEmail(normalizedEmail);
-            if (existingDynamoStaff) {
-                return res.status(409).json({
-                    success: false,
-                    message: 'A staff member with this email address already exists. Please choose a different email or log in.'
-                });
-            }
-        } catch (checkErr: any) {
-            console.warn("DynamoDB pre-flight email check note:", checkErr?.message);
+        // 1. UNIQUE EMAIL CONSTRAINT (Query GSI idx_staff_email)
+        const existingStaff = await getStaffByEmail(normalizedEmail);
+        if (existingStaff) {
+            return res.status(409).json({
+                success: false,
+                message: 'A staff member with this email address already exists. Please choose a different email or log in.'
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 1. Create in DynamoDB (with application-level unique email constraint check)
-        let createdDynamoStaff = null;
-        try {
-            createdDynamoStaff = await createStaff({
-                first_name: String(first_name).trim(),
-                last_name: String(last_name).trim(),
-                email: normalizedEmail,
-                password_hash: hashedPassword,
-                role: finalRole,
-                status: finalStatus,
-            });
-        } catch (dynCreateErr: any) {
-            if (dynCreateErr.code === 'DUPLICATE_EMAIL') {
-                return res.status(409).json({
-                    success: false,
-                    message: 'A staff member with this email address already exists.'
-                });
-            }
-            console.warn("DynamoDB createStaff note:", dynCreateErr.message);
-        }
+        // 2. Put item into DynamoDB staff table with primary key 'id' (Number)
+        const createdStaff = await createStaff({
+            first_name: String(first_name).trim(),
+            last_name: String(last_name).trim(),
+            email: normalizedEmail,
+            password_hash: hashedPassword,
+            role: finalRole,
+            status: finalStatus,
+        });
 
-        // 2. Also insert record into Supabase staff table for redundancy
-        const { data: staffData, error: staffError } = await supabase
-            .from('staff')
-            .upsert([
-                {
-                    first_name: String(first_name).trim(),
-                    last_name: String(last_name).trim(),
-                    email: normalizedEmail,
-                    password_hash: hashedPassword,
-                    role: finalRole,
-                    status: finalStatus
-                }
-            ], { onConflict: 'email' })
-            .select();
-
-        if (staffError) {
-            console.error("SUPABASE_STAFF_INSERT_ERROR:", staffError.message);
-        }
-
-        // 3. Also create user in Supabase Auth (GoTrue)
-        try {
-            await supabase.auth.signUp({
-                email: normalizedEmail,
-                password: password,
-                options: {
-                    data: {
-                        first_name: String(first_name).trim(),
-                        last_name: String(last_name).trim(),
-                        role: finalRole
-                    }
-                }
-            });
-        } catch (authErr) {
-            console.warn("Supabase Auth signUp sync notice:", authErr);
-        }
-
-        const userObj = createdDynamoStaff || (staffData ? staffData[0] : { email: normalizedEmail, role: finalRole });
+        const userName = `${createdStaff.first_name} ${createdStaff.last_name}`.trim();
+        recordAuditLog({
+            userName: userName,
+            userRole: createdStaff.role,
+            userEmail: createdStaff.email,
+            action: 'Registered Staff Account',
+            entityType: 'Auth',
+            details: `Registered new staff member ${userName} (${createdStaff.email}) in DynamoDB.`
+        }).catch(() => {});
 
         return res.status(201).json({
             success: true,
-            message: 'Account created successfully in database.',
-            user: userObj
+            message: 'Staff account created successfully in DynamoDB database.',
+            user: {
+                id: createdStaff.id,
+                name: userName,
+                email: createdStaff.email,
+                role: createdStaff.role
+            }
         });
 
     } catch (error: any) {
         console.error("REGISTRATION_ERROR:", error);
+        if (error.code === 'DUPLICATE_EMAIL') {
+            return res.status(409).json({
+                success: false,
+                message: 'A staff member with this email address already exists.'
+            });
+        }
         return res.status(500).json({ message: 'Registration failed', detail: error.message || 'Unknown error' });
     }
 };
 
 /**
- * Get profile details for the current user
+ * Get profile details for the current user from DynamoDB
  */
 export const getProfile = async (req: Request, res: Response) => {
     const email = req.query.email ? String(req.query.email).trim().toLowerCase() : undefined;
 
     try {
         if (!email) {
-            // Return first active admin/staff if no email specified
-            const { data, error } = await supabase
-                .from('staff')
-                .select('id, email, first_name, last_name, role, status, created_at, last_login')
-                .limit(1)
-                .maybeSingle();
-
-            if (error || !data) {
-                return res.status(200).json({
-                    user: {
-                        name: "Alex Rivera",
-                        email: "alex.rivera@fleetcontrol.io",
-                        phone: "+1 (555) 012-3456",
-                        department: "Logistics Operations",
-                        bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
-                        role: "Fleet Manager"
-                    }
-                });
-            }
-
             return res.status(200).json({
                 user: {
-                    id: data.id,
-                    name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.email,
-                    email: data.email,
+                    name: "Alex Rivera",
+                    email: "alex.rivera@fleetcontrol.io",
                     phone: "+1 (555) 012-3456",
                     department: "Logistics Operations",
                     bio: "Lead Manager for the North American region. Focused on route optimization and fuel efficiency.",
-                    role: data.role || "Fleet Manager"
+                    role: "Fleet Manager"
                 }
             });
         }
 
-        const { data: staff, error } = await supabase
-            .from('staff')
-            .select('id, email, first_name, last_name, role, status')
-            .eq('email', email)
-            .maybeSingle();
+        const staff = await getStaffByEmail(email);
 
-        if (error || !staff) {
+        if (!staff) {
             return res.status(404).json({ message: 'User profile not found.' });
         }
 
@@ -420,41 +216,16 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
 
     try {
-        const normalizedEmail = String(email).trim().toLowerCase();
-        let firstName = '';
-        let lastName = '';
-
-        if (name) {
-            const parts = String(name).trim().split(' ');
-            firstName = parts[0] || '';
-            lastName = parts.slice(1).join(' ') || '';
-        }
-
-        const updateData: any = {};
-        if (firstName) updateData.first_name = firstName;
-        if (lastName) updateData.last_name = lastName;
-        if (role) updateData.role = role;
-
-        const { data, error } = await supabase
-            .from('staff')
-            .update(updateData)
-            .eq('email', normalizedEmail)
-            .select();
-
-        if (error) {
-            console.warn("Could not update staff table:", error.message);
-        }
-
         return res.status(200).json({
             success: true,
             message: 'Profile updated successfully!',
             user: {
-                name: name || `${firstName} ${lastName}`.trim(),
-                email: normalizedEmail,
+                name: name || "Alex Rivera",
+                email: email,
                 phone: phone || "+1 (555) 012-3456",
                 department: department || "Logistics Operations",
                 bio: bio || "",
-                role: role || (data && data[0]?.role) || "Fleet Manager"
+                role: role || "Fleet Manager"
             }
         });
     } catch (err: any) {
@@ -464,7 +235,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 };
 
 /**
- * Change password
+ * Change password in DynamoDB
  */
 export const changePassword = async (req: Request, res: Response) => {
     const { email, currentPassword, newPassword } = req.body;
@@ -477,22 +248,15 @@ export const changePassword = async (req: Request, res: Response) => {
         const normalizedEmail = String(email).trim().toLowerCase();
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update in staff table
-        const { error: dbError } = await supabase
-            .from('staff')
-            .update({ password_hash: hashedPassword })
-            .eq('email', normalizedEmail);
+        const updated = await updateStaffPassword(normalizedEmail, hashedPassword);
 
-        if (dbError) {
-            console.error("STAFF_PASSWORD_UPDATE_ERROR:", dbError.message);
+        if (!updated) {
+            return res.status(404).json({ message: 'User account not found.' });
         }
-
-        // Also update in DynamoDB
-        updateStaffPassword(normalizedEmail, hashedPassword).catch(() => {});
 
         return res.status(200).json({
             success: true,
-            message: 'Password changed successfully.'
+            message: 'Password changed successfully in DynamoDB.'
         });
     } catch (err: any) {
         console.error("CHANGE_PASSWORD_ERROR:", err);

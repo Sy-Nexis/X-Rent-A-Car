@@ -1,49 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
+import {
+    getAllAssignments as fetchDynamoAssignments,
+    createBatchAssignments,
+    updateAssignment as updateDynamoAssignment,
+    deleteAssignment as deleteDynamoAssignment,
+    getAssignmentById
+} from '../services/dynamoAssignmentService';
+import { recordAuditLog } from '../services/dynamoLogService';
 import { cache } from '../utils/cache';
-import { recordAuditLog } from './LogRoutes';
 
 const router = Router();
-
-// In-memory fallback store in case table creation is pending in Supabase
-let inMemoryAssignments: any[] = [];
-
-// Helper to normalize assignment object
-function formatAssignment(item: any) {
-    if (!item) return item;
-    const client = item.clients || item.client || {};
-    const vehicle = item.vehicles || item.vehicle || {};
-    const clientName = `${client.first_name || ''} ${client.last_name || ''}`.trim() || client.name || 'Corporate Client';
-
-    return {
-        id: item.id,
-        clientId: item.client_id,
-        vehicleId: item.vehicle_id,
-        startDate: item.start_date || item.startDate,
-        endDate: item.end_date || item.endDate,
-        dailyRate: Number(item.daily_rate || item.dailyRate || vehicle.daily_rate || 0),
-        status: item.status || 'Active',
-        notes: item.notes || '',
-        createdAt: item.created_at || item.createdAt,
-        client: {
-            id: client.id || item.client_id,
-            name: clientName,
-            email: client.email || '',
-            phone: client.phone || '',
-            governmentId: client.government_id || client.governmentId || '',
-        },
-        vehicle: {
-            id: vehicle.id || item.vehicle_id,
-            make: vehicle.make || '',
-            model: vehicle.model || '',
-            year: vehicle.year || 2024,
-            licensePlate: vehicle.license_plate || vehicle.licensePlate || '',
-            vin: vehicle.vin || '',
-            dailyRate: Number(vehicle.daily_rate || vehicle.dailyRate || 0),
-            status: vehicle.status || 'Active',
-        }
-    };
-}
 
 // ==========================================
 // 1. GET ALL ASSIGNMENTS
@@ -62,33 +28,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Attempt Supabase query with relations
-        const { data, error } = await supabase
-            .from('vehicle_assignments')
-            .select(`
-                id,
-                client_id,
-                vehicle_id,
-                start_date,
-                end_date,
-                daily_rate,
-                status,
-                notes,
-                created_at,
-                clients ( id, first_name, last_name, email, phone, government_id ),
-                vehicles ( id, make, model, year, license_plate, vin, daily_rate, status )
-            `)
-            .order('created_at', { ascending: false });
-
-        let results: any[] = [];
-
-        if (error) {
-            console.warn('vehicle_assignments table query note (falling back to memory/sync):', error.message);
-            results = inMemoryAssignments.map(formatAssignment);
-        } else {
-            results = (data || []).map(formatAssignment);
-        }
-
+        const results = await fetchDynamoAssignments();
         cache.set(cacheKey, results, 15000);
 
         res.setHeader('X-Cache', 'MISS');
@@ -138,60 +78,16 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const assignmentRecords: any[] = [];
-        const now = new Date().toISOString();
-
-        // Build permutation records for multiple clients x multiple vehicles
-        for (const cId of targetClientIds) {
-            for (const vId of targetVehicleIds) {
-                assignmentRecords.push({
-                    client_id: cId,
-                    vehicle_id: vId,
-                    start_date: start_date ? new Date(start_date).toISOString() : now,
-                    end_date: end_date ? new Date(end_date).toISOString() : null,
-                    daily_rate: Number(daily_rate) || 0,
-                    status: status || 'Active',
-                    notes: notes || 'Assigned via Fleet Hub',
-                    created_at: now,
-                    updated_at: now
-                });
-            }
-        }
-
-        console.log(`CREATING_${assignmentRecords.length}_ASSIGNMENTS:`, assignmentRecords);
-
-        // 1. Insert into Supabase vehicle_assignments table
-        const { data, error } = await supabase
-            .from('vehicle_assignments')
-            .insert(assignmentRecords)
-            .select(`
-                id, client_id, vehicle_id, start_date, end_date, daily_rate, status, notes, created_at,
-                clients ( id, first_name, last_name, email, phone, government_id ),
-                vehicles ( id, make, model, year, license_plate, vin, daily_rate, status )
-            `);
-
-        // 2. Update vehicle statuses to 'Rented' in Supabase
-        await supabase
-            .from('vehicles')
-            .update({ status: 'Rented' })
-            .in('id', targetVehicleIds);
-
-        let createdItems: any[] = [];
-
-        if (error) {
-            console.warn('vehicle_assignments insert fallback note:', error.message);
-            // In-memory fallback
-            for (const item of assignmentRecords) {
-                const simulated = {
-                    ...item,
-                    id: Date.now() + Math.floor(Math.random() * 1000)
-                };
-                inMemoryAssignments.unshift(simulated);
-                createdItems.push(formatAssignment(simulated));
-            }
-        } else {
-            createdItems = (data || []).map(formatAssignment);
-        }
+        // Persist batch assignments to DynamoDB and update vehicle statuses
+        const createdItems = await createBatchAssignments({
+            client_ids: targetClientIds,
+            vehicle_ids: targetVehicleIds,
+            start_date,
+            end_date,
+            daily_rate: Number(daily_rate) || 0,
+            notes,
+            status: status || 'Active'
+        });
 
         // Record detailed audit log with specific client & vehicle names
         const clientNames = Array.from(new Set(createdItems.map(i => i.client?.name).filter(Boolean))).join(', ');
@@ -211,7 +107,7 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
 
         res.status(201).json({
             success: true,
-            message: `Successfully created ${assignmentRecords.length} vehicle assignment(s).`,
+            message: `Successfully created ${createdItems.length} vehicle assignment(s).`,
             count: createdItems.length,
             data: createdItems
         });
@@ -232,66 +128,44 @@ router.post('/assign', async (req: Request, res: Response): Promise<void> => {
 router.put('/update', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id, status, end_date, daily_rate, notes } = req.body;
-        const targetId = id || req.query.id;
+        const targetId = Number(id || req.query.id);
 
-        if (!targetId) {
+        if (!targetId || isNaN(targetId)) {
             res.status(400).json({
                 success: false,
-                message: 'Assignment ID is required for update.'
+                message: 'Valid assignment ID is required for update.'
             });
             return;
         }
 
-        const updateData: any = { updated_at: new Date().toISOString() };
+        const existing = await getAssignmentById(targetId);
+        if (!existing) {
+            res.status(404).json({
+                success: false,
+                message: `Assignment #${targetId} not found.`
+            });
+            return;
+        }
+
+        const updateData: any = {};
         if (status !== undefined) updateData.status = status;
         if (end_date !== undefined) updateData.end_date = end_date ? new Date(end_date).toISOString() : null;
         if (daily_rate !== undefined) updateData.daily_rate = Number(daily_rate) || 0;
         if (notes !== undefined) updateData.notes = notes;
 
-        // Fetch existing assignment to know vehicle ID and details
-        const { data: existing } = await supabase
-            .from('vehicle_assignments')
-            .select(`
-                id, vehicle_id, client_id, status, daily_rate, notes,
-                clients ( id, first_name, last_name ),
-                vehicles ( id, make, model, license_plate )
-            `)
-            .eq('id', targetId)
-            .maybeSingle();
-
-        const { data, error } = await supabase
-            .from('vehicle_assignments')
-            .update(updateData)
-            .eq('id', targetId)
-            .select();
-
-        // If assignment completed or terminated, set vehicle back to Available
-        const targetVehicleId = existing?.vehicle_id;
-        if (targetVehicleId && (status === 'Completed' || status === 'Terminated' || status === 'Returned')) {
-            await supabase
-                .from('vehicles')
-                .update({ status: 'Available' })
-                .eq('id', targetVehicleId);
-        }
-
-        const clientName = (existing?.clients as any)?.first_name
-            ? `${(existing?.clients as any).first_name} ${(existing?.clients as any).last_name || ''}`.trim()
-            : `Client #${existing?.client_id || 'N/A'}`;
-        const vehName = (existing?.vehicles as any)?.make
-            ? `${(existing?.vehicles as any).make} ${(existing?.vehicles as any).model || ''} (${(existing?.vehicles as any).license_plate || 'No Plate'})`
-            : `Vehicle #${existing?.vehicle_id || 'N/A'}`;
+        const updated = await updateDynamoAssignment(targetId, updateData);
 
         const isReturn = status === 'Completed' || status === 'Returned';
         let detailMsg = '';
         if (isReturn) {
-            detailMsg = `Returned vehicle ${vehName} from client ${clientName}. Contract #${targetId} marked as ${status}. Vehicle status reset to Available.`;
+            detailMsg = `Returned vehicle from contract #${targetId}. Status marked as ${status}. Vehicle status reset to Available.`;
         } else {
             const assignDiffs: string[] = [];
-            if (status !== undefined && status !== existing?.status) assignDiffs.push(`Status: ${existing?.status || 'Active'} → ${status}`);
-            if (daily_rate !== undefined && Number(daily_rate) !== Number(existing?.daily_rate)) assignDiffs.push(`Rate: LKR ${Number(existing?.daily_rate || 0).toLocaleString()} → LKR ${Number(daily_rate).toLocaleString()}`);
-            if (notes !== undefined && notes !== existing?.notes) assignDiffs.push(`Notes: "${notes}"`);
+            if (status !== undefined && status !== existing.status) assignDiffs.push(`Status: ${existing.status || 'Active'} → ${status}`);
+            if (daily_rate !== undefined && Number(daily_rate) !== Number(existing.daily_rate)) assignDiffs.push(`Rate: LKR ${Number(existing.daily_rate || 0).toLocaleString()} → LKR ${Number(daily_rate).toLocaleString()}`);
+            if (notes !== undefined && notes !== existing.notes) assignDiffs.push(`Notes: "${notes}"`);
             detailMsg = assignDiffs.length > 0
-                ? `Updated contract #${targetId} (${clientName} & ${vehName}). Changes: ${assignDiffs.join(', ')}.`
+                ? `Updated contract #${targetId}. Changes: ${assignDiffs.join(', ')}.`
                 : `Saved contract #${targetId} settings.`;
         }
 
@@ -311,7 +185,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             success: true,
             message: `Assignment #${targetId} updated successfully.`,
-            data: data
+            data: updated ? [updated] : []
         });
 
     } catch (error: any) {
@@ -329,7 +203,7 @@ router.put('/update', async (req: Request, res: Response): Promise<void> => {
 router.delete('/del', async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.query;
-        if (!id) {
+        if (!id || isNaN(Number(id))) {
             res.status(400).json({
                 success: false,
                 message: 'Assignment ID is required.'
@@ -337,36 +211,16 @@ router.delete('/del', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        // Fetch vehicle_id before deletion
-        const { data: existing } = await supabase
-            .from('vehicle_assignments')
-            .select('id, vehicle_id')
-            .eq('id', id)
-            .maybeSingle();
-
-        const { error } = await supabase
-            .from('vehicle_assignments')
-            .delete()
-            .eq('id', id);
-
-        // Reset vehicle to available
-        if (existing?.vehicle_id) {
-            await supabase
-                .from('vehicles')
-                .update({ status: 'Available' })
-                .eq('id', existing.vehicle_id);
-        }
-
-        inMemoryAssignments = inMemoryAssignments.filter(a => String(a.id) !== String(id));
+        await deleteDynamoAssignment(Number(id));
 
         // Record audit log
         recordAuditLog({
-            userName: 'Alex Rivera',
-            userRole: 'Fleet Manager',
+            userName: (req.headers['x-user-name'] as string) || (req.query.user_name as string) || 'Alex Rivera',
+            userRole: (req.headers['x-user-role'] as string) || (req.query.user_role as string) || 'Fleet Manager',
             action: 'Terminated Assignment',
             entityType: 'Assignment',
-            entityId: id as string,
-            details: `Terminated and deleted assignment contract #${id}.`
+            entityId: String(id),
+            details: `Terminated and deleted assignment contract #${id}. Vehicle status reset to Available.`
         }).catch(() => {});
 
         cache.invalidate('assignment');

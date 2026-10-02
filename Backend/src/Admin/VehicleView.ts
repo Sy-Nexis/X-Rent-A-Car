@@ -1,41 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../db';
 import { cache } from '../utils/cache';
+import { getAllVehicles, getVehicleById, getVehicleByVin, getVehicleByPlate } from '../services/dynamoVehicleService';
 
 const router = Router();
 
-// Helper to decode status and normalize fields from Supabase DB
-function decodeVehicle(vehicle: any) {
-    if (!vehicle) return vehicle;
-    let status = vehicle.status;
-    let branch = vehicle.branch;
-    if (branch && branch.includes('|')) {
-        const parts = branch.split('|');
-        branch = parts[0];
-        status = parts[1]; // e.g. 'In Prep' or 'Retired'
-    } else if (status === 'Available') {
-        status = 'Active';
-    }
-
-    const dailyRateNum = Number(vehicle.daily_rate) || 0;
-    const licensePlateStr = vehicle.license_plate || '';
-
-    return {
-        ...vehicle,
-        status,
-        branch,
-        licensePlate: licensePlateStr,
-        license_plate: licensePlateStr,
-        dailyRate: dailyRateNum,
-        daily_rate: dailyRateNum,
-        fuelType: vehicle.fuel_type || 'Diesel',
-        fuel_type: vehicle.fuel_type || 'Diesel',
-        engineCapacity: vehicle.engine_capacity || '',
-        engine_capacity: vehicle.engine_capacity || '',
-    };
-}
-
-const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
+const getVehiclesList = async (req: Request, res: Response): Promise<void> => {
     try {
         const cacheKey = 'vehicles:all';
         const cached = cache.get<any[]>(cacheKey);
@@ -49,106 +18,61 @@ const getAllVehicles = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const { data, error } = await supabase
-            .from('vehicles')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Supabase SELECT error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching vehicle data.'
-            });
-            return;
-        }
-
-        const decodedData = data ? data.map(decodeVehicle) : [];
-        cache.set(cacheKey, decodedData, 30000); // 30s TTL
+        const vehicles = await getAllVehicles();
+        cache.set(cacheKey, vehicles, 15000);
 
         res.setHeader('X-Cache', 'MISS');
         res.status(200).json({
             success: true,
-            count: decodedData.length,
-            data: decodedData
+            count: vehicles.length,
+            data: vehicles
         });
-
     } catch (error: any) {
-        console.error('Unexpected error fetching vehicles:', error);
-
+        console.error('Error fetching vehicles from DynamoDB:', error);
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while fetching vehicle data.'
+            message: 'Database Error while fetching vehicle data.'
         });
     }
 };
 
-// GET all vehicles
-router.get('/', getAllVehicles);
-router.get('/view', getAllVehicles);
-
-// /api/vehicles/view/:id or /api/vehicles/:id
-router.get('/:id', async (req: Request, res: Response): Promise<void> => {
+const getSingleVehicle = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { id } = req.params;
-        if (!id || id === 'view') {
-            return getAllVehicles(req, res);
+        const { id, vin, plate, license_plate } = req.query;
+        let vehicle = null;
+
+        if (id) {
+            vehicle = await getVehicleById(Number(id));
+        } else if (vin) {
+            vehicle = await getVehicleByVin(String(vin));
+        } else if (plate || license_plate) {
+            vehicle = await getVehicleByPlate(String(plate || license_plate));
         }
 
-        const cacheKey = `vehicle:${id}`;
-        const cached = cache.get<any>(cacheKey);
-        if (cached) {
-            res.setHeader('X-Cache', 'HIT');
-            res.status(200).json({
-                success: true,
-                data: cached
-            });
-            return;
-        }
-
-        let query = supabase.from('vehicles').select('*');
-        if (!isNaN(Number(id))) {
-            query = query.or(`id.eq.${id},vin.eq.${id}`);
-        } else {
-            query = query.eq('vin', String(id));
-        }
-
-        const { data, error } = await query.maybeSingle();
-
-        if (error) {
-            console.error('Supabase SELECT single vehicle error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Database Error while fetching vehicle details.'
-            });
-            return;
-        }
-
-        if (!data) {
+        if (!vehicle) {
             res.status(404).json({
                 success: false,
-                message: 'Vehicle not found'
+                message: 'No vehicle record found matching the search criteria.'
             });
             return;
         }
 
-        const decoded = decodeVehicle(data);
-        cache.set(cacheKey, decoded, 30000);
-
-        res.setHeader('X-Cache', 'MISS');
         res.status(200).json({
             success: true,
-            data: decoded
+            data: vehicle
         });
-
     } catch (error: any) {
-        console.error('Unexpected error fetching vehicle details:', error);
-
+        console.error('Error retrieving vehicle from DynamoDB:', error);
         res.status(500).json({
             success: false,
-            message: 'Internal Server Error while fetching vehicle details.'
+            message: 'Server error while checking vehicle registry.'
         });
     }
-});
+};
+
+router.get('/', getVehiclesList);
+router.get('/all', getVehiclesList);
+router.get('/search', getSingleVehicle);
+router.get('/single', getSingleVehicle);
 
 export default router;
