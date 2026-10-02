@@ -15,7 +15,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("SUPER ADMIN");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -39,7 +38,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
           last_name: lastName.trim(),
           email: email.trim(),
           password: password,
-          role: role,
+          role: "Staff",
         }),
       });
 
@@ -214,36 +213,6 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
                     </svg>
                   )}
                 </button>
-              </div>
-            </div>
-
-            {/* Account Role Field */}
-            <div>
-              <label className="block text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1.5">
-                Account Role
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: "SUPER ADMIN", label: "SUPER ADMIN" },
-                  { id: "ADMIN", label: "ADMIN" },
-                  { id: "CLIENT", label: "CLIENT" },
-                  { id: "VEHICLE", label: "VEHICLE" },
-                ].map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setRole(r.id)}
-                    disabled={isLoading}
-                    className={`py-2 px-3 rounded-lg text-[10px] font-extrabold uppercase tracking-wider border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                      role === r.id
-                        ? "bg-brand-cyan/15 border-brand-cyan text-brand-cyan shadow-sm shadow-cyan-500/10"
-                        : "bg-white/[0.02] border-white/5 text-gray-400 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${role === r.id ? "bg-brand-cyan" : "bg-transparent"}`} />
-                    {r.label}
-                  </button>
-                ))}
               </div>
             </div>
 
