@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { Loader2, AlertCircle, Save, X, Info, ShieldCheck, Zap, Fuel, Gauge, MapPin, Palette, Car } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 
 interface Vehicle {
   id: number;
@@ -90,7 +90,7 @@ export default function EditVehicleForm({ vehicle, onClose }: EditVehicleFormPro
         }
       }
 
-      const response = await fetch(`http://localhost:8801/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

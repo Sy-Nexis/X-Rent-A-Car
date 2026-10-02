@@ -10,7 +10,7 @@ import {
   ShieldAlert
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -45,8 +45,7 @@ export default function DeleteClientConfirmModal({
     setError(null);
 
     try {
-      // Endpoint mapping: DELETE http://localhost:8801/api/clients/del?nic={id}
-      const response = await fetch(`http://localhost:8801/api/clients/del?nic=${client.government_id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/clients/del?nic=${client.government_id}`, {
         method: "DELETE",
       });
 

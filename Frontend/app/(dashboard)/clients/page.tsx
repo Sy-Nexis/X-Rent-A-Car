@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import ClientRegistryView from "@/components/Clients/ClientRegistryView";
+import { getApiBaseUrl } from "@/lib/api";
 
 async function getClientsData() {
   const cookieStore = await cookies();
@@ -11,7 +12,7 @@ async function getClientsData() {
   }
 
   try {
-    const res = await fetch("http://localhost:8801/api/clients/view", {
+    const res = await fetch(`${getApiBaseUrl()}/api/clients/view`, {
       cache: "no-store",
       headers,
     });

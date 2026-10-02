@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import AdminHubClient from "@/components/Admin/AdminHubClient";
+import { getApiBaseUrl } from "@/lib/api";
 
 async function getAdminHubData() {
   const cookieStore = await cookies();
@@ -12,11 +13,11 @@ async function getAdminHubData() {
 
   try {
     const [vehiclesRes, clientsRes] = await Promise.all([
-      fetch("http://localhost:8801/api/vehicles/view", {
+      fetch(`${getApiBaseUrl()}/api/vehicles/view`, {
         cache: "no-store",
         headers,
       }),
-      fetch("http://localhost:8801/api/clients/view", {
+      fetch(`${getApiBaseUrl()}/api/clients/view`, {
         cache: "no-store",
         headers,
       }),

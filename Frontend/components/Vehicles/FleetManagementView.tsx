@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 
 export default function FleetManagementView() {
   const router = useRouter();
@@ -78,7 +78,7 @@ export default function FleetManagementView() {
         status: status === "InPrep" ? "In Prep" : status,
       };
 
-      const res = await fetch("http://localhost:8801/api/vehicles/add", {
+      const res = await fetch(`${getApiBaseUrl()}/api/vehicles/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

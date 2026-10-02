@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { setCookie } from "@/lib/cookies";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface LoginViewProps {
   onLoginSuccess: () => void;
   onGoToRegister: () => void;
 }
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8801/api";
+const getBackendApiUrl = () => process.env.NEXT_PUBLIC_BACKEND_API_URL || `${getApiBaseUrl()}/api`;
 
 export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewProps) {
   const [email, setEmail] = useState("");
@@ -23,8 +24,8 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
     setErrorMessage(null);
 
     try {
-      // Send login request directly to Backend API -> Backend processes with Supabase DB
-      const res = await fetch(`${BACKEND_API_URL}/auth/login`, {
+      // Send login request directly to Backend API -> Backend processes with DynamoDB
+      const res = await fetch(`${getBackendApiUrl()}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export default function LoginView({ onLoginSuccess, onGoToRegister }: LoginViewP
     } catch (err: any) {
       console.error("Login request error:", err);
       setErrorMessage(
-        "Could not connect to the Backend API server. Please ensure the backend is running on http://localhost:8801"
+        "Could not connect to the Backend API server. Please check backend connectivity."
       );
     } finally {
       setIsLoading(false);

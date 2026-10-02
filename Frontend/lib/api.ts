@@ -1,6 +1,17 @@
 // Frontend Fast Data Fetching & Memory Caching Utility
 
-const API_BASE = "http://localhost:8801";
+export function getApiBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    // In browser: relative URL when hosted together via Vercel rewrites, or env / localhost
+    return process.env.NEXT_PUBLIC_BACKEND_API_URL 
+      ? process.env.NEXT_PUBLIC_BACKEND_API_URL.replace(/\/api$/, "")
+      : (process.env.NODE_ENV === "production" ? "" : "http://localhost:8801");
+  }
+  // Server-side: Vercel Service Binding (BACKEND_URL) or env var or localhost
+  return process.env.BACKEND_URL || (process.env.NEXT_PUBLIC_BACKEND_API_URL ? process.env.NEXT_PUBLIC_BACKEND_API_URL.replace(/\/api$/, "") : "http://localhost:8801");
+}
+
+const API_BASE = ""; // Handled dynamically via getApiBaseUrl()
 
 interface CacheItem<T> {
   data: T;
@@ -20,7 +31,7 @@ export async function fetchVehicles(forceRefresh = false): Promise<any[]> {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/vehicles/view`, {
+    const res = await fetch(`${getApiBaseUrl()}/api/vehicles/view`, {
       cache: "no-store",
     });
     if (!res.ok) {
@@ -45,7 +56,7 @@ export async function fetchClients(forceRefresh = false): Promise<any[]> {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/clients/view`, {
+    const res = await fetch(`${getApiBaseUrl()}/api/clients/view`, {
       cache: "no-store",
     });
     if (!res.ok) {
@@ -70,7 +81,7 @@ export async function fetchAssignments(forceRefresh = false): Promise<any[]> {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/assignments`, {
+    const res = await fetch(`${getApiBaseUrl()}/api/assignments`, {
       cache: "no-store",
     });
     if (!res.ok) {
@@ -106,8 +117,8 @@ function getAuthHeaders(): Record<string, string> {
 }
 
 export async function assignVehiclesToClients(payload: {
-  client_ids: number[];
-  vehicle_ids: number[];
+  client_ids: (number | string)[];
+  vehicle_ids: (number | string)[];
   start_date?: string;
   end_date?: string;
   daily_rate?: number;
@@ -115,7 +126,7 @@ export async function assignVehiclesToClients(payload: {
   status?: string;
 }): Promise<any> {
   const headers = getAuthHeaders();
-  const res = await fetch(`${API_BASE}/api/assignments/assign`, {
+  const res = await fetch(`${getApiBaseUrl()}/api/assignments/assign`, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),
@@ -129,14 +140,14 @@ export async function assignVehiclesToClients(payload: {
 }
 
 export async function updateAssignment(payload: {
-  id: number;
+  id: number | string;
   status?: string;
   end_date?: string;
   daily_rate?: number;
   notes?: string;
 }): Promise<any> {
   const headers = getAuthHeaders();
-  const res = await fetch(`${API_BASE}/api/assignments/update`, {
+  const res = await fetch(`${getApiBaseUrl()}/api/assignments/update`, {
     method: "PUT",
     headers,
     body: JSON.stringify(payload),
@@ -149,10 +160,10 @@ export async function updateAssignment(payload: {
   return res.json();
 }
 
-export async function deleteAssignment(id: number): Promise<any> {
+export async function deleteAssignment(id: number | string): Promise<any> {
   const headers = getAuthHeaders();
   delete headers["Content-Type"];
-  const res = await fetch(`${API_BASE}/api/assignments/del?id=${id}`, {
+  const res = await fetch(`${getApiBaseUrl()}/api/assignments/del?id=${id}`, {
     method: "DELETE",
     headers,
   });
@@ -175,7 +186,7 @@ export async function fetchLogs(forceFresh = false): Promise<any[]> {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/logs`, {
+    const res = await fetch(`${getApiBaseUrl()}/api/logs`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch activity logs");
@@ -211,7 +222,7 @@ export async function recordLog(payload: {
     }
   }
 
-  const res = await fetch(`${API_BASE}/api/logs/record`, {
+  const res = await fetch(`${getApiBaseUrl()}/api/logs/record`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -229,7 +240,7 @@ export async function recordLog(payload: {
 }
 
 export async function clearAllLogs(): Promise<any> {
-  const res = await fetch(`${API_BASE}/api/logs/clear`, {
+  const res = await fetch(`${getApiBaseUrl()}/api/logs/clear`, {
     method: "DELETE",
   });
   invalidateClientDataCache("logs");

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "@/lib/api";
 
 export default function RegisterClientView() {
   const router = useRouter();
@@ -64,7 +65,7 @@ export default function RegisterClientView() {
         status: "Active",
       };
 
-      const res = await fetch("http://localhost:8801/api/clients/add", {
+      const res = await fetch(`${getApiBaseUrl()}/api/clients/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

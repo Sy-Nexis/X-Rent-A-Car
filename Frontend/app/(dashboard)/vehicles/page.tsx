@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import FleetListView from "@/components/Vehicles/FleetListView";
+import { getApiBaseUrl } from "@/lib/api";
 
 async function getVehiclesData() {
   const cookieStore = await cookies();
@@ -11,7 +12,7 @@ async function getVehiclesData() {
   }
 
   try {
-    const res = await fetch("http://localhost:8801/api/vehicles/view", {
+    const res = await fetch(`${getApiBaseUrl()}/api/vehicles/view`, {
       cache: "no-store",
       headers,
     });

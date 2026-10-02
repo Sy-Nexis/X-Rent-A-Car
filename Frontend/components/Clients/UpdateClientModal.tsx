@@ -22,7 +22,7 @@ import {
   Hash
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -113,7 +113,7 @@ export default function UpdateClientModal({ isOpen, onClose, client, onActionCom
         }
       }
 
-      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${client.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/clients/update?government=${govId}&id=${client.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

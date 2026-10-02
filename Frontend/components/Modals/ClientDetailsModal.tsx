@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Loader2
 } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface Client {
   id: number;
@@ -59,7 +60,7 @@ export default function ClientDetailsModal({ isOpen, onClose, clientId }: Client
     setError(null);
 
     try {
-      const url = `http://localhost:8801/api/clients/view/${clientId}`;
+      const url = `${getApiBaseUrl()}/api/clients/view/${clientId}`;
 
       const response = await fetch(url, {
         method: 'GET',

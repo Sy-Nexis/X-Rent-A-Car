@@ -35,7 +35,7 @@ export function VehicleErrorState() {
             Retry Connection
           </button>
           <div className="p-4 bg-black/40 rounded-2xl border border-white/5 text-[10px] font-mono text-[#424245] uppercase tracking-widest">
-            TARGET_ADDR: http://localhost:8801/api/vehicles/view
+            TARGET_ADDR: /api/vehicles/view
           </div>
         </div>
       </div>

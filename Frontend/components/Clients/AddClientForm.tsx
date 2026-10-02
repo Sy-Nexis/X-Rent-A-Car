@@ -20,6 +20,7 @@ import {
   Hash
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "@/lib/api";
 
 // --- TYPES ---
 interface ClientFormValues {
@@ -59,7 +60,7 @@ export default function AddClientForm() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8801/api/clients/add", {
+      const response = await fetch(`${getApiBaseUrl()}/api/clients/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

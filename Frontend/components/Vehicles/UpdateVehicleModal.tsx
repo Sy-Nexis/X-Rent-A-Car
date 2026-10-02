@@ -23,7 +23,7 @@ import {
   Database,
   Info
 } from "lucide-react";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 // --- TYPES ---
@@ -130,7 +130,7 @@ export default function UpdateVehicleModal({ vehicle, onActionComplete }: Update
         }
       }
 
-      const response = await fetch(`http://localhost:8801/api/vehicles/update?vin=${vehicle.vin}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/vehicles/update?vin=${vehicle.vin}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -57,18 +57,22 @@ app.get('/api/health', (req: Request, res: Response) => {
     res.status(200).json({ status: "Active", database: "AWS DynamoDB" });
 });
 
-// Initialize and Start Server
-app.listen(PORT, async () => {
-    console.log(`neXus API Server running on http://localhost:${PORT}`);
+// Initialize and Start Server locally
+if (!process.env.VERCEL) {
+    app.listen(PORT, async () => {
+        console.log(`neXus API Server running on http://localhost:${PORT}`);
 
-    // Auto-verify and create any missing tables in user's AWS DynamoDB account
-    await ensureAllDynamoTables();
+        // Auto-verify and create any missing tables in user's AWS DynamoDB account
+        await ensureAllDynamoTables();
 
-    try {
-        const command = new DescribeTableCommand({ TableName: STAFF_TABLE_NAME });
-        const res = await dynamoClient.send(command);
-        console.log(`CONNECTION STATUS: AWS DynamoDB table '${STAFF_TABLE_NAME}' status: ${res.Table?.TableStatus || 'ACTIVE'}`);
-    } catch (error: any) {
-        console.warn(`DynamoDB status note: ${error?.message || 'Table initializing'}`);
-    }
-});
+        try {
+            const command = new DescribeTableCommand({ TableName: STAFF_TABLE_NAME });
+            const res = await dynamoClient.send(command);
+            console.log(`CONNECTION STATUS: AWS DynamoDB table '${STAFF_TABLE_NAME}' status: ${res.Table?.TableStatus || 'ACTIVE'}`);
+        } catch (error: any) {
+            console.warn(`DynamoDB status note: ${error?.message || 'Table initializing'}`);
+        }
+    });
+}
+
+export default app;

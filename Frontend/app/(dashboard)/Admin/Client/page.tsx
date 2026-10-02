@@ -2,6 +2,7 @@ import React from "react";
 import ClientListActionable from "@/components/Clients/ClientListActionable";
 import { ErrorStateUI, EmptyRegistryUI } from "@/components/Clients/RegistryStatusStates";
 import { ShieldCheck, Users, Activity } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 async function getClients() {
   try {
     // Attempt to fetch the client registry
-    const response = await fetch("http://localhost:8801/api/clients/view", {
+    const response = await fetch(`${getApiBaseUrl()}/api/clients/view`, {
       cache: "no-store",
       next: { revalidate: 0 }
     });

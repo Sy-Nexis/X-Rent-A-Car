@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { invalidateClientDataCache } from "@/lib/api";
+import { getApiBaseUrl, invalidateClientDataCache } from "@/lib/api";
 
 // --- TYPES ---
 interface Client {
@@ -76,7 +76,7 @@ export default function EditClientPage() {
       try {
         setIsLoading(true);
         // Using government_id as the lookup ID (standard for xrent)
-        const response = await fetch(`http://localhost:8801/api/clients/view/${id}`);
+        const response = await fetch(`${getApiBaseUrl()}/api/clients/view/${id}`);
 
         if (!response.ok) {
           throw new Error(`Registry Error: Client with ID ${id} not found.`);
@@ -117,7 +117,7 @@ export default function EditClientPage() {
 
     try {
       const govId = client.government_id || id;
-      const response = await fetch(`http://localhost:8801/api/clients/update?government=${govId}&id=${client.id || id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/clients/update?government=${govId}&id=${client.id || id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

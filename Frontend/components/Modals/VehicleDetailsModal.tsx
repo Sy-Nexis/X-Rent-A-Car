@@ -17,6 +17,7 @@ import {
   Zap,
   Loader2
 } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface Vehicle {
   id: number | string;
@@ -67,7 +68,7 @@ export default function VehicleDetailsModal({ isOpen, onClose, vehicleId }: Vehi
     setError(null);
 
     try {
-      const url = `http://localhost:8801/api/vehicles/view/${vehicleId}`;
+      const url = `${getApiBaseUrl()}/api/vehicles/view/${vehicleId}`;
 
       // Log this! Check your browser console to see the ACTUAL URL being called.
       console.log("Fetching vehicle details from:", url);

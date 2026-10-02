@@ -17,6 +17,7 @@ import Link from "next/link";
 import DeleteConfirmModal from "../Modals/DeleteConfirmModal";
 import VehicleDetailsModal from "../Modals/VehicleDetailsModal";
 import UpdateVehicleModal from "./UpdateVehicleModal";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface Vehicle {
   id: number;
@@ -66,9 +67,7 @@ export default function VehicleListActionable({ vehicles }: VehicleListActionabl
         plate: deletingVehicle.licensePlate
       }).toString();
 
-      // Ensure the endpoint matches your Backend exactly (e.g., /del vs /delete)
-      const API_BASE_URL = "http://localhost:8801";
-      const url = `${API_BASE_URL}/api/vehicles/del?${queryParams}`;
+      const url = `${getApiBaseUrl()}/api/vehicles/del?${queryParams}`;
 
       const response = await fetch(url, {
         method: "DELETE",

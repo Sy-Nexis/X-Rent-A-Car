@@ -1,6 +1,7 @@
 import Link from "next/link";
 import FleetManager from "@/components/Vehicles/FleetManager";
 import { ChevronRight, LayoutGrid, ShieldCheck, MapPin, Plus } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export const metadata = {
 
 async function getVehicles() {
   try {
-    const response = await fetch('http://localhost:8801/api/vehicles/view', {
+    const response = await fetch(`${getApiBaseUrl()}/api/vehicles/view`, {
       cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',

@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { getApiBaseUrl } from "@/lib/api";
 
 interface RegisterViewProps {
   onRegisterSuccess: () => void;
   onGoToLogin: () => void;
 }
 
-const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:8801/api";
+const getBackendApiUrl = () => process.env.NEXT_PUBLIC_BACKEND_API_URL || `${getApiBaseUrl()}/api`;
 
 export default function RegisterView({ onRegisterSuccess, onGoToLogin }: RegisterViewProps) {
   const [firstName, setFirstName] = useState("");
@@ -26,8 +27,8 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
     setSuccessMessage(null);
 
     try {
-      // Send registration request to Backend API -> Backend writes to Supabase database
-      const res = await fetch(`${BACKEND_API_URL}/auth/register`, {
+      // Send registration request to Backend API -> Backend writes to DynamoDB database
+      const res = await fetch(`${getBackendApiUrl()}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +57,7 @@ export default function RegisterView({ onRegisterSuccess, onGoToLogin }: Registe
     } catch (err: any) {
       console.error("Registration request error:", err);
       setErrorMessage(
-        "Could not connect to Backend API server. Please ensure the backend is running on http://localhost:8801"
+        "Could not connect to Backend API server. Please check backend connectivity."
       );
     } finally {
       setIsLoading(false);
